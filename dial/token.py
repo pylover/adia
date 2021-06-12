@@ -1,0 +1,3 @@
+class Token(object):
+    pass
+
