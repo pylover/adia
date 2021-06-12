@@ -1,6 +1,6 @@
 
+```dial
 @seq
-
 alice:
   init()
   bob.hello(a, b, c):
@@ -15,6 +15,7 @@ alice:
 
     @for i in range(10):
       jack.repeat()
+```
 
 
 ## Sequence Diagram

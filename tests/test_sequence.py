@@ -1,4 +1,4 @@
-from abcdia import parse, Call
+from dial import parse, Call
 
 
 def test_simple_call():
