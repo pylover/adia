@@ -1,6 +1,6 @@
 from io import StringIO
 
-from dial.tokenizer import tokenize, EOF, AT, NAME, NL, COLON, EOF
+from dial.tokenizer import tokenize, EOF, AT, NAME, NL, COLON
 
 
 def tokenizes(string):

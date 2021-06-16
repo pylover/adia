@@ -32,7 +32,6 @@ def tokenize(readline):
     while True:
         line = readline()
         lineno += 1
-        pos = 0
 
         if line == '':
             yield Token(EOF, line, (lineno, 0), (lineno, 0), line)
@@ -53,4 +52,3 @@ def tokenize(readline):
                 (lineno, span[1]),
                 line
             )
-

@@ -1,5 +1,6 @@
 PIP = pip3
 TEST_DIR = tests
+PRJ = dial
 
 .PHONY: test
 test:
@@ -7,7 +8,11 @@ test:
 
 .PHONY: cover
 cover:
-	pytest --cov=dial $(TEST_DIR)
+	pytest --cov=$(PRJ) $(TEST_DIR)
+
+.PHONY: lint
+lint:
+	pylama
 
 .PHONY: env
 env:
