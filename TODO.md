@@ -1,6 +1,6 @@
 
 ```dial
-@seq
+@seq foo
 alice:
   init()
   bob.hello(a, b, c):

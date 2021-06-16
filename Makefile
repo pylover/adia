@@ -1,8 +1,13 @@
 PIP = pip3
+TEST_DIR = tests
 
 .PHONY: test
 test:
-	pytest
+	pytest $(TEST_DIR)
+
+.PHONY: cover
+cover:
+	pytest --cov=dial $(TEST_DIR)
 
 .PHONY: env
 env:

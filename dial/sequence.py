@@ -1,8 +1,10 @@
-from .token import Token
+from .element import Element
+from .diagram import Diagram
 
 
-class Call(Token):
-    def __init__(self, caller, callee, function):
-        self.caller = caller
-        self.callee = callee
-        self.function = function
+class Call(Element):
+    pass
+
+
+class SequenceDiagram(Diagram):
+    pass
