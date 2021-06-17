@@ -18,6 +18,9 @@ alice:
 ```
 
 
+## Tokenizer
+- Semicolon
+
 ## Sequence Diagram
 - call
 - loop

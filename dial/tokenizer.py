@@ -6,22 +6,32 @@ EOF = 0
 NAME = 1
 NL = 2
 AT = 3
-COLON = 4
+DOT = 4
+COLON = 5
+LPAR = 6
+RPAR = 7
+COMA = 8
+RARROW = 9
 
 
 EXACT_TOKENS = [
-    ('@',  1, AT),
-    (':',  1, COLON),
-    ('\n', 1, NL),
+    ('@',   1, AT),
+    ('.',   1, DOT),
+    (':',   1, COLON),
+    ('(',   1, LPAR),
+    (')',   1, RPAR),
+    (',',   1, COMA),
+    ('->',  2, RARROW),
+    ('\n',  1, NL),
 ]
 
 
-WHITESPACE = r'\s+'
-NAME = r'\w+'
-ALLTOKENS = [i[0] for i in EXACT_TOKENS] + [WHITESPACE, NAME]
+WHITESPACE_RE = r'\s+'
+NAME_RE = r'\w+'
+ALLTOKENS_RE = \
+    [re.escape(i[0]) for i in EXACT_TOKENS] + [WHITESPACE_RE, NAME_RE]
+ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS_RE) + ')')
 TOKENS_DICT = {t: n for t, _, n in EXACT_TOKENS}
-ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS) + ')')
-
 
 Token = namedtuple('Token', 'type string start end line')
 
