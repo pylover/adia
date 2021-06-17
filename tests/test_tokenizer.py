@@ -88,3 +88,18 @@ def test_sequence_indented_call():
     assert next(gen) == (EOF,    '',       (8,  0), (8,  0))
     with pytest.raises(StopIteration):
         next(gen)
+
+
+def test_escapechar():
+    gen = tokenizes(
+        'foo:\\\n'
+        '  bar\\\n.baz'
+    )
+    assert next(gen) == (NAME,   'foo',   (1, 0), (1, 3))
+    assert next(gen) == (COLON,  ':',     (1, 3), (1, 4))
+    assert next(gen) == (NAME,   'bar',   (2, 2), (2, 5))
+    assert next(gen) == (DOT,    '.',     (3, 0), (3, 1))
+    assert next(gen) == (NAME,   'baz',   (3, 1), (3, 4))
+    assert next(gen) == (EOF,    '',      (4, 0), (4, 0))
+    with pytest.raises(StopIteration):
+        next(gen)

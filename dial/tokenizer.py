@@ -14,7 +14,7 @@ COMA = 8
 RARROW = 9
 INDENT = 10
 DEDENT = 11
-
+BACKSLASH = 12
 
 EXACT_TOKENS = [
     ('@',   1, AT),
@@ -23,6 +23,7 @@ EXACT_TOKENS = [
     ('(',   1, LPAR),
     (')',   1, RPAR),
     (',',   1, COMA),
+    ('\\',  1, BACKSLASH),
     ('->',  2, RARROW),
     ('\n',  1, NL),
 ]
@@ -42,6 +43,8 @@ def tokenize(readline):
     lineno = 0
     indentsize = 0
     indent = 0
+    escape = False
+    newline = True
 
     while True:
         line = readline()
@@ -55,7 +58,7 @@ def tokenize(readline):
             token = m.group()
             start, end = m.span()
 
-            if start == 0:  # Beginning of line
+            if newline and (start == 0):  # Beginning of line
                 lineindent = 0
                 if token.startswith(' '):  # Whitespace
                     # Indentation
@@ -88,6 +91,15 @@ def tokenize(readline):
                 # Ignore for the now.
                 continue
 
+            if token == '\\':  # Escape
+                escape = True
+                continue
+
+            if escape:
+                escape = False
+                continue
+
+            newline = token == '\n'
             yield Token(
                 TOKENS_DICT.get(token, NAME),
                 token,
