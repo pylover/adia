@@ -12,6 +12,8 @@ LPAR = 6
 RPAR = 7
 COMA = 8
 RARROW = 9
+INDENT = 10
+DEDENT = 11
 
 
 EXACT_TOKENS = [
@@ -38,6 +40,8 @@ Token = namedtuple('Token', 'type string start end line')
 
 def tokenize(readline):
     lineno = 0
+    indentsize = 0
+    indent = 0
 
     while True:
         line = readline()
@@ -49,16 +53,45 @@ def tokenize(readline):
 
         for m in ALLTOKENS_RE.finditer(line):
             token = m.group()
-            span = m.span()
+            start, end = m.span()
 
-            if token.startswith(' '):
-                # Just ignore for now
+            if start == 0:  # Beginning of line
+                lineindent = 0
+                if token.startswith(' '):  # Whitespace
+                    # Indentation
+                    if not indentsize:
+                        indentsize = end - start
+
+                    lineindent = (end - start) // indentsize
+
+                if lineindent > indent:
+                    indent = lineindent
+                    yield Token(
+                        INDENT,
+                        token,
+                        (lineno, start),
+                        (lineno, end),
+                        line
+                    )
+                elif lineindent < indent:
+                    for i in range(indent - lineindent):
+                        indent -= 1
+                        yield Token(
+                            DEDENT,
+                            '',
+                            (lineno, lineindent * indentsize),
+                            (lineno, lineindent * indentsize),
+                            line
+                        )
+
+            if token.startswith(' '):  # Whitespace
+                # Ignore for the now.
                 continue
 
             yield Token(
                 TOKENS_DICT.get(token, NAME),
                 token,
-                (lineno, span[0]),
-                (lineno, span[1]),
+                (lineno, start),
+                (lineno, end),
                 line
             )
