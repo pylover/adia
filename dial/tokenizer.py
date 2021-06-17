@@ -16,7 +16,9 @@ INDENT = 10
 DEDENT = 11
 BACKSLASH = 12
 
+
 EXACT_TOKENS = [
+    ('->',  2, RARROW),
     ('@',   1, AT),
     ('.',   1, DOT),
     (':',   1, COLON),
@@ -24,11 +26,11 @@ EXACT_TOKENS = [
     (')',   1, RPAR),
     (',',   1, COMA),
     ('\\',  1, BACKSLASH),
-    ('->',  2, RARROW),
     ('\n',  1, NL),
 ]
 
 
+# Regex patterns
 WHITESPACE_RE = r'\s+'
 NAME_RE = r'\w+'
 ALLTOKENS_RE = \
@@ -36,7 +38,25 @@ ALLTOKENS_RE = \
 ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS_RE) + ')')
 TOKENS_DICT = {t: n for t, _, n in EXACT_TOKENS}
 
+# Token namedtuple
 Token = namedtuple('Token', 'type string start end line')
+
+
+def EOFToken(lineno, line):
+    return Token(EOF, '', (lineno, 0), (lineno, 0), '')
+
+
+def IndentToken(lineno, token, start, end, line):
+    return Token(INDENT, token, (lineno, start), (lineno, end), line)
+
+
+def DedentToken(lineno, lineindent, indentsize, line):
+    return Token(
+        DEDENT, '',
+        (lineno, lineindent * indentsize),
+        (lineno, lineindent * indentsize),
+        line
+    )
 
 
 def tokenize(readline):
@@ -51,7 +71,7 @@ def tokenize(readline):
         lineno += 1
 
         if line == '':
-            yield Token(EOF, line, (lineno, 0), (lineno, 0), line)
+            yield EOFToken(lineno, line)
             break
 
         for m in ALLTOKENS_RE.finditer(line):
@@ -69,23 +89,12 @@ def tokenize(readline):
 
                 if lineindent > indent:
                     indent = lineindent
-                    yield Token(
-                        INDENT,
-                        token,
-                        (lineno, start),
-                        (lineno, end),
-                        line
-                    )
+                    yield IndentToken(lineno, token, start, end, line)
+
                 elif lineindent < indent:
                     for i in range(indent - lineindent):
                         indent -= 1
-                        yield Token(
-                            DEDENT,
-                            '',
-                            (lineno, lineindent * indentsize),
-                            (lineno, lineindent * indentsize),
-                            line
-                        )
+                        yield DedentToken(lineno, lineindent, indentsize, line)
 
             if token.startswith(' '):  # Whitespace
                 # Ignore for the now.
