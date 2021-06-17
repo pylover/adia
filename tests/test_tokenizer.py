@@ -11,14 +11,14 @@ def tokenizes(string):
         yield t.type, t.string, t.start, t.end
 
 
-def test_emptyinput():
+def test_tokenizer_emptyinput():
     gen = tokenizes('')
     assert next(gen) == (EOF, '', (1, 0), (1, 0))
     with pytest.raises(StopIteration):
         next(gen)
 
 
-def test_sequence_flat_call():
+def test_tokenizer_sequencediagram_flat():
     gen = tokenizes(
         '@seq foo\n'
         'bar: baz\n'
@@ -49,7 +49,7 @@ def test_sequence_flat_call():
         next(gen)
 
 
-def test_sequence_indented_call():
+def test_tokenizer_sequencediagram_indented():
     gen = tokenizes(
         'foo:\n'
         '  bar:\n'
@@ -90,7 +90,7 @@ def test_sequence_indented_call():
         next(gen)
 
 
-def test_escapechar():
+def test_tokenizer_escapechar():
     gen = tokenizes(
         'foo:\\\n'
         '  bar\\\n.baz'
