@@ -13,4 +13,6 @@ Then:
 
 ```bash
 make env
+make test
+make cover
 ```
