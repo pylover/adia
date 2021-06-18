@@ -1,34 +1,6 @@
 import re
-from collections import namedtuple
 
-
-EOF = 0
-NAME = 1
-NL = 2
-AT = 3
-DOT = 4
-COLON = 5
-LPAR = 6
-RPAR = 7
-COMA = 8
-RARROW = 9
-INDENT = 10
-DEDENT = 11
-BACKSLASH = 12
-
-
-EXACT_TOKENS = [
-    ('->',  2, RARROW),
-    ('@',   1, AT),
-    ('.',   1, DOT),
-    (':',   1, COLON),
-    ('(',   1, LPAR),
-    (')',   1, RPAR),
-    (',',   1, COMA),
-    ('\\',  1, BACKSLASH),
-    ('\n',  1, NL),
-]
-
+from .token import *
 
 # Regex patterns
 WHITESPACE_RE = r'\s+'
@@ -37,9 +9,6 @@ ALLTOKENS_RE = \
     [re.escape(i[0]) for i in EXACT_TOKENS] + [WHITESPACE_RE, NAME_RE]
 ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS_RE) + ')')
 TOKENS_DICT = {t: n for t, _, n in EXACT_TOKENS}
-
-# Token namedtuple
-Token = namedtuple('Token', 'type string start end line')
 
 
 def EOFToken(lineno, line):
