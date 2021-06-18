@@ -1,7 +1,7 @@
 """Another language for diagrams."""
 
 from .sequence import Call
-from .document import Document
+from .canvas import Canvas
 from .sequence import SequenceDiagram
 
 

@@ -54,7 +54,7 @@ def test_tokenizer_sequencediagram_indented():
         'foo:\n'
         '  bar:\n'
         '    thud\n'
-        '  baz\n'
+        '  baz:\n'
         '    fred:\n'
         '      corge\n'
         'qux: quux'
@@ -71,7 +71,8 @@ def test_tokenizer_sequencediagram_indented():
     assert next(gen) == (NL,     '\n',     (3,  8), (3,  9))
     assert next(gen) == (DEDENT, '',       (4,  2), (4,  2))
     assert next(gen) == (NAME,   'baz',    (4,  2), (4,  5))
-    assert next(gen) == (NL,     '\n',     (4,  5), (4,  6))
+    assert next(gen) == (COLON,  ':',      (4,  5), (4,  6))
+    assert next(gen) == (NL,     '\n',     (4,  6), (4,  7))
     assert next(gen) == (INDENT, '    ',   (5,  0), (5,  4))
     assert next(gen) == (NAME,   'fred',   (5,  4), (5,  8))
     assert next(gen) == (COLON,  ':',      (5,  8), (5,  9))
@@ -86,6 +87,47 @@ def test_tokenizer_sequencediagram_indented():
     assert next(gen) == (COLON,  ':',      (7,  3), (7,  4))
     assert next(gen) == (NAME,   'quux',   (7,  5), (7,  9))
     assert next(gen) == (EOF,    '',       (8,  0), (8,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
+def test_tokenizer_sequencediagram_indented_autocoloffset():
+    # Automatic column offset detection
+    gen = tokenizes('''
+        foo:
+          bar
+        qux: quux''')
+    assert next(gen) == (NL,     '\n',   (1,  0), (1,  1))
+    assert next(gen) == (NAME,   'foo',  (2,  8), (2, 11))
+    assert next(gen) == (COLON,  ':',    (2, 11), (2, 12))
+    assert next(gen) == (NL,     '\n',   (2, 12), (2, 13))
+    assert next(gen) == (INDENT, '  ',   (3,  8), (3, 10))
+    assert next(gen) == (NAME,   'bar',  (3, 10), (3, 13))
+    assert next(gen) == (NL,     '\n',   (3, 13), (3, 14))
+    assert next(gen) == (DEDENT, '',     (4,  8), (4,  8))
+    assert next(gen) == (NAME,   'qux',  (4,  8), (4, 11))
+    assert next(gen) == (COLON,  ':',    (4, 11), (4, 12))
+    assert next(gen) == (NAME,   'quux', (4, 13), (4, 17))
+    assert next(gen) == (EOF,    '',     (5,  0), (5,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+    gen = tokenizes('''
+      foo:
+        bar
+      qux: quux''')
+    assert next(gen) == (NL,     '\n',   (1,  0), (1,  1))
+    assert next(gen) == (NAME,   'foo',  (2,  6), (2,  9))
+    assert next(gen) == (COLON,  ':',    (2,  9), (2, 10))
+    assert next(gen) == (NL,     '\n',   (2, 10), (2, 11))
+    assert next(gen) == (INDENT, '  ',   (3,  6), (3,  8))
+    assert next(gen) == (NAME,   'bar',  (3,  8), (3, 11))
+    assert next(gen) == (NL,     '\n',   (3, 11), (3, 12))
+    assert next(gen) == (DEDENT, '',     (4,  6), (4,  6))
+    assert next(gen) == (NAME,   'qux',  (4,  6), (4,  9))
+    assert next(gen) == (COLON,  ':',    (4,  9), (4, 10))
+    assert next(gen) == (NAME,   'quux', (4, 11), (4, 15))
+    assert next(gen) == (EOF,    '',     (5,  0), (5,  0))
     with pytest.raises(StopIteration):
         next(gen)
 

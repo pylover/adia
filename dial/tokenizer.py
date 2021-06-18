@@ -46,21 +46,28 @@ def EOFToken(lineno, line):
     return Token(EOF, '', (lineno, 0), (lineno, 0), '')
 
 
-def IndentToken(lineno, token, start, end, line):
-    return Token(INDENT, token, (lineno, start), (lineno, end), line)
+def IndentToken(lineno, token, coloffset, start, end, line):
+    start += coloffset
+    return Token(INDENT, token[coloffset:], (lineno, start), (lineno, end),
+                 line)
 
 
-def DedentToken(lineno, lineindent, indentsize, line):
+def DedentToken(lineno, coloffset, lineindent, indentsize, line):
     return Token(
         DEDENT, '',
-        (lineno, lineindent * indentsize),
-        (lineno, lineindent * indentsize),
+        (lineno, lineindent * indentsize + coloffset),
+        (lineno, lineindent * indentsize + coloffset),
         line
     )
 
 
+def NewlineToken(lineno, token, start, end, line):
+    return Token(NL, token, (lineno, start), (lineno, end), line)
+
+
 def tokenize(readline):
     lineno = 0
+    coloffset = -1
     indentsize = 0
     indent = 0
     escape = False
@@ -78,28 +85,6 @@ def tokenize(readline):
             token = m.group()
             start, end = m.span()
 
-            if newline and (start == 0):  # Beginning of line
-                lineindent = 0
-                if token.startswith(' '):  # Whitespace
-                    # Indentation
-                    if not indentsize:
-                        indentsize = end - start
-
-                    lineindent = (end - start) // indentsize
-
-                if lineindent > indent:
-                    indent = lineindent
-                    yield IndentToken(lineno, token, start, end, line)
-
-                elif lineindent < indent:
-                    for i in range(indent - lineindent):
-                        indent -= 1
-                        yield DedentToken(lineno, lineindent, indentsize, line)
-
-            if token.startswith(' '):  # Whitespace
-                # Ignore for the now.
-                continue
-
             if token == '\\':  # Escape
                 escape = True
                 continue
@@ -108,7 +93,42 @@ def tokenize(readline):
                 escape = False
                 continue
 
+            if newline and (start == 0):  # Beginning of line
+                lineindent = 0
+                if token.startswith(' '):  # Whitespace
+                    # Indentation
+                    if coloffset < 0:
+                        coloffset = end
+
+                    elif not indentsize:
+                        indentsize = end - coloffset
+
+                    if indentsize:
+                        lineindent = (end - coloffset) // indentsize
+
+                elif token not in ['\n'] and coloffset < 0:
+                    coloffset = start
+
+                if lineindent > indent:
+                    indent = lineindent
+                    yield IndentToken(lineno, token, coloffset, start, end,
+                                      line)
+
+                elif lineindent < indent:
+                    for i in range(indent - lineindent):
+                        indent -= 1
+                        yield DedentToken(lineno, coloffset, lineindent,
+                                          indentsize, line)
+
+            if token.startswith(' '):  # Whitespace
+                # Ignore for the now.
+                continue
+
             newline = token == '\n'
+            if newline:
+                yield NewlineToken(lineno, token, start, end, line)
+                continue
+
             yield Token(
                 TOKENS_DICT.get(token, NAME),
                 token,
