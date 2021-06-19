@@ -27,15 +27,14 @@ __all__.extend(TOKEN_NAMES.values())
 
 
 EXACT_TOKENS = [
-    ('->',  2, RARROW),
-    ('@',   1, AT),
-    ('.',   1, DOT),
-    (':',   1, COLON),
-    ('(',   1, LPAR),
-    (')',   1, RPAR),
-    (',',   1, COMA),
-    ('\\',  1, BACKSLASH),
-    ('\n',  1, NL),
+    ('->', RARROW),
+    ('@',  AT),
+    ('.',  DOT),
+    (':',  COLON),
+    ('(',  LPAR),
+    (')',  RPAR),
+    (',',  COMA),
+    ('\\', BACKSLASH),
 ]
 
 
