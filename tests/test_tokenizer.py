@@ -114,7 +114,6 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     with pytest.raises(StopIteration):
         next(gen)
 
-
     gen = tokenizes('''
         foo: bar
     ''')
@@ -126,7 +125,6 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     assert next(gen) == (EOF,     '',     (4,  0), (4,  0))
     with pytest.raises(StopIteration):
         next(gen)
-
 
     # Automatic column offset detection
     gen = tokenizes('''

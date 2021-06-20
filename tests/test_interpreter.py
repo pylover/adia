@@ -10,7 +10,7 @@ def test_interpreter_sequencediagram_parse():
 
     d.parse('''
         foo: bar
-        bar: 
+        bar:
             baz
             qux
     ''')
