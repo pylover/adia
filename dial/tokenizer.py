@@ -5,9 +5,10 @@ from .token import *
 # Regex patterns
 WHITESPACE_RE = r'\s+'
 NAME_RE = r'\w+'
-NL_RE = re.escape('\n')
+NEWLINE_RE = re.escape('\n')
 ALLTOKENS_RE = \
-    [re.escape(i[0]) for i in EXACT_TOKENS] + [WHITESPACE_RE, NAME_RE, NL_RE]
+    [re.escape(i[0]) for i in EXACT_TOKENS] + \
+    [WHITESPACE_RE, NAME_RE, NEWLINE_RE]
 ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS_RE) + ')')
 TOKENS_DICT = {t: n for t, n in EXACT_TOKENS}
 
@@ -42,13 +43,20 @@ class Tokenizer:
         )
 
     def _newlinetoken(self, token, start, end, line):
-        return Token(NL, token, (self.lineno, start), (self.lineno, end), line)
+        return Token(
+            NEWLINE,
+            token,
+            (self.lineno, start),
+            (self.lineno, end),
+            line
+        )
 
     def tokenizeline(self, line):
         self.lineno += 1
 
         if line == '':
             yield self._eoftoken(line)
+            return
 
         for m in ALLTOKENS_RE.finditer(line):
             token = m.group()
@@ -107,9 +115,9 @@ class Tokenizer:
 
 def tokenize(readline):
     tokenizer = Tokenizer()
+    eof = False
 
-    while True:
+    while not eof:
         for token in tokenizer.tokenizeline(readline()):
             yield token
-            if token.type == EOF:
-                return
+            eof = token.type == EOF

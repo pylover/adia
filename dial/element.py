@@ -1,2 +1,0 @@
-class Element(object):
-    pass

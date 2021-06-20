@@ -1,7 +1,9 @@
 
 ```dial
 @seq foo
+alice: bob
 alice:
+  bob
   init()
   bob.hello(a, b, c):
     jack.hey(a)

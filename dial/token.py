@@ -1,12 +1,12 @@
 from collections import namedtuple
 
 
-__all__ = ['Token', 'EXACT_TOKENS']
+__all__ = ['Token', 'EXACT_TOKENS', 'TOKEN_NAMES']
 
 
 EOF = 0
 NAME = 1
-NL = 2
+NEWLINE = 2
 AT = 3
 DOT = 4
 COLON = 5
