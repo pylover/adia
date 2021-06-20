@@ -9,18 +9,35 @@ def test_interpreter_sequencediagram_parse():
     d = SequenceDiagram(Tokenizer(), 'foo')
 
     d.parse('''
-        foo: bar
-        bar:
-            baz
-            qux
+      foo: bar
+      bar:
+        alfred
+        baz:
+          quux:
+            fred
+          thud
+        qux:
+          bar
+          baz
+      foo: bar
     ''')
     assert 'foo' in d.modules
     assert 'bar' in d.modules
     assert 'baz' in d.modules
     assert 'qux' in d.modules
     assert d[0] == Call('foo', 'bar')
-    assert d[1] == Call('bar', 'baz')
-    assert d[2] == Call('bar', 'qux')
+    assert d[1] == Call('bar', 'alfred')
+    assert d[2] == Call('bar', 'baz', [
+        Call('baz', 'quux', [
+            Call('quux', 'fred')
+        ]),
+        Call('baz', 'thud')
+    ])
+    assert d[3] == Call('bar', 'qux', [
+        Call('qux', 'bar'),
+        Call('qux', 'baz')
+    ])
+    assert d[4] == Call('foo', 'bar')
 
 
 def test_interpreter_sequencediagram_parseline():

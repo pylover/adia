@@ -8,15 +8,45 @@ class Module(Visible):
         self.name = name
 
 
-class Call(Visible):
-    def __init__(self, caller, callee):
+class Call(list, Visible):
+    def __init__(self, caller, callee, children=None):
         self.caller = caller
         self.callee = callee
+        if children:
+            super(Call, self).__init__(children)
+
+        super(list, self).__init__()
+
+    def __ne__(self, other):
+        if isinstance(other, Call):
+            if len(self) != len(other):
+                return True
+
+            for i, c in enumerate(self):
+                if c != other[i]:
+                    return True
+
+            return self.caller != other.caller or \
+                self.callee != other.callee
+
+        return super().__ne__(other)
 
     def __eq__(self, other):
         if isinstance(other, Call):
-            return self.caller == other.caller and \
-                self.callee == other.callee
+            return not self.__ne__(other)
+
+        return super().__eq__(other)
+
+    def __repr__(self):
+        result = f'{self.caller} -> {self.callee}'
+        if self:
+            result += ':\n'
+            for c in self:
+                r = repr(c)
+                for l in r.splitlines():
+                    result += '  ' + l + '\n'
+
+        return result
 
 
 class SequenceDiagram(list, Visible, Interpreter):
@@ -24,6 +54,7 @@ class SequenceDiagram(list, Visible, Interpreter):
         super(Visible, self).__init__(tokenizer)
         self.name = name
         self.modules = {}
+        self.callerstack = []
         self.callstack = []
 
     def _ensuremodule(self, module):
@@ -38,17 +69,34 @@ class SequenceDiagram(list, Visible, Interpreter):
 
     def _indent(self, caller):
         self._ensuremodule(caller)
-        self.callstack.append(caller)
-        return 'caller'
-
-    def _callercallee(self, callee):
-        self._ensuremodule(callee)
-        self.append(Call(self.callstack[-1], callee))
+        self.callerstack.append(caller)
         return 'caller'
 
     def _dedent(self):
-        self.callstack.pop()
-        return 'caller' if self.callstack else 'root'
+        self.callerstack.pop()
+        if self.callstack:
+            self.callstack.pop()
+        return 'caller' if self.callerstack else 'root'
+
+    def _newcall(self, callee):
+        self._ensuremodule(callee)
+        call = Call(self.callerstack[-1], callee)
+
+        if self.callstack:
+            self.callstack[-1].append(call)
+        else:
+            self.append(call)
+
+        return call
+
+    def _callercallee(self, callee):
+        self._newcall(callee)
+        return 'caller'
+
+    def _callercalleecaller(self, callee):
+        call = self._newcall(callee)
+        self.callstack.append(call)
+        return self._indent(callee)
 
     states = {
         'root': {
@@ -68,6 +116,11 @@ class SequenceDiagram(list, Visible, Interpreter):
         'caller': {
             NAME: {
                 NEWLINE: _callercallee,
+                COLON: {
+                    NEWLINE: {
+                        INDENT: _callercalleecaller,
+                    }
+                }
             },
             DEDENT: _dedent,
         }
