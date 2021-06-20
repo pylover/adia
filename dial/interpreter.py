@@ -20,7 +20,7 @@ class BadSyntax(Exception):
         filename = interpreter.filename or 'String'
 
         super().__init__(
-            f'File "{filename}", line {token.start[0]}\n'
+            f'File "{filename}", line {token.start[0]}, col {token.start[1]}\n'
             f'{expected}, got: {got}{gotstr}.')
 
 
@@ -31,17 +31,6 @@ class Action(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __call__(self, interpreter):
         raise NotImplementedError()
-
-
-class Callback(Action):
-    def __init__(self, callback, nextstate):
-        self.callback = callback
-        super().__init__(nextstate)
-
-    def __call__(self, interpreter):
-        self.callback(interpreter, *interpreter.tokenstack)
-        interpreter.tokenstack.clear()
-        return self.nextstate
 
 
 class Ignore(Action):
@@ -64,6 +53,10 @@ class Interpreter(metaclass=abc.ABCMeta):
         for token in self.tokenizer.tokenizeline(line):
             self.perform(token)
 
+    def parse(self, string):
+        for token in self.tokenizer.tokenizes(string):
+            self.perform(token)
+
     @property
     @abc.abstractmethod
     def states(self):
@@ -78,5 +71,6 @@ class Interpreter(metaclass=abc.ABCMeta):
         if token.type == NAME:
             self.tokenstack.append(token.string)
 
-        if isinstance(self.state, Action):
-            self.state = self.states[self.state(self)]
+        if callable(self.state):
+            self.state = self.states[self.state(self, *self.tokenstack)]
+            self.tokenstack.clear()

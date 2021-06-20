@@ -1,5 +1,5 @@
 from .visible import Visible
-from .interpreter import Interpreter, Ignore, Callback
+from .interpreter import Interpreter, Ignore
 from .token import *
 
 
@@ -13,12 +13,18 @@ class Call(Visible):
         self.caller = caller
         self.callee = callee
 
+    def __eq__(self, other):
+        if isinstance(other, Call):
+            return self.caller == other.caller and \
+                self.callee == other.callee
+
 
 class SequenceDiagram(list, Visible, Interpreter):
     def __init__(self, tokenizer, name):
         super(Visible, self).__init__(tokenizer)
         self.name = name
         self.modules = {}
+        self.callstack = []
 
     def _ensuremodule(self, module):
         if module not in self.modules:
@@ -28,6 +34,21 @@ class SequenceDiagram(list, Visible, Interpreter):
         self._ensuremodule(caller)
         self._ensuremodule(callee)
         self.append(Call(caller, callee))
+        return 'root'
+
+    def _indent(self, caller):
+        self._ensuremodule(caller)
+        self.callstack.append(caller)
+        return 'caller'
+
+    def _callercallee(self, callee):
+        self._ensuremodule(callee)
+        self.append(Call(self.callstack[-1], callee))
+        return 'caller'
+
+    def _dedent(self):
+        self.callstack.pop()
+        return 'caller' if self.callstack else 'root'
 
     states = {
         'root': {
@@ -35,12 +56,19 @@ class SequenceDiagram(list, Visible, Interpreter):
             NAME: {
                 COLON: {
                     NAME: {
-                        NEWLINE: Callback(_simplecall, 'root'),
+                        NEWLINE: _simplecall,
                     },
                     NEWLINE: {
-                        INDENT: Ignore('root')
+                        INDENT: _indent
                     }
                 }
-            }
+            },
+            EOF: Ignore('root')
         },
+        'caller': {
+            NAME: {
+                NEWLINE: _callercallee,
+            },
+            DEDENT: _dedent,
+        }
     }

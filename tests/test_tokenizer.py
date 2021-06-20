@@ -1,13 +1,11 @@
-from io import StringIO
-
 import pytest
 
 from dial.token import *
-from dial.tokenizer import tokenize
+from dial.tokenizer import tokenizes as tokenizes_
 
 
 def tokenizes(string):
-    for t in tokenize(StringIO(string).readline):
+    for t in tokenizes_(string):
         yield t.type, t.string, t.start, t.end
 
 
@@ -92,6 +90,44 @@ def test_tokenizer_sequencediagram_indented():
 
 
 def test_tokenizer_sequencediagram_indented_autocoloffset():
+    gen = tokenizes('''
+        foo: bar
+        bar:
+            baz
+            qux
+    ''')
+    assert next(gen) == (NEWLINE, '\n',   (1,  0), (1,  1))
+    assert next(gen) == (NAME,    'foo',  (2,  8), (2, 11))
+    assert next(gen) == (COLON,   ':',    (2, 11), (2, 12))
+    assert next(gen) == (NAME,    'bar',  (2, 13), (2, 16))
+    assert next(gen) == (NEWLINE, '\n',   (2, 16), (2, 17))
+    assert next(gen) == (NAME,    'bar',  (3,  8), (3, 11))
+    assert next(gen) == (COLON,   ':',    (3, 11), (3, 12))
+    assert next(gen) == (NEWLINE, '\n',   (3, 12), (3, 13))
+    assert next(gen) == (INDENT,  '    ', (4,  8), (4, 12))
+    assert next(gen) == (NAME,    'baz',  (4, 12), (4, 15))
+    assert next(gen) == (NEWLINE, '\n',   (4, 15), (4, 16))
+    assert next(gen) == (NAME,    'qux',  (5, 12), (5, 15))
+    assert next(gen) == (NEWLINE, '\n',   (5, 15), (5, 16))
+    assert next(gen) == (DEDENT,  '',     (6,  8), (6,  8))
+    assert next(gen) == (EOF,     '',     (7,  0), (7,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
+    gen = tokenizes('''
+        foo: bar
+    ''')
+    assert next(gen) == (NEWLINE, '\n',   (1,  0), (1,  1))
+    assert next(gen) == (NAME,    'foo',  (2,  8), (2, 11))
+    assert next(gen) == (COLON,   ':',    (2, 11), (2, 12))
+    assert next(gen) == (NAME,    'bar',  (2, 13), (2, 16))
+    assert next(gen) == (NEWLINE, '\n',   (2, 16), (2, 17))
+    assert next(gen) == (EOF,     '',     (4,  0), (4,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
     # Automatic column offset detection
     gen = tokenizes('''
         foo:

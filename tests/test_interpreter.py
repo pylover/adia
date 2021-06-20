@@ -5,7 +5,25 @@ from dial.sequence import SequenceDiagram, Call, Module
 from dial.interpreter import BadSyntax
 
 
-def test_interpreter_sequencediagram():
+def test_interpreter_sequencediagram_parse():
+    d = SequenceDiagram(Tokenizer(), 'foo')
+
+    d.parse('''
+        foo: bar
+        bar: 
+            baz
+            qux
+    ''')
+    assert 'foo' in d.modules
+    assert 'bar' in d.modules
+    assert 'baz' in d.modules
+    assert 'qux' in d.modules
+    assert d[0] == Call('foo', 'bar')
+    assert d[1] == Call('bar', 'baz')
+    assert d[2] == Call('bar', 'qux')
+
+
+def test_interpreter_sequencediagram_parseline():
     d = SequenceDiagram(Tokenizer(), 'foo')
 
     d.parseline('foo: bar')
@@ -26,14 +44,14 @@ def test_interpreter_badsyntax():
     with pytest.raises(BadSyntax) as e:
         d.parseline('foo')
     assert str(e.value) == '''\
-File "String", line 1
+File "String", line 1, col 3
 Expected: COLON, got: NEWLINE.'''
 
     d = SequenceDiagram(Tokenizer(), 'foo')
     with pytest.raises(BadSyntax) as e:
         d.parseline('foo: @')
     assert str(e.value) == '''\
-File "String", line 1
+File "String", line 1, col 5
 Expected one of: (NAME|NEWLINE), got: AT "@".'''
 
     d = SequenceDiagram(Tokenizer(), 'foo')
@@ -41,5 +59,5 @@ Expected one of: (NAME|NEWLINE), got: AT "@".'''
     with pytest.raises(BadSyntax) as e:
         d.parseline('')
     assert str(e.value) == '''\
-File "String", line 2
-Expected one of: (NAME|NEWLINE), got: EOF.'''
+File "String", line 2, col 0
+Expected: INDENT, got: EOF.'''

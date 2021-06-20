@@ -1,9 +1,10 @@
+import io
 import re
 
 from .token import *
 
 # Regex patterns
-WHITESPACE_RE = r'\s+'
+WHITESPACE_RE = r' +'
 NAME_RE = r'\w+'
 NEWLINE_RE = re.escape('\n')
 ALLTOKENS_RE = \
@@ -80,7 +81,7 @@ class Tokenizer:
                     elif not self.indentsize:
                         self.indentsize = end - self.coloffset
 
-                    if self.indentsize:
+                    if self.indentsize and (end > self.coloffset):
                         lineindent = (end - self.coloffset) // self.indentsize
 
                 elif token not in ['\n'] and self.coloffset < 0:
@@ -112,12 +113,17 @@ class Tokenizer:
                 line
             )
 
+    def tokenize(self, readline):
+        eof = False
 
-def tokenize(readline):
-    tokenizer = Tokenizer()
-    eof = False
+        while not eof:
+            for token in self.tokenizeline(readline()):
+                yield token
+                eof = token.type == EOF
 
-    while not eof:
-        for token in tokenizer.tokenizeline(readline()):
-            yield token
-            eof = token.type == EOF
+    def tokenizes(self, string):
+        yield from self.tokenize(io.StringIO(string).readline)
+
+
+def tokenizes(string):
+    yield from Tokenizer().tokenizes(string)

@@ -39,4 +39,7 @@ EXACT_TOKENS = [
 
 
 # Token namedtuple
-Token = namedtuple('Token', 'type string start end line')
+class Token(namedtuple('Token', 'type string start end line')):
+    def __repr__(self):
+        return f'Token({TOKEN_NAMES[self.type]}, {self.string}, ' \
+            f'{self.start}, {self.end}, {self.line})'
