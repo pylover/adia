@@ -93,6 +93,12 @@ class SequenceDiagram(list, Visible, Interpreter):
         self._newcall(callee)
         return 'caller'
 
+    def _callercalleesimplecall(self, caller, callee):
+        call = self._newcall(caller)
+        self._ensuremodule(callee)
+        call.append(Call(caller, callee))
+        return 'caller'
+
     def _callercalleecaller(self, callee):
         call = self._newcall(callee)
         self.callstack.append(call)
@@ -117,6 +123,9 @@ class SequenceDiagram(list, Visible, Interpreter):
             NAME: {
                 NEWLINE: _callercallee,
                 COLON: {
+                    NAME: {
+                        NEWLINE: _callercalleesimplecall,
+                    },
                     NEWLINE: {
                         INDENT: _callercalleecaller,
                     }

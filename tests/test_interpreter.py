@@ -5,21 +5,31 @@ from dial.sequence import SequenceDiagram, Call, Module
 from dial.interpreter import BadSyntax
 
 
+# def test_interpreter_sequencediagram_callargs():
+#     d = SequenceDiagram(Tokenizer(), 'foo')
+# 
+#     d.parse('''
+#         foo: bar.baz()
+#     ''')
+#     assert 'foo' in d.modules
+#     assert 'bar' in d.modules
+
+ 
 def test_interpreter_sequencediagram_parse():
     d = SequenceDiagram(Tokenizer(), 'foo')
 
     d.parse('''
-      foo: bar
-      bar:
-        alfred
-        baz:
-          quux:
-            fred
-          thud
-        qux:
-          bar
-          baz
-      foo: bar
+        foo: bar
+        bar:
+            alfred
+            baz:
+                quux:
+                    fred
+                thud
+            qux:
+                bar
+                baz: foo
+        foo: bar
     ''')
     assert 'foo' in d.modules
     assert 'bar' in d.modules
@@ -35,7 +45,9 @@ def test_interpreter_sequencediagram_parse():
     ])
     assert d[3] == Call('bar', 'qux', [
         Call('qux', 'bar'),
-        Call('qux', 'baz')
+        Call('qux', 'baz', [
+            Call('baz', 'foo')
+        ])
     ])
     assert d[4] == Call('foo', 'bar')
 
