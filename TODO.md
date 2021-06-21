@@ -22,6 +22,9 @@ alice:
 
 ## Tokenizer
 - Semicolon
+- Note
+- Escape
+- Loop
 
 ## Sequence Diagram
 - call

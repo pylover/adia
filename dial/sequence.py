@@ -49,6 +49,24 @@ class Call(list, Visible):
         return result
 
 
+class Note(Visible):
+    def __init__(self, content, position, module):
+        self.content = content
+        self.position = position
+        self.module = module
+        super().__init__()
+
+    def __repr__(self):
+        result = f'@note {self.position}'
+        if self.module:
+            result += f' of {self.module}'
+
+        if self.content:
+            result += f': {self.content}'
+
+        return result
+
+
 class SequenceDiagram(list, Visible, Interpreter):
     def __init__(self, tokenizer, name):
         super(Visible, self).__init__(tokenizer, 'start')
@@ -59,6 +77,7 @@ class SequenceDiagram(list, Visible, Interpreter):
         self._caller = None
         self._callstack = []
         self._level = 0
+        self._keywords = None
 
     def _ensuremodule(self, name):
         if name not in self.modules:
@@ -112,6 +131,20 @@ class SequenceDiagram(list, Visible, Interpreter):
             self.tokenstack.append(self._caller.module)
             self.tokenstack.append(funcname)
 
+    def _eat_keyword(self, *keywords):
+        self._keywords = keywords
+
+    def _eat_keyword_value(self, *values):
+        if self._keywords[0] == 'note':
+            position = self._keywords[1] if len(self._keywords) > 1 else 'left'
+            module = self._caller.module if self._caller else \
+                self._parent[-1] if self._parent else None
+            self._parent.append(Note(
+                ' '.join(values),
+                position,
+                module
+            ))
+
     states = {
         'start': {
             NEWLINE: Ignore(),
@@ -123,6 +156,7 @@ class SequenceDiagram(list, Visible, Interpreter):
                 LPAR: Hook(_self_call, '('),
             },
             DEDENT: Hook(_eat_dedent, 'start'),
+            AT: Goto('@'),
         },
         ':': {
             NAME: {
@@ -148,5 +182,16 @@ class SequenceDiagram(list, Visible, Interpreter):
         ')': {
             NEWLINE: Hook(_eat_callee, 'start'),
             COLON: Hook(_eat_caller, ':'),
+        },
+        '@': {
+            NAME: Goto('@...'),
+        },
+        '@...': {
+            COLON: Hook(_eat_keyword, '@...:'),
+            NAME: Goto('@...'),
+        },
+        '@...:': {
+            NAME: Goto('@...:'),
+            NEWLINE: Hook(_eat_keyword_value, 'start')
         },
     }

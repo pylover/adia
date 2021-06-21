@@ -5,6 +5,23 @@ from dial.sequence import SequenceDiagram, Call, Module
 from dial.interpreter import BadSyntax
 
 
+def test_interpreter_sequencediagram_note():
+    d = SequenceDiagram(Tokenizer(), 'foo')
+    d.parse('''
+            @note: foo
+            foo:
+                @note: bar
+                @note left: baz
+                @note right: foo \
+                    bar \\n \
+                    baz
+            ''')
+    assert repr(d[0]) == '@note left: foo'
+    assert repr(d[1]) == '@note left of foo: bar'
+    assert repr(d[2]) == '@note left of foo: baz'
+    assert repr(d[3]) == '@note right of foo: foo bar baz'
+
+
 def test_interpreter_sequencediagram_indent():
     d = SequenceDiagram(Tokenizer(), 'foo')
     d.parse('''
@@ -16,11 +33,14 @@ def test_interpreter_sequencediagram_indent():
                 qux
             baz:
                 qux:
-                    phoenix.fly(sky, space)
+                    phoenix.fly(sky, space):
+                        @note: nautilus
+                    @note right: odyssey
                 thud
             giga.mega(alef)
         foo: bar
-''')
+        @note: terminate
+    ''')
     assert 'foo' in d.modules
     assert 'bar' in d.modules
     assert 'baz' in d.modules
@@ -37,11 +57,14 @@ def test_interpreter_sequencediagram_indent():
     assert repr(d[3]) ==  \
         'foo -> baz:\n' \
         '  baz -> qux:\n' \
-        '    qux -> phoenix.fly(sky, space)\n' \
+        '    qux -> phoenix.fly(sky, space):\n' \
+        '      @note left of phoenix: nautilus\n' \
+        '    @note right of qux: odyssey\n' \
         '  baz -> thud'
     assert repr(d[4]) == 'foo -> giga.mega(alef)'
     assert repr(d[5]) == 'foo -> bar'
-    assert len(d) == 6
+    assert repr(d[6]) == '@note left of foo: terminate'
+    assert len(d) == 7
 
 
 def test_interpreter_sequencediagram_callargs():
@@ -110,3 +133,10 @@ Expected one of `NAME|NEWLINE`, got: COLON ":".'''
     assert str(e.value) == '''\
 File "String", line 3, col 12
 Expected `INDENT`, got: NAME "bar".'''
+
+    d = SequenceDiagram(Tokenizer(), 'foo')
+    with pytest.raises(BadSyntax) as e:
+        d.parse('foo: bar: baz')
+    assert str(e.value) == '''\
+File "String", line 1, col 8
+Expected one of `NEWLINE|.`, got: COLON ":".'''
