@@ -23,6 +23,15 @@ class Tokenizer:
         self.escape = False
         self.newline = True
 
+    def _token(self, type_, string, start, end, line):
+        return Token(
+            type_,
+            string,
+            (self.lineno, start),
+            (self.lineno, end),
+            line
+        )
+
     def _eoftoken(self, line):
         return Token(EOF, '', (self.lineno, 0), (self.lineno, 0), '')
 
@@ -64,11 +73,16 @@ class Tokenizer:
             start, end = m.span()
 
             if token == '\\':  # Escape
-                self.escape = True
-                continue
-
-            if self.escape:
+                if self.escape:
+                    self.escape = False
+                else:
+                    self.escape = True
+                    continue
+            elif self.escape:
                 self.escape = False
+                if token != '\n':
+                    yield self._token(NAME, token, start, end, line)
+
                 continue
 
             if self.newline and (start == 0):  # Beginning of line
@@ -105,11 +119,11 @@ class Tokenizer:
                 yield self._newlinetoken(token, start, end, line)
                 continue
 
-            yield Token(
+            yield self._token(
                 TOKENS_DICT.get(token, NAME),
                 token,
-                (self.lineno, start),
-                (self.lineno, end),
+                start,
+                end,
                 line
             )
 

@@ -17,7 +17,8 @@ RARROW = 9
 INDENT = 10
 DEDENT = 11
 BACKSLASH = 12
-
+SLASH = 13
+PIPE = 14
 
 TOKEN_NAMES = {
     value: name for name, value in globals().items()
@@ -37,6 +38,8 @@ EXACT_TOKENS = [
     (')',  RPAR),
     (',',  COMMA),
     ('\\', BACKSLASH),
+    ('/',  SLASH),
+    ('|',  PIPE),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 

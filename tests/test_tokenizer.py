@@ -167,6 +167,26 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
 
 
 def test_tokenizer_escapechar():
+    gen = tokenizes('\\@ \\: \\|')
+    assert next(gen) == (NAME,      '@',     (1, 1), (1, 2))
+    assert next(gen) == (NAME,      ':',     (1, 4), (1, 5))
+    assert next(gen) == (NAME,      '|',     (1, 7), (1, 8))
+    assert next(gen) == (EOF,       '',      (2, 0), (2, 0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+    gen = tokenizes('\\\n \n')
+    assert next(gen) == (NEWLINE,   '\n',    (2, 1), (2, 2))
+    assert next(gen) == (EOF,       '',      (3, 0), (3, 0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+    gen = tokenizes('\\\\')
+    assert next(gen) == (BACKSLASH, '\\',    (1, 1), (1, 2))
+    assert next(gen) == (EOF,       '',      (2, 0), (2, 0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
     gen = tokenizes(
         'foo:\\\n'
         '  bar\\\n.baz'

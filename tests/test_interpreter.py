@@ -19,7 +19,7 @@ def test_interpreter_sequencediagram_note():
     assert repr(d[0]) == '@note left: foo'
     assert repr(d[1]) == '@note left of foo: bar'
     assert repr(d[2]) == '@note left of foo: baz'
-    assert repr(d[3]) == '@note right of foo: foo bar baz'
+    assert repr(d[3]) == '@note right of foo: foo bar n baz'
 
 
 def test_interpreter_sequencediagram_indent():
