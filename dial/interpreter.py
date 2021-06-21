@@ -83,6 +83,13 @@ class Interpreter(metaclass=abc.ABCMeta):
     def states(self):
         raise NotImplementedError()
 
+    def _action(self, action):
+        newstate = action(self)
+
+        if newstate is not None:
+            return self.states[newstate]
+        return None
+
     def perform(self, token):
         backup = self.state
         try:
@@ -90,13 +97,14 @@ class Interpreter(metaclass=abc.ABCMeta):
         except KeyError:
             raise BadSyntax(self, token)
 
-        if token.type == NAME:
+        if token.type in (NAME, MULTILINE):
             self.tokenstack.append(token.string)
 
+        newstate = None
         if callable(self.state):
-            newstate = self.state(self)
+            newstate = self._action(self.state)
 
-            if newstate is not None:
-                self.state = self.states[newstate]
+            if newstate:
+                self.state = newstate
             else:
                 self.state = backup

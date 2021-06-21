@@ -19,6 +19,7 @@ DEDENT = 11
 BACKSLASH = 12
 SLASH = 13
 PIPE = 14
+MULTILINE = 15
 
 TOKEN_NAMES = {
     value: name for name, value in globals().items()

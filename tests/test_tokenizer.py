@@ -9,6 +9,36 @@ def tokenizes(string):
         yield t.type, t.string, t.start, t.end
 
 
+def test_tokenizer_multiline():
+    gen = tokenizes('''
+    |
+        foo
+        bar.
+    foo: bar
+    ''')
+    exp = 'foo\nbar.'
+    assert next(gen) == (NEWLINE,   '\n',  (1,  0), (1,  1))
+    assert next(gen) == (MULTILINE, exp,   (3,  8), (4, 12))
+    assert next(gen) == (NAME,      'foo', (5,  4), (5,  7))
+    assert next(gen) == (COLON,     ':',   (5,  7), (5,  8))
+    assert next(gen) == (NAME,      'bar', (5,  9), (5, 12))
+    assert next(gen) == (NEWLINE,   '\n',  (5, 12), (5, 13))
+    assert next(gen) == (EOF,       '',    (7,  0), (7,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+    gen = tokenizes('''
+    | foo
+    ''')
+    assert next(gen) == (NEWLINE,   '\n',  (1,  0), (1,  1))
+    assert next(gen) == (PIPE,      '|',   (2,  4), (2,  5))
+    assert next(gen) == (NAME,      'foo', (2,  6), (2,  9))
+    assert next(gen) == (NEWLINE,   '\n',  (2,  9), (2, 10))
+    assert next(gen) == (EOF,       '',    (4,  0), (4,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
 def test_tokenizer_emptyinput():
     gen = tokenizes('')
     assert next(gen) == (EOF, '', (1, 0), (1, 0))

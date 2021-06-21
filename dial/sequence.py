@@ -192,6 +192,7 @@ class SequenceDiagram(list, Visible, Interpreter):
         },
         '@...:': {
             NAME: Goto('@...:'),
-            NEWLINE: Hook(_eat_keyword_value, 'start')
+            MULTILINE: Hook(_eat_keyword_value, 'start'),
+            NEWLINE: Hook(_eat_keyword_value, 'start'),
         },
     }

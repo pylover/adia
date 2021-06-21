@@ -13,13 +13,17 @@ def test_interpreter_sequencediagram_note():
                 @note: bar
                 @note left: baz
                 @note right: foo \
-                    bar \\n \
-                    baz
+                    bar
+                @note: |
+                    foo
+                    bar
+                    !@#$%^&*+_)(
             ''')
     assert repr(d[0]) == '@note left: foo'
     assert repr(d[1]) == '@note left of foo: bar'
     assert repr(d[2]) == '@note left of foo: baz'
-    assert repr(d[3]) == '@note right of foo: foo bar n baz'
+    assert repr(d[3]) == '@note right of foo: foo bar'
+    assert repr(d[4]) == '@note left of foo: foo\nbar\n!@#$%^&*+_)('
 
 
 def test_interpreter_sequencediagram_indent():

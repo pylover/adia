@@ -22,6 +22,10 @@ class Tokenizer:
         self.indent = 0
         self.escape = False
         self.newline = True
+        self._mlmatch = []
+        self._ml = False
+        self._mlindent = False
+        self._mllastlen = 0
 
     def _token(self, type_, string, start, end, line):
         return Token(
@@ -61,8 +65,33 @@ class Tokenizer:
             line
         )
 
-    def tokenizeline(self, line):
+    def _tokenizeline(self, line):
         self.lineno += 1
+
+        if self._ml:
+            m = re.match(WHITESPACE_RE, line)
+            end = m.span()[1] if m else 0
+            if self._mlindent == 0 and end > 0:
+                self._mlindent = end
+                self._mltoken = line[self._mlindent:]
+                self._mllastlen = len(line)
+                return
+            elif end < self._mlindent:
+                sl = self._mlmatch[-1].start[0]
+                self._mlmatch.clear()
+                yield Token(
+                    MULTILINE,
+                    self._mltoken[:-1],
+                    (sl + 1, self._mlindent),
+                    (self.lineno - 1, self._mllastlen - 1),
+                    line
+                )
+                self._ml = False
+                self._mlindent = 0
+            elif end > 0:
+                self._mltoken += line[self._mlindent:]
+                self._mllastlen = len(line)
+                return
 
         if line == '':
             yield self._eoftoken(line)
@@ -126,6 +155,20 @@ class Tokenizer:
                 end,
                 line
             )
+
+    def tokenizeline(self, line):
+        for token in self._tokenizeline(line):
+            if token.type == PIPE:
+                self._mlmatch.append(token)
+                continue
+            elif token.type == NEWLINE and len(self._mlmatch) == 1:
+                self._mlmatch.append(token)
+                self._ml = True
+                continue
+            else:
+                while self._mlmatch:
+                    yield self._mlmatch.pop(0)
+                yield token
 
     def tokenize(self, readline):
         eof = False
