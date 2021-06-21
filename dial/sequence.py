@@ -1,11 +1,27 @@
 from .visible import Visible
-from .interpreter import Interpreter, Ignore
+from .interpreter import Interpreter, Ignore, Goto, Hook
 from .token import *
 
 
 class Module(Visible):
     def __init__(self, name):
         self.name = name
+
+
+class Function:
+    def __init__(self, module, name=None, args=None, returns=None):
+        self.module = module
+        self.name = name
+        self.args = args or []
+        self.returns = returns
+
+    def __repr__(self):
+        result = f'{self.module}'
+        if self.name:
+            args = ', '.join(self.args) if self.args else ''
+            result += f'.{self.name}({args})'
+
+        return result
 
 
 class Call(list, Visible):
@@ -17,28 +33,9 @@ class Call(list, Visible):
 
         super(list, self).__init__()
 
-    def __ne__(self, other):
-        if isinstance(other, Call):
-            if len(self) != len(other):
-                return True
-
-            for i, c in enumerate(self):
-                if c != other[i]:
-                    return True
-
-            return self.caller != other.caller or \
-                self.callee != other.callee
-
-        return super().__ne__(other)
-
-    def __eq__(self, other):
-        if isinstance(other, Call):
-            return not self.__ne__(other)
-
-        return super().__eq__(other)
-
     def __repr__(self):
         result = f'{self.caller} -> {self.callee}'
+
         if self:
             result += ':\n'
             for c in self:
@@ -46,91 +43,110 @@ class Call(list, Visible):
                 for l in r.splitlines():
                     result += '  ' + l + '\n'
 
+        if result.endswith('\n'):
+            result = result[:-1]
+
         return result
 
 
 class SequenceDiagram(list, Visible, Interpreter):
     def __init__(self, tokenizer, name):
-        super(Visible, self).__init__(tokenizer)
+        super(Visible, self).__init__(tokenizer, 'start')
         self.name = name
         self.modules = {}
-        self.callerstack = []
-        self.callstack = []
 
-    def _ensuremodule(self, module):
-        if module not in self.modules:
-            self.modules[module] = Module(module)
+        # Parser states
+        self._caller = None
+        self._callstack = []
+        self._level = 0
 
-    def _simplecall(self, caller, callee):
-        self._ensuremodule(caller)
-        self._ensuremodule(callee)
-        self.append(Call(caller, callee))
-        return 'root'
+    def _ensuremodule(self, name):
+        if name not in self.modules:
+            self.modules[name] = Module(name)
 
-    def _indent(self, caller):
-        self._ensuremodule(caller)
-        self.callerstack.append(caller)
-        return 'caller'
+    @property
+    def _parent(self):
+        if self._callstack:
+            return self._callstack[-1]
 
-    def _dedent(self):
-        self.callerstack.pop()
-        if self.callstack:
-            self.callstack.pop()
-        return 'caller' if self.callerstack else 'root'
+        return self
 
-    def _newcall(self, callee):
-        self._ensuremodule(callee)
-        call = Call(self.callerstack[-1], callee)
-
-        if self.callstack:
-            self.callstack[-1].append(call)
-        else:
-            self.append(call)
-
+    def _create_call(self, module, name=None, *args):
+        self._ensuremodule(module)
+        callee = Function(module, name, args)
+        call = Call(self._caller, callee)
+        self._parent.append(call)
         return call
 
-    def _callercallee(self, callee):
-        self._newcall(callee)
-        return 'caller'
+    # Parser functions
+    def _eat_caller(self, module, name=None, *args):
+        self._ensuremodule(module)
+        if self._level:
+            call = self._create_call(module, name, *args)
+            self._callstack.append(call)
+            self._caller = call.callee
+        else:
+            self._caller = Function(module, name, args)
 
-    def _callercalleesimplecall(self, caller, callee):
-        call = self._newcall(caller)
-        self._ensuremodule(callee)
-        call.append(Call(caller, callee))
-        return 'caller'
+    def _eat_callee(self, module, name=None, *args):
+        self._ensuremodule(module)
+        callee = Function(module, name, args)
+        self._parent.append(Call(self._caller, callee))
 
-    def _callercalleecaller(self, callee):
-        call = self._newcall(callee)
-        self.callstack.append(call)
-        return self._indent(callee)
+    def _eat_indent(self):
+        self._level += 1
+
+    def _eat_dedent(self):
+        self._level -= 1
+        if self._callstack:
+            call = self._callstack.pop()
+            self._caller = call.caller
+        else:
+            self._caller = None
+
+    def _self_call(self, funcname):
+        if self._caller is None:
+            self._eat_caller(funcname)
+            self.tokenstack.append(self._caller.module)
+        else:
+            self.tokenstack.append(self._caller.module)
+            self.tokenstack.append(funcname)
 
     states = {
-        'root': {
-            NEWLINE: Ignore('root'),
+        'start': {
+            NEWLINE: Ignore(),
+            EOF: Ignore(),
             NAME: {
-                COLON: {
-                    NAME: {
-                        NEWLINE: _simplecall,
-                    },
-                    NEWLINE: {
-                        INDENT: _indent
-                    }
-                }
+                COLON: Hook(_eat_caller, ':'),
+                DOT: Goto('.'),
+                NEWLINE: Hook(_eat_callee, 'start'),
+                LPAR: Hook(_self_call, '('),
             },
-            EOF: Ignore('root')
+            DEDENT: Hook(_eat_dedent, 'start'),
         },
-        'caller': {
+        ':': {
             NAME: {
-                NEWLINE: _callercallee,
-                COLON: {
-                    NAME: {
-                        NEWLINE: _callercalleesimplecall,
-                    },
-                    NEWLINE: {
-                        INDENT: _callercalleecaller,
-                    }
-                }
+                NEWLINE: Hook(_eat_callee, 'start'),
+                DOT: Goto('.'),
             },
-            DEDENT: _dedent,
-        }
+            NEWLINE: {
+                INDENT: Hook(_eat_indent, 'start'),
+            }
+        },
+        '.': {
+            NAME: {
+                LPAR: Goto('('),
+            }
+        },
+        '(': {
+            RPAR: Goto(')'),
+            NAME: {
+                COMMA: Goto('('),
+                RPAR: Goto(')'),
+            }
+        },
+        ')': {
+            NEWLINE: Hook(_eat_callee, 'start'),
+            COLON: Hook(_eat_caller, ':'),
+        },
     }

@@ -1,21 +1,25 @@
 import abc
 
 from .token import *
+from .token import EXACT_TOKENS_DICT
 
 
 class BadSyntax(Exception):
     def __init__(self, interpreter, token):
-        validtokens = [TOKEN_NAMES[i] for i in interpreter.state.keys()]
         got = TOKEN_NAMES[token.type]
         if token.string.strip():
             gotstr = f' "{token.string}"'
         else:
             gotstr = ''
 
+        validtokens = [
+            EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
+            for i in interpreter.state.keys()
+        ]
         if len(validtokens) > 1:
-            expected = f'Expected one of: ({"|".join(validtokens)})'
+            expected = f'Expected one of `{"|".join(validtokens)}`'
         elif len(validtokens) == 1:
-            expected = f'Expected: {validtokens[0]}'
+            expected = f'Expected `{validtokens[0]}`'
 
         filename = interpreter.filename or 'String'
 
@@ -24,25 +28,42 @@ class BadSyntax(Exception):
             f'{expected}, got: {got}{gotstr}.')
 
 
-class Action(metaclass=abc.ABCMeta):
-    def __init__(self, nextstate):
+class Action:
+    def __init__(self, nextstate=None):
         self.nextstate = nextstate
 
-    @abc.abstractmethod
     def __call__(self, interpreter):
-        raise NotImplementedError()
+        return self.nextstate
 
 
 class Ignore(Action):
     def __call__(self, interpreter):
         interpreter.tokenstack.clear()
+        return super().__call__(interpreter)
+
+
+class Hook(Action):
+    def __init__(self, callback, nextstate=None):
+        super().__init__(nextstate)
+        self.callback = callback
+
+    def __call__(self, interpreter):
+        args = interpreter.tokenstack.copy()
+        interpreter.tokenstack.clear()
+        newstate = self.callback(interpreter, *args)
+
+        return self.nextstate if self.nextstate else newstate
+
+
+class Goto(Action):
+    def __call__(self, interpreter):
         return self.nextstate
 
 
 class Interpreter(metaclass=abc.ABCMeta):
-    def __init__(self, tokenizer):
+    def __init__(self, tokenizer, initstate):
         self.tokenizer = tokenizer
-        self.state = self.states['root']
+        self.state = self.states[initstate]
         self.tokenstack = []
         self.filename = None
 
@@ -63,6 +84,7 @@ class Interpreter(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     def perform(self, token):
+        backup = self.state
         try:
             self.state = self.state[token.type]
         except KeyError:
@@ -72,5 +94,9 @@ class Interpreter(metaclass=abc.ABCMeta):
             self.tokenstack.append(token.string)
 
         if callable(self.state):
-            self.state = self.states[self.state(self, *self.tokenstack)]
-            self.tokenstack.clear()
+            newstate = self.state(self)
+
+            if newstate is not None:
+                self.state = self.states[newstate]
+            else:
+                self.state = backup

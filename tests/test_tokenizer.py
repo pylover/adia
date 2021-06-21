@@ -37,7 +37,7 @@ def test_tokenizer_sequencediagram_flat():
     assert next(gen) == (NAME,    'quux',  (3,  9), (3, 13))
     assert next(gen) == (LPAR,    '(',     (3, 13), (3, 14))
     assert next(gen) == (NAME,    'corge', (3, 14), (3, 19))
-    assert next(gen) == (COMA,    ',',     (3, 19), (3, 20))
+    assert next(gen) == (COMMA,   ',',     (3, 19), (3, 20))
     assert next(gen) == (NAME,    'fred',  (3, 21), (3, 25))
     assert next(gen) == (RPAR,    ')',     (3, 25), (3, 26))
     assert next(gen) == (RARROW,  '->',    (3, 27), (3, 29))
