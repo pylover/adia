@@ -4,7 +4,24 @@ from .token import *
 from .token import EXACT_TOKENS_DICT
 
 
-class BadSyntax(Exception):
+class InterpreterError(Exception):
+    def __init__(self, interpreter, token, msg):
+        filename = interpreter.tokenizer.filename or 'String'
+
+        super().__init__(
+            f'File "{filename}", '
+            f'Interpreter {interpreter.__class__.__name__}, '
+            f'line {token.start[0]}, col {token.start[1]}\n'
+            f'{msg}'
+        )
+
+
+class BadAttribute(InterpreterError):
+    def __init__(self, interpreter, token, attr):
+        super().__init__(interpreter, token, f'Invalid attribute: {attr}.')
+
+
+class BadSyntax(InterpreterError):
     def __init__(self, interpreter, token):
         got = TOKEN_NAMES[token.type]
         if token.string.strip():
@@ -21,13 +38,9 @@ class BadSyntax(Exception):
         elif len(validtokens) == 1:
             expected = f'Expected `{validtokens[0]}`'
 
-        filename = interpreter.tokenizer.filename or 'String'
-
         super().__init__(
-            f'File "{filename}", '
-            f'Interpreter {interpreter.__class__.__name__}, '
-            f'line {token.start[0]}, col {token.start[1]}\n'
-            f'{expected}, got: {got}{gotstr}.')
+            interpreter, token, f'{expected}, got: {got}{gotstr}.'
+        )
 
 
 class Action:
@@ -61,13 +74,21 @@ class Consume(Action):
         self.callback = callback
         super().__init__(nextstate)
 
+    def _call_callback(self, interpreter, token, *args, **kw):
+        if self.callback is None:
+            return
+
+        try:
+            self.callback(interpreter, *args, **kw)
+        except AttributeError as e:
+            raise BadAttribute(interpreter, token, e.args[0])
+
     def __call__(self, interpreter, token):
         args = tuple(
             i.string for i in interpreter.tokenstack if i.type in self.capture
         )
         interpreter.tokenstack.clear()
-        if self.callback:
-            self.callback(interpreter, *args)
+        self._call_callback(interpreter, token, *args)
 
         return super().__call__(interpreter, token)
 
@@ -87,14 +108,13 @@ class FinalConsume(Consume):
         super().__call__(interpreter, token)
 
 
-class New(Action):
+class New(Consume):
     target = None
     parent = None
 
-    def __init__(self, factory, callback=None, nextstate=None):
+    def __init__(self, factory, *args, **kwargs):
         self.factory = factory
-        self.callback = callback
-        super().__init__(nextstate)
+        super().__init__(*args, **kwargs)
 
     def __call__(self, parent, token):
         self.target = self.factory(parent.tokenizer)
@@ -110,8 +130,8 @@ class New(Action):
         if more:
             return None
 
-        if self.callback:
-            self.callback(self.parent, self.target)
+        self._call_callback(self.parent, token, self.target)
+
         return self.nextstate
 
 
@@ -161,7 +181,7 @@ class Interpreter(metaclass=abc.ABCMeta):
             line += '\n'
 
         for token in self.tokenizer.tokenizeline(line):
-            self.perform(token)
+            self.eat_token(token)
 
     def parse(self, string):
         for token in self.tokenizer.tokenizes(string):

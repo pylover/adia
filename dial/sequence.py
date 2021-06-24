@@ -4,8 +4,9 @@ from .token import *
 
 
 class Module(Visible):
-    def __init__(self, title):
+    def __init__(self, title, type_='module'):
         self.title = title
+        self.type = type_
 
 
 class Call(Visible, Interpreter, list):
@@ -56,6 +57,18 @@ class SequenceDiagram(Visible, Interpreter, list):
 
     def __repr__(self):
         result = f'# Sequence\ntitle: {self.title}\n'
+
+        attrs = ''
+        for k, v in self.modules.items():
+            if k != v.title:
+                attrs += f'{k}.title: {v.title}\n'
+
+            if 'module' != v.type:
+                attrs += f'{k}.type: {v.type}\n'
+
+        if attrs:
+            result += f'\n{attrs}'
+
         if len(self):
             result += '\n'
             for c in self:
@@ -85,6 +98,8 @@ class SequenceDiagram(Visible, Interpreter, list):
             self._callstack.pop()
 
     def _new_call(self, call):
+        self._ensuremodule(call.caller)
+        self._ensuremodule(call.callee)
         self.current.append(call)
 
     def _attr(self, attr, value):
@@ -94,6 +109,12 @@ class SequenceDiagram(Visible, Interpreter, list):
             self.title = value
         else:
             raise AttributeError(attr)
+
+    def _module_attr(self, module, attr, value):
+        self._ensuremodule(module)
+        value = value.strip()
+
+        setattr(self.modules[module], attr, value)
 
     statemap = {
         'start': {
@@ -108,9 +129,14 @@ class SequenceDiagram(Visible, Interpreter, list):
         },
         'name': {
             RARROW: New(Call, callback=_new_call, nextstate='start'),
-            COLON: {EVERYTHING: {
-                NEWLINE: Consume(_attr, nextstate='start')
-            }}
+            COLON: Goto(nextstate='attr:'),
+            DOT: {NAME: {COLON: Goto(nextstate='mod.attr:')}}
+        },
+        'attr:': {
+            EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
+        },
+        'mod.attr:': {
+            EVERYTHING: {NEWLINE: Consume(_module_attr, nextstate='start')}
         },
         '  name': {
             RARROW: New(Call, callback=_new_call, nextstate='start')
