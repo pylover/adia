@@ -19,6 +19,8 @@ foo -> bar: baz
 def test_sequence_calltext():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
+title: Foo Bar
+
 foo -> bar: baz
 foo -> bar: int baz.qux(quux):int
   bar -> baz: thud
@@ -33,6 +35,8 @@ foo -> bar
 def test_sequence_hierarchy():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
+title: Foo Bar
+
 foo -> bar
 foo -> baz
   baz -> qux
@@ -47,36 +51,21 @@ foo -> bar
 
 
 def test_interpreter_badsyntax():
-    d = SequenceDiagram(Tokenizer(), 'foo')
+    d = SequenceDiagram(Tokenizer())
     with pytest.raises(BadSyntax) as e:
         d.parse('foo')
     assert str(e.value) == '''\
 File "String", Interpreter SequenceDiagram, line 2, col 0
-Expected `->`, got: EOF.\
+Expected one of `->|:`, got: EOF.\
 '''
 
-    d = SequenceDiagram(Tokenizer(), 'foo')
-    with pytest.raises(BadSyntax) as e:
-        d.parse('foo::')
-    assert str(e.value) == '''\
-File "String", Interpreter SequenceDiagram, line 1, col 3
-Expected `->`, got: COLON ":".\
-'''
-
-    d = SequenceDiagram(Tokenizer(), 'foo')
+    d = SequenceDiagram(Tokenizer())
     with pytest.raises(BadSyntax) as e:
         d.parse('''
-            foo:
+            foo
             bar
         ''')
     assert str(e.value) == '''\
 File "String", Interpreter SequenceDiagram, line 2, col 15
-Expected `->`, got: COLON ":".\
-'''
-    d = SequenceDiagram(Tokenizer(), 'foo')
-    with pytest.raises(BadSyntax) as e:
-        d.parse('foo: bar: baz')
-    assert str(e.value) == '''\
-File "String", Interpreter SequenceDiagram, line 1, col 3
-Expected `->`, got: COLON ":".\
+Expected one of `->|:`, got: NEWLINE.\
 '''

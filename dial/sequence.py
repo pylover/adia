@@ -47,7 +47,7 @@ class Call(Visible, Interpreter, list):
 
 
 class SequenceDiagram(Visible, Interpreter, list):
-    title = None
+    title = 'Untitled'
 
     def __init__(self, tokenizer):
         super().__init__(tokenizer, 'start')
