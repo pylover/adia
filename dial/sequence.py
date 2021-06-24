@@ -1,198 +1,104 @@
 from .visible import Visible
-from .interpreter import Interpreter, Ignore, Goto, Hook
+from .interpreter import Interpreter, FinalConsume, New, Ignore, Goto
 from .token import *
 
 
 class Module(Visible):
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, title):
+        self.title = title
 
 
-class Function:
-    def __init__(self, module, name=None, args=None, returns=None):
-        self.module = module
-        self.name = name
-        self.args = args or []
-        self.returns = returns
+class Call(Visible, Interpreter, list):
+    caller = None
+    callee = None
 
-    def __repr__(self):
-        result = f'{self.module}'
-        if self.name:
-            args = ', '.join(self.args) if self.args else ''
-            result += f'.{self.name}({args})'
-
-        return result
-
-
-class Call(list, Visible):
-    def __init__(self, caller, callee, children=None):
-        self.caller = caller
-        self.callee = callee
-        if children:
-            super(Call, self).__init__(children)
-
-        super(list, self).__init__()
+    def __init__(self, tokenizer):
+        super().__init__(tokenizer, 'call')
 
     def __repr__(self):
         result = f'{self.caller} -> {self.callee}'
+        if self.text:
+            result += f': {self.text}'
 
-        if self:
-            result += ':\n'
+        if len(self):
+            result += '\n'
             for c in self:
-                r = repr(c)
-                for l in r.splitlines():
-                    result += '  ' + l + '\n'
+                for line in repr(c).splitlines():
+                    result += f'  {line}\n'
 
-        if result.endswith('\n'):
-            result = result[:-1]
+        return result.rstrip('\n')
 
-        return result
+    def _complete(self, caller, callee, text=None):
+        self.caller = caller
+        self.callee = callee
+        self.text = text.strip() if text else None
 
-
-class Note(Visible):
-    def __init__(self, content, position, module):
-        self.content = content
-        self.position = position
-        self.module = module
-        super().__init__()
-
-    def __repr__(self):
-        result = f'@note {self.position}'
-        if self.module:
-            result += f' of {self.module}'
-
-        if self.content:
-            result += f': {self.content}'
-
-        return result
+    statemap = {
+        'call': {NAME: {RARROW: {NAME: Goto(nextstate='name -> name')}}},
+        'name -> name': {
+            NEWLINE: FinalConsume(_complete),
+            EOF: FinalConsume(_complete),
+            COLON: Goto(nextstate=':'),
+        },
+        ':': {EVERYTHING: {
+            NEWLINE: FinalConsume(_complete)
+        }}
+    }
 
 
-class SequenceDiagram(list, Visible, Interpreter):
+class SequenceDiagram(Visible, Interpreter, list):
     def __init__(self, tokenizer, name):
-        super(Visible, self).__init__(tokenizer, 'start')
+        super().__init__(tokenizer, 'start')
         self.name = name
         self.modules = {}
-
-        # Parser states
-        self._caller = None
         self._callstack = []
-        self._level = 0
-        self._keywords = None
+
+    def __repr__(self):
+        result = f'# Sequence'
+        if len(self):
+            result += '\n'
+            for c in self:
+                result += repr(c)
+                result += '\n'
+
+        return result.rstrip('\n')
+
 
     def _ensuremodule(self, name):
         if name not in self.modules:
             self.modules[name] = Module(name)
 
     @property
-    def _parent(self):
+    def current(self):
         if self._callstack:
             return self._callstack[-1]
 
         return self
 
-    def _create_call(self, module, name=None, *args):
-        self._ensuremodule(module)
-        callee = Function(module, name, args)
-        call = Call(self._caller, callee)
-        self._parent.append(call)
-        return call
+    def _indent(self):
+        self.tokenstack.pop(0)
+        if len(self.current):
+            self._callstack.append(self.current[-1])
 
-    # Parser functions
-    def _eat_caller(self, module, name=None, *args):
-        self._ensuremodule(module)
-        if self._level:
-            call = self._create_call(module, name, *args)
-            self._callstack.append(call)
-            self._caller = call.callee
-        else:
-            self._caller = Function(module, name, args)
-
-    def _eat_callee(self, module, name=None, *args):
-        self._ensuremodule(module)
-        callee = Function(module, name, args)
-        self._parent.append(Call(self._caller, callee))
-
-    def _eat_indent(self):
-        self._level += 1
-
-    def _eat_dedent(self):
-        self._level -= 1
+    def _dedent(self):
         if self._callstack:
-            call = self._callstack.pop()
-            self._caller = call.caller
-        else:
-            self._caller = None
+            self._callstack.pop()
 
-    def _self_call(self, funcname):
-        if self._caller is None:
-            self._eat_caller(funcname)
-            self.tokenstack.append(self._caller.module)
-        else:
-            self.tokenstack.append(self._caller.module)
-            self.tokenstack.append(funcname)
+    def _new_call(self, call):
+        self.current.append(call)
 
-    def _eat_keyword(self, *keywords):
-        self._keywords = keywords
-
-    def _eat_keyword_value(self, *values):
-        if self._keywords[0] == 'note':
-            position = self._keywords[1] if len(self._keywords) > 1 else 'left'
-            module = self._caller.module if self._caller else \
-                self._parent[-1] if self._parent else None
-            self._parent.append(Note(
-                ' '.join(values),
-                position,
-                module
-            ))
-
-    states = {
+    statemap = {
         'start': {
-            NEWLINE: Ignore(),
-            EOF: Ignore(),
-            NAME: {
-                COLON: Hook(_eat_caller, ':'),
-                DOT: Goto('.'),
-                NEWLINE: Hook(_eat_callee, 'start'),
-                LPAR: Hook(_self_call, '('),
+            HASH: { NAME: {NEWLINE: Ignore(nextstate='start')}},
+            NEWLINE: Ignore(nextstate='start'),
+            INDENT: {
+                NAME: Goto(callback=_indent, nextstate='name'),
             },
-            DEDENT: Hook(_eat_dedent, 'start'),
-            AT: Goto('@'),
+            DEDENT: Ignore(callback=_dedent, nextstate='start'),
+            EOF: Ignore(nextstate='start'),
+            NAME: Goto(nextstate='name'),
         },
-        ':': {
-            NAME: {
-                NEWLINE: Hook(_eat_callee, 'start'),
-                DOT: Goto('.'),
-            },
-            NEWLINE: {
-                INDENT: Hook(_eat_indent, 'start'),
-            }
-        },
-        '.': {
-            NAME: {
-                LPAR: Goto('('),
-            }
-        },
-        '(': {
-            RPAR: Goto(')'),
-            NAME: {
-                COMMA: Goto('('),
-                RPAR: Goto(')'),
-            }
-        },
-        ')': {
-            NEWLINE: Hook(_eat_callee, 'start'),
-            COLON: Hook(_eat_caller, ':'),
-        },
-        '@': {
-            NAME: Goto('@...'),
-        },
-        '@...': {
-            COLON: Hook(_eat_keyword, '@...:'),
-            NAME: Goto('@...'),
-        },
-        '@...:': {
-            NAME: Goto('@...:'),
-            MULTILINE: Hook(_eat_keyword_value, 'start'),
-            NEWLINE: Hook(_eat_keyword_value, 'start'),
-        },
+        'name': {
+            RARROW: New(Call, callback=_new_call, nextstate='start')
+        }
     }

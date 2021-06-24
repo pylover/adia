@@ -16,6 +16,7 @@ TOKENS_DICT = {t: n for t, n in EXACT_TOKENS}
 
 class Tokenizer:
     def __init__(self):
+        self.filename = "String"
         self.lineno = 0
         self.coloffset = -1
         self.indentsize = 0
@@ -64,6 +65,20 @@ class Tokenizer:
             (self.lineno, end),
             line
         )
+
+    def _everything(self, start, line):
+        end = len(line)
+        value = line[start:-1]
+
+        yield Token(
+            EVERYTHING,
+            value,
+            (self.lineno, start),
+            (self.lineno, end - 1),
+            line
+        )
+
+        yield self._newlinetoken(line[-1], end - 1, end, line)
 
     def _tokenizeline(self, line):
         self.lineno += 1
@@ -155,6 +170,11 @@ class Tokenizer:
                 end,
                 line
             )
+
+            if token == ':':
+                yield from self._everything(start + 1, line)
+                self.newline = True
+                return
 
     def tokenizeline(self, line):
         for token in self._tokenizeline(line):

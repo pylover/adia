@@ -7,7 +7,7 @@ def test_call():
 
     bar = Call('bar', 'baz', children=[
         Call('baz', 'quux', children=[
-            Call('quux', Function('fred', 'fire', ['a', 'b']))
+            Call('quux', Function('fred', 'fire', 'a', 'b'))
         ]),
         Call('baz', 'thud')
     ])

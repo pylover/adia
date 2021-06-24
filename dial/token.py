@@ -19,7 +19,10 @@ DEDENT = 11
 BACKSLASH = 12
 SLASH = 13
 PIPE = 14
-MULTILINE = 15
+HASH = 15
+MULTILINE = 16
+EVERYTHING = 17
+
 
 TOKEN_NAMES = {
     value: name for name, value in globals().items()
@@ -41,6 +44,7 @@ EXACT_TOKENS = [
     ('\\', BACKSLASH),
     ('/',  SLASH),
     ('|',  PIPE),
+    ('#',  HASH),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 

@@ -21,10 +21,11 @@ class BadSyntax(Exception):
         elif len(validtokens) == 1:
             expected = f'Expected `{validtokens[0]}`'
 
-        filename = interpreter.filename or 'String'
+        filename = interpreter.tokenizer.filename or 'String'
 
         super().__init__(
-            f'File "{filename}", line {token.start[0]}, col {token.start[1]}\n'
+            f'File "{filename}", Interpreter {interpreter.__class__.__name__}, '
+            f'line {token.start[0]}, col {token.start[1]}\n'
             f'{expected}, got: {got}{gotstr}.')
 
 
@@ -32,40 +33,126 @@ class Action:
     def __init__(self, nextstate=None):
         self.nextstate = nextstate
 
-    def __call__(self, interpreter):
+    def __call__(self, interpreter, token):
         return self.nextstate
 
 
-class Ignore(Action):
-    def __call__(self, interpreter):
-        interpreter.tokenstack.clear()
-        return super().__call__(interpreter)
-
-
-class Hook(Action):
-    def __init__(self, callback, nextstate=None):
-        super().__init__(nextstate)
-        self.callback = callback
-
-    def __call__(self, interpreter):
-        args = interpreter.tokenstack.copy()
-        interpreter.tokenstack.clear()
-        newstate = self.callback(interpreter, *args)
-
-        return self.nextstate if self.nextstate else newstate
-
-
 class Goto(Action):
-    def __call__(self, interpreter):
+    def __init__(self, callback=None, nextstate=None):
+        self.callback = callback
+        super().__init__(nextstate)
+
+    def __call__(self, interpreter, token):
+        if self.callback:
+            self.callback(interpreter)
+
+        return super().__call__(interpreter, token)
+
+
+class Consume(Action):
+    capture = [
+        NAME,
+        EVERYTHING,
+        MULTILINE,
+    ]
+    def __init__(self, callback=None, nextstate=None):
+        self.callback = callback
+        super().__init__(nextstate)
+
+    def __call__(self, interpreter, token):
+        args = tuple(
+            i.string for i in interpreter.tokenstack if i.type in self.capture
+        )
+        interpreter.tokenstack.clear()
+        if self.callback:
+            self.callback(interpreter, *args)
+
+        return super().__call__(interpreter, token)
+
+
+class Ignore(Consume):
+    def __call__(self, interpreter, token):
+        interpreter.tokenstack.clear()
+        return super().__call__(interpreter, token)
+
+
+class FinalConsume(Consume):
+    def __init__(self, callback):
+        super().__init__(callback, None)
+
+    def __call__(self, interpreter, token):
+        interpreter.more = False
+        super().__call__(interpreter, token)
+
+
+class New(Action):
+    target = None
+    parent = None
+
+    def __init__(self, factory, callback=None, nextstate=None):
+        self.factory = factory
+        self.callback = callback
+        super().__init__(nextstate)
+
+    def __call__(self, parent, token):
+        self.target = self.factory(parent.tokenizer)
+        self.parent = parent
+
+        while parent.tokenstack:
+            self.eat_token(parent.tokenstack.pop(0))
+
+        return self
+
+    def eat_token(self, token):
+        more = self.target.eat_token(token)
+        if more:
+            return None
+
+        if self.callback:
+            self.callback(self.parent, self.target)
         return self.nextstate
 
 
 class Interpreter(metaclass=abc.ABCMeta):
-    def __init__(self, tokenizer, initstate):
+    def __init__(self, tokenizer, initialstate, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.tokenizer = tokenizer
-        self.state = self.states[initstate]
+        self.more = True
+        self.state = self.statemap[initialstate]
         self.tokenstack = []
-        self.filename = None
+
+    @property
+    @abc.abstractmethod
+    def statemap(self):
+        raise NotImplementedError()
+
+    def _set_state(self, key):
+        if isinstance(key, str):
+            self.state = self.statemap[key]
+        else:
+            self.state = key
+
+    def _redirect(self, target, token):
+        newstatekey = target.eat_token(token)
+        if newstatekey:
+            self._set_state(newstatekey)
+
+    def eat_token(self, token):
+        if isinstance(self.state, New):
+            return self._redirect(self.state, token)
+
+        try:
+            newstate = self.state[token.type]
+        except KeyError:
+            raise BadSyntax(self, token)
+
+        self.tokenstack.append(token)
+
+        if callable(newstate):
+            newstate = newstate(self, token)
+
+        self._set_state(newstate)
+        return self.more
 
     def parseline(self, line):
         if len(line) and not line.endswith('\n'):
@@ -76,35 +163,6 @@ class Interpreter(metaclass=abc.ABCMeta):
 
     def parse(self, string):
         for token in self.tokenizer.tokenizes(string):
-            self.perform(token)
+            self.eat_token(token)
 
-    @property
-    @abc.abstractmethod
-    def states(self):
-        raise NotImplementedError()
 
-    def _action(self, action):
-        newstate = action(self)
-
-        if newstate is not None:
-            return self.states[newstate]
-        return None
-
-    def perform(self, token):
-        backup = self.state
-        try:
-            self.state = self.state[token.type]
-        except KeyError:
-            raise BadSyntax(self, token)
-
-        if token.type in (NAME, MULTILINE):
-            self.tokenstack.append(token.string)
-
-        newstate = None
-        if callable(self.state):
-            newstate = self._action(self.state)
-
-            if newstate:
-                self.state = newstate
-            else:
-                self.state = backup
