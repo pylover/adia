@@ -112,9 +112,10 @@ class SequenceDiagram(Visible, Interpreter, list):
 
     def _module_attr(self, module, attr, value):
         self._ensuremodule(module)
-        value = value.strip()
+        if not hasattr(self.modules[module], attr):
+            raise AttributeError(module, attr)
 
-        setattr(self.modules[module], attr, value)
+        setattr(self.modules[module], attr, value.strip())
 
     statemap = {
         'start': {

@@ -5,6 +5,19 @@ from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax, BadAttribute
 
 
+def test_sequence_moduleattr_error():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+foo.invalid: Foo
+'''
+    with pytest.raises(BadAttribute) as e:
+        d.parse(s)
+    assert str(e.value) == '''\
+File "String", Interpreter SequenceDiagram, line 2, col 16
+Invalid attribute: foo.invalid.\
+'''
+
+
 def test_sequence_moduleattr():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
@@ -20,16 +33,7 @@ foo -> bar: baz
     assert repr(d) == s[:-1]
 
 
-def test_sequence_title():
-    d = SequenceDiagram(Tokenizer())
-    s = '''# Sequence
-title: Foo Bar
-
-foo -> bar: baz
-'''
-    d.parse(s)
-    assert repr(d) == s[:-1]
-
+def test_sequence_title_error():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
 invalid: Foo Bar
@@ -42,6 +46,17 @@ foo -> bar: baz
 File "String", Interpreter SequenceDiagram, line 2, col 16
 Invalid attribute: invalid.\
 '''
+
+
+def test_sequence_title():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+title: Foo Bar
+
+foo -> bar: baz
+'''
+    d.parse(s)
+    assert repr(d) == s[:-1]
 
 
 def test_sequence_calltext():

@@ -81,7 +81,7 @@ class Consume(Action):
         try:
             self.callback(interpreter, *args, **kw)
         except AttributeError as e:
-            raise BadAttribute(interpreter, token, e.args[0])
+            raise BadAttribute(interpreter, token, '.'.join(e.args))
 
     def __call__(self, interpreter, token):
         args = tuple(
