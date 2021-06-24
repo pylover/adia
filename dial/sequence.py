@@ -54,7 +54,7 @@ class SequenceDiagram(Visible, Interpreter, list):
         self._callstack = []
 
     def __repr__(self):
-        result = f'# Sequence'
+        result = '# Sequence'
         if len(self):
             result += '\n'
             for c in self:
@@ -62,7 +62,6 @@ class SequenceDiagram(Visible, Interpreter, list):
                 result += '\n'
 
         return result.rstrip('\n')
-
 
     def _ensuremodule(self, name):
         if name not in self.modules:
@@ -89,7 +88,7 @@ class SequenceDiagram(Visible, Interpreter, list):
 
     statemap = {
         'start': {
-            HASH: { NAME: {NEWLINE: Ignore(nextstate='start')}},
+            HASH: {NAME: {NEWLINE: Ignore(nextstate='start')}},
             NEWLINE: Ignore(nextstate='start'),
             INDENT: {
                 NAME: Goto(callback=_indent, nextstate='name'),

@@ -1,7 +1,7 @@
 import pytest
 
 from dial.tokenizer import Tokenizer
-from dial.sequence import SequenceDiagram, Call, Module
+from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax
 
 
@@ -35,34 +35,37 @@ foo -> bar
     assert repr(d) == s[:-1]
 
 
-# def test_interpreter_badsyntax():
-#     d = SequenceDiagram(Tokenizer(), 'foo')
-#     with pytest.raises(BadSyntax) as e:
-#         d.parse('foo')
-#     assert str(e.value) == '''\
-# File "String", line 2, col 0
-# Expected one of `NAME|:|.|NEWLINE|(`, got: EOF.'''
-# 
-#     d = SequenceDiagram(Tokenizer(), 'foo')
-#     with pytest.raises(BadSyntax) as e:
-#         d.parse('foo::')
-#     assert str(e.value) == '''\
-# File "String", line 1, col 4
-# Expected one of `NAME|NEWLINE|MULTILINE`, got: COLON ":".'''
-# 
-#     d = SequenceDiagram(Tokenizer(), 'foo')
-#     with pytest.raises(BadSyntax) as e:
-#         d.parse('''
-#             foo:
-#             bar
-#         ''')
-#     assert str(e.value) == '''\
-# File "String", line 3, col 12
-# Expected `INDENT`, got: NAME "bar".'''
-# 
-#     d = SequenceDiagram(Tokenizer(), 'foo')
-#     with pytest.raises(BadSyntax) as e:
-#         d.parse('foo: bar: baz')
-#     assert str(e.value) == '''\
-# File "String", line 2, col 0
-# Expected one of `NAME|:|.|NEWLINE|(`, got: EOF.'''
+def test_interpreter_badsyntax():
+    d = SequenceDiagram(Tokenizer(), 'foo')
+    with pytest.raises(BadSyntax) as e:
+        d.parse('foo')
+    assert str(e.value) == '''\
+File "String", Interpreter SequenceDiagram, line 2, col 0
+Expected `->`, got: EOF.\
+'''
+
+    d = SequenceDiagram(Tokenizer(), 'foo')
+    with pytest.raises(BadSyntax) as e:
+        d.parse('foo::')
+    assert str(e.value) == '''\
+File "String", Interpreter SequenceDiagram, line 1, col 3
+Expected `->`, got: COLON ":".\
+'''
+
+    d = SequenceDiagram(Tokenizer(), 'foo')
+    with pytest.raises(BadSyntax) as e:
+        d.parse('''
+            foo:
+            bar
+        ''')
+    assert str(e.value) == '''\
+File "String", Interpreter SequenceDiagram, line 2, col 15
+Expected `->`, got: COLON ":".\
+'''
+    d = SequenceDiagram(Tokenizer(), 'foo')
+    with pytest.raises(BadSyntax) as e:
+        d.parse('foo: bar: baz')
+    assert str(e.value) == '''\
+File "String", Interpreter SequenceDiagram, line 1, col 3
+Expected `->`, got: COLON ":".\
+'''

@@ -24,7 +24,8 @@ class BadSyntax(Exception):
         filename = interpreter.tokenizer.filename or 'String'
 
         super().__init__(
-            f'File "{filename}", Interpreter {interpreter.__class__.__name__}, '
+            f'File "{filename}", '
+            f'Interpreter {interpreter.__class__.__name__}, '
             f'line {token.start[0]}, col {token.start[1]}\n'
             f'{expected}, got: {got}{gotstr}.')
 
@@ -55,6 +56,7 @@ class Consume(Action):
         EVERYTHING,
         MULTILINE,
     ]
+
     def __init__(self, callback=None, nextstate=None):
         self.callback = callback
         super().__init__(nextstate)
@@ -164,5 +166,3 @@ class Interpreter(metaclass=abc.ABCMeta):
     def parse(self, string):
         for token in self.tokenizer.tokenizes(string):
             self.eat_token(token)
-
-
