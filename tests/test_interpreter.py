@@ -5,8 +5,19 @@ from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax
 
 
+def test_sequence_title():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+title: Foo Bar
+
+foo -> bar: baz
+'''
+    d.parse(s)
+    assert repr(d) == s[:-1]
+
+
 def test_sequence_calltext():
-    d = SequenceDiagram(Tokenizer(), 'foo')
+    d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
 foo -> bar: baz
 foo -> bar: int baz.qux(quux):int
@@ -20,7 +31,7 @@ foo -> bar
 
 
 def test_sequence_hierarchy():
-    d = SequenceDiagram(Tokenizer(), 'foo')
+    d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
 foo -> bar
 foo -> baz

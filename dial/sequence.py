@@ -1,5 +1,5 @@
 from .visible import Visible
-from .interpreter import Interpreter, FinalConsume, New, Ignore, Goto
+from .interpreter import Interpreter, Consume, FinalConsume, New, Ignore, Goto
 from .token import *
 
 
@@ -47,14 +47,15 @@ class Call(Visible, Interpreter, list):
 
 
 class SequenceDiagram(Visible, Interpreter, list):
-    def __init__(self, tokenizer, name):
+    title = None
+
+    def __init__(self, tokenizer):
         super().__init__(tokenizer, 'start')
-        self.name = name
         self.modules = {}
         self._callstack = []
 
     def __repr__(self):
-        result = '# Sequence'
+        result = f'# Sequence\ntitle: {self.title}\n'
         if len(self):
             result += '\n'
             for c in self:
@@ -86,18 +87,32 @@ class SequenceDiagram(Visible, Interpreter, list):
     def _new_call(self, call):
         self.current.append(call)
 
+    def _attr(self, attr, value):
+        value = value.strip()
+
+        if attr == 'title':
+            self.title = value
+        else:
+            raise AttributeError(attr)
+
     statemap = {
         'start': {
             HASH: {NAME: {NEWLINE: Ignore(nextstate='start')}},
             NEWLINE: Ignore(nextstate='start'),
             INDENT: {
-                NAME: Goto(callback=_indent, nextstate='name'),
+                NAME: Goto(callback=_indent, nextstate='  name'),
             },
             DEDENT: Ignore(callback=_dedent, nextstate='start'),
             EOF: Ignore(nextstate='start'),
             NAME: Goto(nextstate='name'),
         },
         'name': {
+            RARROW: New(Call, callback=_new_call, nextstate='start'),
+            COLON: {EVERYTHING: {
+                NEWLINE: Consume(_attr, nextstate='start')
+            }}
+        },
+        '  name': {
             RARROW: New(Call, callback=_new_call, nextstate='start')
         }
     }
