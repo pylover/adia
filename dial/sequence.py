@@ -5,9 +5,11 @@ from .token import *
 
 
 class Module(Visible):
-    def __init__(self, title, type_='module'):
+    title = None
+    type = 'module'
+
+    def __init__(self, title):
         self.title = title
-        self.type = type_
 
 
 class Item(Visible, Interpreter):
@@ -90,8 +92,11 @@ class Note(Item):
         return self.type_
 
     @property
-    def module(self):
-        return ' '.join(self.args)
+    def modules(self):
+        for m in self.args:
+            if m == '~':
+                continue
+            yield m
 
     def _complete(self, type_, *args, **kw):
         args = list(args)
@@ -103,15 +108,13 @@ class Note(Item):
 
     @property
     def _short_repr(self):
-        pos = self.position
-
-        result = f'@{pos}'
+        result = f'@{self.position}'
 
         if self.position != 'over':
             result += ' of'
 
-        if self.module:
-            result += f' {self.module}'
+        if self.args:
+            result += f' {" ".join(self.args)}'
 
         return result
 
@@ -219,8 +222,8 @@ class SequenceDiagram(Visible, Interpreter, list):
         self.current.append(call)
 
     def _new_note(self, note):
-        if note.module:
-            self._ensuremodule(note.module)
+        for m in note.modules:
+            self._ensuremodule(m)
         self.current.append(note)
 
     def _new_loop(self, loop):
@@ -238,10 +241,10 @@ class SequenceDiagram(Visible, Interpreter, list):
             raise AttributeError(attr)
 
     def _module_attr(self, module, attr, value):
-        self._ensuremodule(module)
-        if not hasattr(self.modules[module], attr):
+        if not hasattr(Module, attr):
             raise AttributeError(module, attr)
 
+        self._ensuremodule(module)
         setattr(self.modules[module], attr, value.strip())
 
     _keywords = {
