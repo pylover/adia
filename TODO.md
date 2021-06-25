@@ -3,7 +3,6 @@
 
 ## Sequence Diagram
 - repr -> short
-- loads, dumps
 - load, dump
 - ascii
 - svg

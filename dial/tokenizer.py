@@ -2,6 +2,8 @@ import io
 import re
 
 from .token import *
+from .token import EXACT_TOKENS, Token
+
 
 # Regex patterns
 WHITESPACE_RE = r' +'

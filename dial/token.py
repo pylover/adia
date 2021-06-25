@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 
-__all__ = ['Token', 'EXACT_TOKENS', 'TOKEN_NAMES']
+__all__ = []
 
 
 EOF = 0

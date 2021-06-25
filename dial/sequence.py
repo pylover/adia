@@ -18,8 +18,8 @@ class Item(Visible, Interpreter):
     text = None
     multiline = None
 
-    def __init__(self, tokenizer):
-        super().__init__(tokenizer, 'start')
+    def __init__(self, *args, **kw):
+        super().__init__('start', *args, **kw)
 
     def _complete(self, type_, *args, text=None, multiline=False):
         self.type_ = type_
@@ -49,8 +49,8 @@ class Item(Visible, Interpreter):
     @property
     def _short_repr(self):
         return self.type_
-
-    def __repr__(self):
+    
+    def dumps(self):
         result = self._short_repr
 
         if self.text:
@@ -121,13 +121,13 @@ class Note(Item):
 
 class Container(Item, list):
 
-    def __repr__(self):
-        result = super().__repr__()
+    def dumps(self):
+        result = super().dumps()
 
         if len(self):
             result += '\n'
             for c in self:
-                for line in repr(c).splitlines():
+                for line in c.dumps().splitlines():
                     result += f'  {line}\n'
 
         return result.rstrip('\n')
@@ -170,12 +170,12 @@ class Condition(Container):
 class SequenceDiagram(Visible, Interpreter, list):
     title = 'Untitled'
 
-    def __init__(self, tokenizer):
-        super().__init__(tokenizer, 'start')
+    def __init__(self, *args, **kwargs):
+        super().__init__('start', *args, **kwargs)
         self.modules = {}
         self._callstack = []
 
-    def __repr__(self):
+    def dumps(self):
         result = f'# Sequence\ntitle: {self.title}\n'
 
         attrs = ''
@@ -192,7 +192,7 @@ class SequenceDiagram(Visible, Interpreter, list):
         if len(self):
             result += '\n'
             for c in self:
-                result += repr(c)
+                result += c.dumps()
                 result += '\n'
 
         return result.rstrip('\n')
@@ -290,3 +290,20 @@ class SequenceDiagram(Visible, Interpreter, list):
             NAME: New(Note, callback=_new_note, nextstate='start'),
         }
     }
+
+    def feedline(self, line):
+        if len(line) and not line.endswith('\n'):
+            line += '\n'
+
+        for token in self.tokenizer.tokenizeline(line):
+            self.eat_token(token)
+
+    def feed(self, string):
+        for token in self.tokenizer.tokenizes(string):
+            self.eat_token(token)
+    
+    @classmethod
+    def loads(cls, string):
+        diagram = cls()
+        diagram.feed(string)
+        return diagram

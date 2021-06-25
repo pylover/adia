@@ -2,45 +2,8 @@ import abc
 
 from .token import *
 from .token import EXACT_TOKENS_DICT
-
-
-class InterpreterError(Exception):
-    def __init__(self, interpreter, token, msg):
-        filename = interpreter.tokenizer.filename or 'String'
-
-        super().__init__(
-            f'File "{filename}", '
-            f'Interpreter {interpreter.__class__.__name__}, '
-            f'line {token.start[0]}, col {token.start[1]}\n'
-            f'{msg}'
-        )
-
-
-class BadAttribute(InterpreterError):
-    def __init__(self, interpreter, token, attr):
-        super().__init__(interpreter, token, f'Invalid attribute: {attr}.')
-
-
-class BadSyntax(InterpreterError):
-    def __init__(self, interpreter, token):
-        got = TOKEN_NAMES[token.type]
-        if token.string.strip():
-            gotstr = f' "{token.string}"'
-        else:
-            gotstr = ''
-
-        validtokens = [
-            EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
-            for i in interpreter.state.keys()
-        ]
-        if len(validtokens) > 1:
-            expected = f'Expected one of `{"|".join(validtokens)}`'
-        elif len(validtokens) == 1:
-            expected = f'Expected `{validtokens[0]}`'
-
-        super().__init__(
-            interpreter, token, f'{expected}, got: {got}{gotstr}.'
-        )
+from .tokenizer import Tokenizer
+from .exceptions import BadSyntax, BadAttribute
 
 
 class Action:
@@ -127,7 +90,7 @@ class New(Consume):
         super().__init__(*args, **kwargs)
 
     def __call__(self, parent, token):
-        self.target = self.factory(parent.tokenizer)
+        self.target = self.factory(tokenizer=parent.tokenizer)
         self.parent = parent
 
         while parent.tokenstack:
@@ -146,9 +109,9 @@ class New(Consume):
 
 
 class Interpreter(metaclass=abc.ABCMeta):
-    def __init__(self, tokenizer, initialstate, *args, **kwargs):
+    def __init__(self, initialstate, *args, tokenizer=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.tokenizer = tokenizer
+        self.tokenizer = tokenizer if tokenizer else Tokenizer()
         self.more = True
         self.state = self.statemap[initialstate]
         self.tokenstack = []
@@ -185,14 +148,3 @@ class Interpreter(metaclass=abc.ABCMeta):
 
         self._set_state(newstate)
         return self.more
-
-    def parseline(self, line):
-        if len(line) and not line.endswith('\n'):
-            line += '\n'
-
-        for token in self.tokenizer.tokenizeline(line):
-            self.eat_token(token)
-
-    def parse(self, string):
-        for token in self.tokenizer.tokenizes(string):
-            self.eat_token(token)
