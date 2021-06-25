@@ -1,5 +1,8 @@
+import abc
+
 from .visible import Visible
-from .interpreter import Interpreter, Consume, FinalConsume, New, Ignore, Goto
+from .interpreter import Interpreter, Consume, FinalConsume, New, Ignore, \
+    Goto, Switch
 from .token import *
 
 
@@ -9,15 +12,23 @@ class Module(Visible):
         self.type = type_
 
 
-class Call(Visible, Interpreter, list):
-    caller = None
-    callee = None
+class Item(Visible, Interpreter, list, metaclass=abc.ABCMeta):
+    text = None
 
     def __init__(self, tokenizer):
-        super().__init__(tokenizer, 'call')
+        super().__init__(tokenizer, 'start')
+
+    @property
+    @abc.abstractmethod
+    def short_repr(self):
+        raise NotImplementedError()
+
+    def _complete(self, text=None):
+        self.text = text.strip() if text else None
 
     def __repr__(self):
-        result = f'{self.caller} -> {self.callee}'
+        result = self._short_repr
+
         if self.text:
             result += f': {self.text}'
 
@@ -29,16 +40,51 @@ class Call(Visible, Interpreter, list):
 
         return result.rstrip('\n')
 
+
+class Call(Item):
+    caller = None
+    callee = None
+
+    @property
+    def _short_repr(self):
+        return f'{self.caller} -> {self.callee}'
+
     def _complete(self, caller, callee, text=None):
         self.caller = caller
         self.callee = callee
-        self.text = text.strip() if text else None
+        super()._complete(text)
 
     statemap = {
-        'call': {NAME: {RARROW: {NAME: Goto(nextstate='name -> name')}}},
+        'start': {NAME: {RARROW: {NAME: Goto(nextstate='name -> name')}}},
         'name -> name': {
             NEWLINE: FinalConsume(_complete),
             EOF: FinalConsume(_complete),
+            COLON: Goto(nextstate=':'),
+        },
+        ':': {EVERYTHING: {
+            NEWLINE: FinalConsume(_complete)
+        }}
+    }
+
+
+class Loop(Item):
+    type_ = None
+
+    @property
+    def _short_repr(self):
+        return self.type_
+
+    def _complete(self, type_, text=None):
+        self.type_ = type_
+        super()._complete(text)
+
+    statemap = {
+        'start': {
+            NAME: Goto(nextstate='name'),
+        },
+        'name': {
+            NAME: Goto(nextstate='name'),
+            NEWLINE: FinalConsume(_complete),
             COLON: Goto(nextstate=':'),
         },
         ':': {EVERYTHING: {
@@ -102,6 +148,9 @@ class SequenceDiagram(Visible, Interpreter, list):
         self._ensuremodule(call.callee)
         self.current.append(call)
 
+    def _new_loop(self, loop):
+        self.current.append(loop)
+
     def _attr(self, attr, value):
         value = value.strip()
 
@@ -126,12 +175,17 @@ class SequenceDiagram(Visible, Interpreter, list):
             },
             DEDENT: Ignore(callback=_dedent, nextstate='start'),
             EOF: Ignore(nextstate='start'),
-            NAME: Goto(nextstate='name'),
+            NAME: Switch(
+                for_=New(Loop, callback=_new_loop, nextstate='start'),
+                while_=New(Loop, callback=_new_loop, nextstate='start'),
+                loop=New(Loop, callback=_new_loop, nextstate='start'),
+                default=Goto(nextstate='name')
+            ),
         },
         'name': {
             RARROW: New(Call, callback=_new_call, nextstate='start'),
             COLON: Goto(nextstate='attr:'),
-            DOT: {NAME: {COLON: Goto(nextstate='mod.attr:')}}
+            DOT: {NAME: {COLON: Goto(nextstate='mod.attr:')}},
         },
         'attr:': {
             EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}

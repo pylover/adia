@@ -51,25 +51,18 @@ class Action:
         return self.nextstate
 
 
+class Switch(Action):
+    def __init__(self, default=None, **kw):
+        self.default = default
+        self.cases = {k.rstrip('_'): v for k, v in kw.items()}
+        super().__init__()
+
+    def __call__(self, interpreter, token, *args):
+        action = self.cases.get(token.string, self.default)
+        return action(interpreter, token, *args)
+
+
 class Goto(Action):
-    def __init__(self, callback=None, nextstate=None):
-        self.callback = callback
-        super().__init__(nextstate)
-
-    def __call__(self, interpreter, token):
-        if self.callback:
-            self.callback(interpreter)
-
-        return super().__call__(interpreter, token)
-
-
-class Consume(Action):
-    capture = [
-        NAME,
-        EVERYTHING,
-        MULTILINE,
-    ]
-
     def __init__(self, callback=None, nextstate=None):
         self.callback = callback
         super().__init__(nextstate)
@@ -83,14 +76,27 @@ class Consume(Action):
         except AttributeError as e:
             raise BadAttribute(interpreter, token, '.'.join(e.args))
 
-    def __call__(self, interpreter, token):
+    def __call__(self, interpreter, token, *args):
+        self._call_callback(interpreter, token, *args)
+        return super().__call__(interpreter, token)
+
+
+class Consume(Goto):
+    capture = [
+        NAME,
+        EVERYTHING,
+        MULTILINE,
+    ]
+
+    def __init__(self, callback=None, nextstate=None):
+        super().__init__(callback=callback, nextstate=nextstate)
+
+    def __call__(self, interpreter, token, *args):
         args = tuple(
             i.string for i in interpreter.tokenstack if i.type in self.capture
         )
         interpreter.tokenstack.clear()
-        self._call_callback(interpreter, token, *args)
-
-        return super().__call__(interpreter, token)
+        return super().__call__(interpreter, token, *args)
 
 
 class Ignore(Consume):
@@ -101,7 +107,7 @@ class Ignore(Consume):
 
 class FinalConsume(Consume):
     def __init__(self, callback):
-        super().__init__(callback, None)
+        super().__init__(callback=callback, nextstate=None)
 
     def __call__(self, interpreter, token):
         interpreter.more = False

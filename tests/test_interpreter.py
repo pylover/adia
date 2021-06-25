@@ -5,6 +5,23 @@ from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax, BadAttribute
 
 
+def test_sequence_loop():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+title: loop
+
+for
+  foo -> bar: baz(*)
+for: i in range(10)
+  foo -> bar: baz(i)
+while: j > 0
+  foo -> bar: baz(j)
+loop: over [1, 2, 3]
+'''
+    d.parse(s)
+    assert repr(d) == s[:-1]
+
+
 def test_sequence_comment():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence

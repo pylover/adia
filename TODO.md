@@ -36,19 +36,10 @@ foo -> bar
   
 ```
 
-
-## Tokenizer
-- Semicolon
-- Loop
-
 ## Sequence Diagram
-- call
-- loop
 - if
 - note: right left over
-- comment
-- actor
-- parallel
+- Parallel
 - Include
 
 ## Class Diagram
