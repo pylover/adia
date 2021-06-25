@@ -5,11 +5,42 @@ from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax, BadAttribute
 
 
+# def test_sequence_note():
+#     d = SequenceDiagram(Tokenizer())
+#     s = '''# Sequence
+# title: note
+# @note: Foo Bar baz
+# '''
+#     d.parse(s)
+#     assert repr(d) == s[:-1]
+
+
+def test_sequence_condition():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+title: condition
+
+if: foo > 1
+  foo -> bar: baz(*)
+elif: foo < 0
+else
+  alt: j > 9
+    foo -> bar: baz(*)
+  else
+    foo -> bar: baz(*)
+'''
+    d.parse(s)
+    assert repr(d) == s[:-1]
+
+
 def test_sequence_loop():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
 title: loop
 
+foo -> bar
+  loop: over list
+    bar -> baz
 for
   foo -> bar: baz(*)
 for: i in range(10)
@@ -17,6 +48,9 @@ for: i in range(10)
 while: j > 0
   foo -> bar: baz(j)
 loop: over [1, 2, 3]
+  for: i in list(7...99)
+    while: bool
+      foo -> thud: wow
 '''
     d.parse(s)
     assert repr(d) == s[:-1]
@@ -25,11 +59,17 @@ loop: over [1, 2, 3]
 def test_sequence_comment():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence
+title: Comment
+
 # This is comment
+foo -> bar:
+  # This is comment too
 '''
     d.parse(s)
     assert repr(d) == '''# Sequence
-title: Untitled'''
+title: Comment
+
+foo -> bar'''
 
 
 def test_sequence_moduleattr_error():

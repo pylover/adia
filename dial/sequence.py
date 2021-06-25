@@ -12,7 +12,7 @@ class Module(Visible):
         self.type = type_
 
 
-class Item(Visible, Interpreter, list, metaclass=abc.ABCMeta):
+class Item(Visible, Interpreter, metaclass=abc.ABCMeta):
     text = None
 
     def __init__(self, tokenizer):
@@ -32,6 +32,14 @@ class Item(Visible, Interpreter, list, metaclass=abc.ABCMeta):
         if self.text:
             result += f': {self.text}'
 
+        return result
+
+
+class Container(Item, list):
+
+    def __repr__(self):
+        result = super().__repr__()
+
         if len(self):
             result += '\n'
             for c in self:
@@ -41,7 +49,7 @@ class Item(Visible, Interpreter, list, metaclass=abc.ABCMeta):
         return result.rstrip('\n')
 
 
-class Call(Item):
+class Call(Container):
     caller = None
     callee = None
 
@@ -67,7 +75,33 @@ class Call(Item):
     }
 
 
-class Loop(Item):
+class Loop(Container):
+    type_ = None
+
+    @property
+    def _short_repr(self):
+        return self.type_
+
+    def _complete(self, type_, text=None):
+        self.type_ = type_
+        super()._complete(text)
+
+    statemap = {
+        'start': {
+            NAME: Goto(nextstate='name'),
+        },
+        'name': {
+            NAME: Goto(nextstate='name'),
+            NEWLINE: FinalConsume(_complete),
+            COLON: Goto(nextstate=':'),
+        },
+        ':': {EVERYTHING: {
+            NEWLINE: FinalConsume(_complete)
+        }}
+    }
+
+
+class Condition(Container):
     type_ = None
 
     @property
@@ -151,6 +185,9 @@ class SequenceDiagram(Visible, Interpreter, list):
     def _new_loop(self, loop):
         self.current.append(loop)
 
+    def _new_condition(self, condition):
+        self.current.append(condition)
+
     def _attr(self, attr, value):
         value = value.strip()
 
@@ -166,26 +203,36 @@ class SequenceDiagram(Visible, Interpreter, list):
 
         setattr(self.modules[module], attr, value.strip())
 
+    _keywords = {
+        'for': New(Loop, callback=_new_loop, nextstate='start'),
+        'while': New(Loop, callback=_new_loop, nextstate='start'),
+        'loop': New(Loop, callback=_new_loop, nextstate='start'),
+        'if': New(Condition, callback=_new_condition, nextstate='start'),
+        'alt': New(Condition, callback=_new_condition, nextstate='start'),
+        'elif': New(Condition, callback=_new_condition, nextstate='start'),
+        'else': New(Condition, callback=_new_condition, nextstate='start'),
+    }
+
     statemap = {
         'start': {
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
             NEWLINE: Ignore(nextstate='start'),
-            INDENT: {
-                NAME: Goto(callback=_indent, nextstate='  name'),
-            },
+            INDENT: Goto(callback=_indent, nextstate='indent'),
             DEDENT: Ignore(callback=_dedent, nextstate='start'),
             EOF: Ignore(nextstate='start'),
-            NAME: Switch(
-                for_=New(Loop, callback=_new_loop, nextstate='start'),
-                while_=New(Loop, callback=_new_loop, nextstate='start'),
-                loop=New(Loop, callback=_new_loop, nextstate='start'),
-                default=Goto(nextstate='name')
-            ),
+            NAME: Switch(default=Goto(nextstate='name'), **_keywords)
+        },
+        'indent': {
+            HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
+            NAME: Switch(default=Goto(nextstate='  name'), **_keywords)
         },
         'name': {
             RARROW: New(Call, callback=_new_call, nextstate='start'),
             COLON: Goto(nextstate='attr:'),
             DOT: {NAME: {COLON: Goto(nextstate='mod.attr:')}},
+        },
+        '  name': {
+            RARROW: New(Call, callback=_new_call, nextstate='start')
         },
         'attr:': {
             EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
@@ -193,7 +240,4 @@ class SequenceDiagram(Visible, Interpreter, list):
         'mod.attr:': {
             EVERYTHING: {NEWLINE: Consume(_module_attr, nextstate='start')}
         },
-        '  name': {
-            RARROW: New(Call, callback=_new_call, nextstate='start')
-        }
     }
