@@ -172,9 +172,12 @@ class Tokenizer:
             )
 
             if token in (':', '#'):
-                yield from self._everything(start + 1, line)
-                self.newline = True
-                return
+                if line[end] == ' ':
+                    end += 1
+                if line[end] != '|':
+                    yield from self._everything(start + 1, line)
+                    self.newline = True
+                    return
 
     def tokenizeline(self, line):
         for token in self._tokenizeline(line):

@@ -1,5 +1,3 @@
-import abc
-
 from .visible import Visible
 from .interpreter import Interpreter, Consume, FinalConsume, New, Ignore, \
     Goto, Switch
@@ -12,25 +10,108 @@ class Module(Visible):
         self.type = type_
 
 
-class Item(Visible, Interpreter, metaclass=abc.ABCMeta):
+class Item(Visible, Interpreter):
+    type_ = None
+    args = None
     text = None
+    multiline = None
 
     def __init__(self, tokenizer):
         super().__init__(tokenizer, 'start')
 
-    @property
-    @abc.abstractmethod
-    def short_repr(self):
-        raise NotImplementedError()
-
-    def _complete(self, text=None):
+    def _complete(self, type_, *args, text=None, multiline=False):
+        self.type_ = type_
+        self.args = args
         self.text = text.strip() if text else None
+        self.multiline = multiline
+
+    def _finish_multiline(self, type_, *args):
+        return self._finish(type_, *args, multiline=True)
+
+    def _finish(self, type_, *args, **kw):
+        args = list(args)
+        nargs = []
+        while args:
+            a = args.pop(0)
+            if a == ':':
+                break
+
+            nargs.append(a)
+
+        if args:
+            text = args[0]
+        else:
+            text = None
+        return self._complete(type_, *nargs, text=text, **kw)
+
+    @property
+    def _short_repr(self):
+        return self.type_
 
     def __repr__(self):
         result = self._short_repr
 
         if self.text:
-            result += f': {self.text}'
+            result += ': '
+
+            if self.multiline:
+                result += '|\n'
+                for l in self.text.splitlines():
+                    result += f'  {l}\n'
+            else:
+                result += f'{self.text}'
+
+        return result
+
+    statemap = {
+        'start': {
+            NAME: Goto(nextstate='name'),
+        },
+        'name': {
+            NAME: Goto(nextstate='name'),
+            TILDA: Goto(nextstate='name'),
+            NEWLINE: FinalConsume(_finish, alltokens=True),
+            COLON: Goto(nextstate=':'),
+        },
+        ':': {
+            MULTILINE: FinalConsume(_finish_multiline, alltokens=True),
+            EVERYTHING: {
+                NEWLINE: FinalConsume(_finish, alltokens=True)
+            }
+        },
+    }
+
+
+class Note(Item):
+    multiline = False
+
+    @property
+    def position(self):
+        return self.type_
+
+    @property
+    def module(self):
+        return ' '.join(self.args)
+
+    def _complete(self, type_, *args, **kw):
+        args = list(args)
+
+        if args and args[0] == 'of':
+            args.pop(0)
+
+        super()._complete(type_, *args, **kw)
+
+    @property
+    def _short_repr(self):
+        pos = self.position
+
+        result = f'@{pos}'
+
+        if self.position != 'over':
+            result += ' of'
+
+        if self.module:
+            result += f' {self.module}'
 
         return result
 
@@ -60,7 +141,7 @@ class Call(Container):
     def _complete(self, caller, callee, text=None):
         self.caller = caller
         self.callee = callee
-        super()._complete(text)
+        super()._complete('call', text=text)
 
     statemap = {
         'start': {NAME: {RARROW: {NAME: Goto(nextstate='name -> name')}}},
@@ -76,55 +157,11 @@ class Call(Container):
 
 
 class Loop(Container):
-    type_ = None
-
-    @property
-    def _short_repr(self):
-        return self.type_
-
-    def _complete(self, type_, text=None):
-        self.type_ = type_
-        super()._complete(text)
-
-    statemap = {
-        'start': {
-            NAME: Goto(nextstate='name'),
-        },
-        'name': {
-            NAME: Goto(nextstate='name'),
-            NEWLINE: FinalConsume(_complete),
-            COLON: Goto(nextstate=':'),
-        },
-        ':': {EVERYTHING: {
-            NEWLINE: FinalConsume(_complete)
-        }}
-    }
+    pass
 
 
 class Condition(Container):
-    type_ = None
-
-    @property
-    def _short_repr(self):
-        return self.type_
-
-    def _complete(self, type_, text=None):
-        self.type_ = type_
-        super()._complete(text)
-
-    statemap = {
-        'start': {
-            NAME: Goto(nextstate='name'),
-        },
-        'name': {
-            NAME: Goto(nextstate='name'),
-            NEWLINE: FinalConsume(_complete),
-            COLON: Goto(nextstate=':'),
-        },
-        ':': {EVERYTHING: {
-            NEWLINE: FinalConsume(_complete)
-        }}
-    }
+    pass
 
 
 class SequenceDiagram(Visible, Interpreter, list):
@@ -169,7 +206,6 @@ class SequenceDiagram(Visible, Interpreter, list):
         return self
 
     def _indent(self):
-        self.tokenstack.pop(0)
         if len(self.current):
             self._callstack.append(self.current[-1])
 
@@ -181,6 +217,11 @@ class SequenceDiagram(Visible, Interpreter, list):
         self._ensuremodule(call.caller)
         self._ensuremodule(call.callee)
         self.current.append(call)
+
+    def _new_note(self, note):
+        if note.module:
+            self._ensuremodule(note.module)
+        self.current.append(note)
 
     def _new_loop(self, loop):
         self.current.append(loop)
@@ -217,14 +258,16 @@ class SequenceDiagram(Visible, Interpreter, list):
         'start': {
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
             NEWLINE: Ignore(nextstate='start'),
-            INDENT: Goto(callback=_indent, nextstate='indent'),
+            INDENT: Ignore(callback=_indent, nextstate='indent'),
             DEDENT: Ignore(callback=_dedent, nextstate='start'),
             EOF: Ignore(nextstate='start'),
-            NAME: Switch(default=Goto(nextstate='name'), **_keywords)
+            NAME: Switch(default=Goto(nextstate='name'), **_keywords),
+            AT: Ignore(nextstate='@'),
         },
         'indent': {
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
-            NAME: Switch(default=Goto(nextstate='  name'), **_keywords)
+            NAME: Switch(default=Goto(nextstate='  name'), **_keywords),
+            AT: Ignore(nextstate='@'),
         },
         'name': {
             RARROW: New(Call, callback=_new_call, nextstate='start'),
@@ -240,4 +283,7 @@ class SequenceDiagram(Visible, Interpreter, list):
         'mod.attr:': {
             EVERYTHING: {NEWLINE: Consume(_module_attr, nextstate='start')}
         },
+        '@': {
+            NAME: New(Note, callback=_new_note, nextstate='start'),
+        }
     }

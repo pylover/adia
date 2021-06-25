@@ -22,7 +22,7 @@ PIPE = 14
 HASH = 15
 MULTILINE = 16
 EVERYTHING = 17
-
+TILDA = 18
 
 TOKEN_NAMES = {
     value: name for name, value in globals().items()
@@ -45,6 +45,7 @@ EXACT_TOKENS = [
     ('/',  SLASH),
     ('|',  PIPE),
     ('#',  HASH),
+    ('~',  TILDA),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 

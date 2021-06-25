@@ -82,18 +82,22 @@ class Goto(Action):
 
 
 class Consume(Goto):
-    capture = [
+    limit = [
         NAME,
         EVERYTHING,
         MULTILINE,
     ]
 
-    def __init__(self, callback=None, nextstate=None):
+    def __init__(self, callback=None, nextstate=None, alltokens=False):
+        if alltokens:
+            self.limit = None
+
         super().__init__(callback=callback, nextstate=nextstate)
 
     def __call__(self, interpreter, token, *args):
         args = tuple(
-            i.string for i in interpreter.tokenstack if i.type in self.capture
+            i.string for i in interpreter.tokenstack if
+            not self.limit or i.type in self.limit
         )
         interpreter.tokenstack.clear()
         return super().__call__(interpreter, token, *args)
@@ -106,8 +110,8 @@ class Ignore(Consume):
 
 
 class FinalConsume(Consume):
-    def __init__(self, callback):
-        super().__init__(callback=callback, nextstate=None)
+    def __init__(self, callback, **kw):
+        super().__init__(callback=callback, nextstate=None, **kw)
 
     def __call__(self, interpreter, token):
         interpreter.more = False

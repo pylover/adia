@@ -5,14 +5,26 @@ from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax, BadAttribute
 
 
-# def test_sequence_note():
-#     d = SequenceDiagram(Tokenizer())
-#     s = '''# Sequence
-# title: note
-# @note: Foo Bar baz
-# '''
-#     d.parse(s)
-#     assert repr(d) == s[:-1]
+def test_sequence_note():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+title: note
+
+@over: |
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+  tempor incididunt ut labore et dolore.
+
+@over ~: Foo Bar baz
+@over foo ~ bar: Foo Bar baz
+@over ~ foo: Foo Bar baz
+@over foo ~: Foo Bar baz
+@over: Foo Bar baz
+@over foo: Foo Bar baz
+@right of qux: note
+@left of bar: note
+'''
+    d.parse(s)
+    assert repr(d) == s[:-1]
 
 
 def test_sequence_condition():

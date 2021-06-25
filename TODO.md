@@ -12,15 +12,15 @@
 +   bar -> baz: (a, b) func(a, b)
 +   bar -> qux: func(a)
 +     # This is comment
--     @over:
--       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
--       tempor incididunt ut labore et dolore.
--     @over bar: note
--     @over bar~qux: note
--     @over bar~: note
--     @over ~bar: note
--     @left of bar: note
--     @right of qux: note
++     @over:
++       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
++       tempor incididunt ut labore et dolore.
++     @over bar: note
++     @over bar~qux: note
++     @over bar~: note
++     @over ~bar: note
++     @left of bar: note
++     @right of qux: note
 +   for i in list
 +     qux -> quux: func(a)
 +   if condition
