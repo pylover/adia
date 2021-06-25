@@ -304,7 +304,7 @@ class SequenceDiagram(Visible, Interpreter, list):
     def feed(self, string):
         for token in self.tokenizer.tokenizes(string):
             self.eat_token(token)
-    
+
     def __repr__(self):
         return f'SequenceDiagram: {self.title}'
 

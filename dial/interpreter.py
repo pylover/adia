@@ -1,7 +1,6 @@
 import abc
 
 from .token import *
-from .token import EXACT_TOKENS_DICT
 from .tokenizer import Tokenizer
 from .exceptions import BadSyntax, BadAttribute
 

@@ -153,7 +153,8 @@ invalid: Foo Bar
 
 foo -> bar: baz
 '''
-    with pytest.raises(BadAttribute) as e: d = SequenceDiagram.loads(s)
+    with pytest.raises(BadAttribute) as e:
+        SequenceDiagram.loads(s)
     assert str(e.value) == '''\
 File "String", Interpreter SequenceDiagram, line 2, col 16
 Invalid attribute: invalid.\

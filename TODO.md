@@ -2,8 +2,13 @@
 # Current release
 
 ## Sequence Diagram
-- load, dump
+
 - ascii
+  - call hierarchy
+  - note
+  - loop
+  - condition
+- load, dump
 - svg
 
 # Next release
