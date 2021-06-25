@@ -171,7 +171,7 @@ class Tokenizer:
                 line
             )
 
-            if token == ':':
+            if token in (':', '#'):
                 yield from self._everything(start + 1, line)
                 self.newline = True
                 return

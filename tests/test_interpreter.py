@@ -5,6 +5,16 @@ from dial.sequence import SequenceDiagram
 from dial.interpreter import BadSyntax, BadAttribute
 
 
+def test_sequence_comment():
+    d = SequenceDiagram(Tokenizer())
+    s = '''# Sequence
+# This is comment
+'''
+    d.parse(s)
+    assert repr(d) == '''# Sequence
+title: Untitled'''
+
+
 def test_sequence_moduleattr_error():
     d = SequenceDiagram(Tokenizer())
     s = '''# Sequence

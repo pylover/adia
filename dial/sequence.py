@@ -119,7 +119,7 @@ class SequenceDiagram(Visible, Interpreter, list):
 
     statemap = {
         'start': {
-            HASH: {NAME: {NEWLINE: Ignore(nextstate='start')}},
+            HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
             NEWLINE: Ignore(nextstate='start'),
             INDENT: {
                 NAME: Goto(callback=_indent, nextstate='  name'),

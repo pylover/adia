@@ -9,6 +9,19 @@ def tokenizes(string):
         yield t.type, t.string, t.start, t.end
 
 
+def test_tokenizer_hash():
+    exp = 'foo bar.baz(a, b): as return'
+    gen = tokenizes(f'#{exp}\n  foo')
+    assert next(gen) == (HASH,       '#',   (1,  0), (1,  1))
+    assert next(gen) == (EVERYTHING, exp,   (1,  1), (1, 29))
+    assert next(gen) == (NEWLINE,    '\n',  (1, 29), (1, 30))
+    assert next(gen) == (INDENT,     '  ',  (2,  0), (2,  2))
+    assert next(gen) == (NAME,      'foo',  (2,  2), (2,  5))
+    assert next(gen) == (EOF,        '',    (3,  0), (3,  0))
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
 def test_tokenizer_colon():
     exp = 'foo bar.baz(a, b): as return'
     gen = tokenizes(f':{exp}\n  foo')

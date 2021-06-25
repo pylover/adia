@@ -1,12 +1,11 @@
 
 
 ```dial
-!dialect: pashmak
 
-@title Foo Bar Baz
+title: Foo Bar Baz
 
-foo.title = Lorem ipsum
-foo.type = actor
+foo.title: Lorem ipsum
+foo.type: actor
 
 foo -> bar
   bar -> baz: int func(a, b)
