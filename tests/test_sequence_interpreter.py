@@ -4,6 +4,31 @@ from dial.exceptions import BadSyntax, BadAttribute
 from dial.sequence import SequenceDiagram
 
 
+def test_sequenceitem_repr():
+    s = '''# Sequence
+title: foo
+
+foo -> bar
+foo -> bar:
+foo -> bar: baz
+for: i in range(10)
+  foo -> baz
+'''
+    d = SequenceDiagram.loads(s)
+    assert repr(d[0]) == 'foo -> bar'
+    assert repr(d[1]) == 'foo -> bar'
+    assert repr(d[2]) == 'foo -> bar: baz'
+    assert repr(d[3]) == 'for: i in range(10)'
+
+
+def test_sequence_repr():
+    s = '''# Sequence
+title: foo
+'''
+    d = SequenceDiagram.loads(s)
+    assert repr(d) == 'SequenceDiagram: foo'
+
+
 def test_sequence_note():
     s = '''# Sequence
 title: note

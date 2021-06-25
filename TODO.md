@@ -2,7 +2,6 @@
 # Current release
 
 ## Sequence Diagram
-- repr -> short
 - load, dump
 - ascii
 - svg

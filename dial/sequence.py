@@ -47,11 +47,11 @@ class Item(Visible, Interpreter):
         return self._complete(type_, *nargs, text=text, **kw)
 
     @property
-    def _short_repr(self):
+    def left(self):
         return self.type_
-    
-    def dumps(self):
-        result = self._short_repr
+
+    def __repr__(self):
+        result = self.left
 
         if self.text:
             result += ': '
@@ -64,6 +64,9 @@ class Item(Visible, Interpreter):
                 result += f'{self.text}'
 
         return result
+
+    def dumps(self):
+        return repr(self)
 
     statemap = {
         'start': {
@@ -107,7 +110,7 @@ class Note(Item):
         super()._complete(type_, *args, **kw)
 
     @property
-    def _short_repr(self):
+    def left(self):
         result = f'@{self.position}'
 
         if self.position != 'over':
@@ -138,7 +141,7 @@ class Call(Container):
     callee = None
 
     @property
-    def _short_repr(self):
+    def left(self):
         return f'{self.caller} -> {self.callee}'
 
     def _complete(self, caller, callee, text=None):
@@ -302,6 +305,9 @@ class SequenceDiagram(Visible, Interpreter, list):
         for token in self.tokenizer.tokenizes(string):
             self.eat_token(token)
     
+    def __repr__(self):
+        return f'SequenceDiagram: {self.title}'
+
     @classmethod
     def loads(cls, string):
         diagram = cls()
