@@ -42,3 +42,21 @@ class MutableString(list):
                     f'with slice of size {s.stop - s.start}'
                 )
         return super().__setitem__(s, value)
+
+    def pop(self, *args):
+        raise ValueError(
+            f'attempt to pop from MutableString of size {self.length}'
+        )
+
+    def append(self, s):
+        l = len(s)
+        if l == 0:
+            raise ValueError(
+                f'attempt to append zero characters'
+            )
+        elif l > 1:
+            raise ValueError(
+                f'attempt to append multiple characters: {s}'
+            )
+
+        super().append(s)
