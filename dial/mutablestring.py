@@ -51,9 +51,7 @@ class MutableString(list):
     def append(self, s):
         l = len(s)
         if l == 0:
-            raise ValueError(
-                f'attempt to append zero characters'
-            )
+            raise ValueError('attempt to append zero characters')
         elif l > 1:
             raise ValueError(
                 f'attempt to append multiple characters: {s}'
