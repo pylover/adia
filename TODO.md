@@ -1,6 +1,9 @@
 
 # Current release
 
+- Mutable string
+- Brython tests
+
 ## Sequence Diagram
 
 - ascii
