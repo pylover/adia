@@ -1,6 +1,6 @@
-import pytest
-
 from dial.mutablestring import MutableString
+
+from .helpers import raises
 
 
 def test_mutablestring_remove():
@@ -29,18 +29,18 @@ def test_mutablestring_append():
     s.append('2')
     assert s == '12'
 
-    with pytest.raises(ValueError) as e:
+    with raises(ValueError) as e:
         s.append('34')
     assert str(e.value) == 'attempt to append multiple characters: 34'
 
-    with pytest.raises(ValueError) as e:
+    with raises(ValueError) as e:
         s.append('')
     assert str(e.value) == 'attempt to append zero characters'
 
 
 def test_mutablestring_pop():
     s = MutableString('123456')
-    with pytest.raises(ValueError) as e:
+    with raises(ValueError) as e:
         s.pop()
 
     assert str(e.value) == 'attempt to pop from MutableString of size 6'
@@ -108,7 +108,7 @@ def test_mutablestring_setitem():
     s[1:] = 'foo'
     assert str(s) == ' foo '
 
-    with pytest.raises(ValueError) as e:
+    with raises(ValueError) as e:
         s[1:4] = 'fo'
 
     assert str(e.value) == \

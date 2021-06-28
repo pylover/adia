@@ -45,10 +45,19 @@ $(WWWDIST)/stdlib.min.js:
 $(WWWDIST)/stdlib.full.js:
 	- cp $(WWW)/brython_stdlib.js $(WWWDIST)/stdlib.full.js
 
+$(WWWDIST)/index.html:
+	- ln -s $(shell readlink -f $(WWW))/index.html $(WWWDIST)
+
+$(WWWDIST)/test.html:
+	- ln -s $(shell readlink -f $(WWW))/test.html $(WWWDIST)
+
+$(WWWDIST)/webtests.py:
+	- ln -s $(shell readlink -f $(WWW))/webtests.py $(WWWDIST)
+
 .PHONY: www
-www: $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js
+www: $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js $(WWWDIST)/index.html \
+	$(WWWDIST)/test.html $(WWWDIST)/webtests.py
 	- cp $(WWW)/brython.js $(WWWDIST)/runtime.js
-	- ln -s $(shell readlink -f $(WWW))/main.html $(WWWDIST)/index.html
 
 .PHONY: serve
 serve: www
@@ -60,4 +69,5 @@ clean::
 		$(WWWDIST)/runtime.js \
 		$(WWWDIST)/stdlib.*.js \
 		$(WWWDIST)/dial.js \
+		$(WWWDIST)/test.html \
 		$(WWWDIST)/index.html

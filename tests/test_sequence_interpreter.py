@@ -1,7 +1,7 @@
-import pytest
-
 from dial.exceptions import BadSyntax, BadAttribute
 from dial.sequence import SequenceDiagram
+
+from .helpers import raises
 
 
 def test_sequenceitem_repr():
@@ -125,7 +125,7 @@ def test_sequence_moduleattr_error():
     s = '''# Sequence
 foo.invalid: Foo
 '''
-    with pytest.raises(BadAttribute) as e:
+    with raises(BadAttribute) as e:
         SequenceDiagram.loads(s)
     assert str(e.value) == '''\
 File "String", Interpreter SequenceDiagram, line 2, col 16
@@ -153,7 +153,7 @@ invalid: Foo Bar
 
 foo -> bar: baz
 '''
-    with pytest.raises(BadAttribute) as e:
+    with raises(BadAttribute) as e:
         SequenceDiagram.loads(s)
     assert str(e.value) == '''\
 File "String", Interpreter SequenceDiagram, line 2, col 16
@@ -204,14 +204,14 @@ foo -> bar
 
 
 def test_interpreter_badsyntax():
-    with pytest.raises(BadSyntax) as e:
+    with raises(BadSyntax) as e:
         SequenceDiagram().feedline('foo')
     assert str(e.value) == '''\
 File "String", Interpreter SequenceDiagram, line 1, col 3
 Expected one of `->|:|.`, got: NEWLINE.\
 '''
 
-    with pytest.raises(BadSyntax) as e:
+    with raises(BadSyntax) as e:
         SequenceDiagram.loads('''
             foo
             bar
@@ -221,7 +221,7 @@ File "String", Interpreter SequenceDiagram, line 2, col 15
 Expected one of `->|:|.`, got: NEWLINE.\
 '''
 
-    with pytest.raises(BadSyntax) as e:
+    with raises(BadSyntax) as e:
         SequenceDiagram.loads('''
             title: Foo
               foo: bar
