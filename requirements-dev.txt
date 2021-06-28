@@ -2,4 +2,4 @@
 pytest-pudb
 ropevim
 ipython
-
+brythoncli

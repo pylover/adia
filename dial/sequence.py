@@ -1,4 +1,5 @@
 from .visible import Visible
+from .container import Container
 from .interpreter import Interpreter, Consume, FinalConsume, New, Ignore, \
     Goto, Switch
 from .token import *
@@ -122,7 +123,7 @@ class Note(Item):
         return result
 
 
-class Container(Item, list):
+class ContainerItem(Item, Container):
 
     def dumps(self):
         result = super().dumps()
@@ -136,7 +137,7 @@ class Container(Item, list):
         return result.rstrip('\n')
 
 
-class Call(Container):
+class Call(ContainerItem):
     caller = None
     callee = None
 
@@ -162,15 +163,15 @@ class Call(Container):
     }
 
 
-class Loop(Container):
+class Loop(ContainerItem):
     pass
 
 
-class Condition(Container):
+class Condition(ContainerItem):
     pass
 
 
-class SequenceDiagram(Visible, Interpreter, list):
+class SequenceDiagram(Visible, Interpreter, Container):
     title = 'Untitled'
 
     def __init__(self, *args, **kwargs):

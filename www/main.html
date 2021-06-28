@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="runtime.js"></script>
+<script type="text/javascript" src="stdlib.min.js"></script>
+<script type="text/javascript" src="dial.js"></script>
+<style>
+  font-family: monospace;
+</style>
+</head>
+
+<body onload="brython({debug: 1})">
+
+<textarea cols="60" rows="40" id="source">
+title: Wow
+
+foo -> bar: baz
+  @over: bar
+</textarea>
+<textarea cols="60" rows="40" id="target"></textarea>
+
+<script type="text/python">
+from browser import document, bind
+
+from dial.sequence import SequenceDiagram
+
+source = document['source']
+target = document['target']
+processing = False
+
+
+def update(e):
+  global processing
+  if processing:
+    return
+
+  if hasattr(e, 'charCode') and e.charCode != 13:
+    return 
+
+  processing = True
+  print('processing')
+  try:
+    v = source.value;
+    v += '\n'
+    d = SequenceDiagram.loads(v)
+    dump = d.dumps()
+    target.value = dump
+  except:
+    print('error')
+    pass
+  finally:
+    processing = False
+
+
+source.bind('keypress', update)
+source.bind('change', update)
+update(None)
+
+# pythonpath: ['public']
+</script>
+</body>
+
+</html>

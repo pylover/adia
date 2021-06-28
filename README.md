@@ -4,6 +4,7 @@
 # dial
 Another language for diagrams.
 
+
 ## Setup development evironment
 
 Use your favorite virtual environment tool such as 
@@ -16,3 +17,27 @@ make env
 make test
 make cover
 ```
+
+### Web interface
+
+The `dial` package should be compatible with the `Brython` too. So, you can 
+use it on every browser which supports ECMA6.
+
+To build and check the demo, run:
+
+```bash
+make clean
+make www
+make serve
+```
+
+Or just one line to do all the above commands in order:
+
+```bash
+make clean serve
+```
+
+then open http://localhost:8080 in your favorite browser to use `dial` wihtout
+the `CPython`.
+
+Isn't that nice?
