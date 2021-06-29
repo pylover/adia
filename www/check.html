@@ -17,7 +17,7 @@
 
 <script type="text/python">
 from browser import document, bind
-import webtests
+import check
 
 target = document['target']
 counter = 0
@@ -26,10 +26,10 @@ start = 'Running Dial web tests'
 target.value += f'{start}\n'
 print(start)
 
-for test in webtests.run():
+for t in check.run():
   counter += 1
-  print(test)
-  target.value += f'{test}\n'
+  print(t)
+  target.value += f'{t}\n'
 
 final = f'{counter} tests are passed successfully.'
 target.value += f'{final}\n'

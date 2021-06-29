@@ -36,7 +36,7 @@ make cover
 make clean server
 ```
 
-Then open the browser and point http://localhost:8000/test.html to run tests.
+Then open the browser and point http://localhost:8000/check.html to run tests.
 
 ### Web interface
 

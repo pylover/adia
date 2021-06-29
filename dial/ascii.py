@@ -36,4 +36,20 @@ class ASCIICanvas:
         self._backend[row + height - 1][col] = '+'
         self._backend[row + height - 1][col + width - 1] = '+'
 
-#     def draw_text(self, col, row, text):
+    def draw_line(self, col, row, line):
+        self._backend[row][col:] = line
+
+    def draw_text(self, col, row, text):
+        for line in text.splitlines():
+            self.draw_line(col, row, line)
+            row += 1
+
+    def draw_textbox(self, col, row, text, hmargin=0, vmargin=0):
+        lines = text.splitlines()
+        textheight = len(lines)
+        width = max(len(l) for l in lines)
+
+        boxheight = textheight + (vmargin * 2) + 2
+        boxwidth = width + (hmargin * 2) + 2
+        self.draw_text(col + hmargin + 1, row + vmargin + 1, text)
+        self.draw_box(col, row, boxwidth, boxheight)

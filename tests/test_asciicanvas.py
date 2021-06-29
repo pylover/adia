@@ -1,34 +1,6 @@
 from dial.ascii import ASCIICanvas
 
-
-NEWLINE = '↵\n'
-
-
-def norm(s):
-    return s.replace('\n', NEWLINE)
-
-
-def eq(a, b):
-    b = b.strip()
-
-    bb = []
-    for l in b.splitlines():
-        bb.append(l[5:-1])
-
-    bb.pop(0)
-    bb.pop()
-    bb[-1] += '\n'
-    b = '\n'.join(bb)
-
-    a += '\n'
-    try:
-        assert a == b
-    except AssertionError:
-        print('Given:')
-        print(norm(a))
-        print('Expected:')
-        print(norm(b))
-        raise ValueError()
+from .helpers import eq
 
 
 def test_asciicanvas_drawline():
@@ -57,14 +29,72 @@ def test_asciicanvas_drawline():
 
 
 def test_asciicanvas_drawbox():
-    c = ASCIICanvas(11, 5)
-    c.draw_box(3, 1, 5, 3)
+    c = ASCIICanvas(11, 6)
+    c.draw_box(3, 1, 5, 4)
     eq(str(c), '''\
     .............
     .           .
     .   +---+   .
     .   |   |   .
+    .   |   |   .
     .   +---+   .
     .           .
     .............
+    ''')
+
+
+def test_asciicanvas_drawtext():
+    c = ASCIICanvas(11, 5)
+    c.draw_text(3, 1, 'foo\n\n  bar')
+    eq(str(c), '''\
+    .............
+    .           .
+    .   foo     .
+    .           .
+    .     bar   .
+    .           .
+    .............
+    ''')
+
+
+def test_asciicanvas_drawtextbox():
+    c = ASCIICanvas(11, 6)
+    c.draw_textbox(2, 1, 'foo\n\n  bar')
+    eq(str(c), '''\
+    .............
+    .           .
+    .  +-----+  .
+    .  |foo  |  .
+    .  |     |  .
+    .  |  bar|  .
+    .  +-----+  .
+    .............
+    ''')
+
+    c = ASCIICanvas(14, 6)
+    c.draw_textbox(2, 1, 'foo\n\n  bar', hmargin=1)
+    eq(str(c), '''\
+    ................
+    .              .
+    .  +-------+   .
+    .  | foo   |   .
+    .  |       |   .
+    .  |   bar |   .
+    .  +-------+   .
+    ................
+    ''')
+
+    c = ASCIICanvas(14, 8)
+    c.draw_textbox(2, 1, 'foo\n\n  bar', hmargin=1, vmargin=1)
+    eq(str(c), '''\
+    ................
+    .              .
+    .  +-------+   .
+    .  |       |   .
+    .  | foo   |   .
+    .  |       |   .
+    .  |   bar |   .
+    .  |       |   .
+    .  +-------+   .
+    ................
     ''')

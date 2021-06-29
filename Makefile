@@ -48,14 +48,14 @@ $(WWWDIST)/stdlib.full.js:
 $(WWWDIST)/index.html:
 	- ln -s $(shell readlink -f $(WWW))/index.html $(WWWDIST)
 
-$(WWWDIST)/test.html:
-	- ln -s $(shell readlink -f $(WWW))/test.html $(WWWDIST)
+$(WWWDIST)/check.html:
+	- ln -s $(shell readlink -f $(WWW))/check.html $(WWWDIST)
+
+$(WWWDIST)/check.py:
+	- ln -s $(shell readlink -f $(WWW))/check.py $(WWWDIST)
 
 $(WWWDIST)/kitchen.html:
 	- ln -s $(shell readlink -f $(WWW))/kitchen.html $(WWWDIST)
-
-$(WWWDIST)/webtests.py:
-	- ln -s $(shell readlink -f $(WWW))/webtests.py $(WWWDIST)
 
 $(WWWDIST)/kitchen.py:
 	- ln -s $(shell readlink -f $(WWW))/kitchen.py $(WWWDIST)
@@ -68,7 +68,7 @@ $(WWWDIST)/tests:
 
 .PHONY: www
 www: $(WWWDIST)/stdlib.full.js $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js \
-	$(WWWDIST)/index.html $(WWWDIST)/test.html $(WWWDIST)/webtests.py \
+	$(WWWDIST)/index.html $(WWWDIST)/check.html $(WWWDIST)/check.py \
 	$(WWWDIST)/tests $(WWWDIST)/kitchen.py $(WWWDIST)/kitchen.html \
 	$(WWWDIST)/favicon.ico
 	- cp $(WWW)/brython.js $(WWWDIST)/runtime.js
@@ -85,8 +85,9 @@ clean::
 		$(WWWDIST)/stdlib.*.js \
 		$(WWWDIST)/dial.js \
 		$(WWWDIST)/tests \
-		$(WWWDIST)/webtests.py \
-		$(WWWDIST)/test.html \
+		$(WWWDIST)/check.py \
+		$(WWWDIST)/check.html \
 		$(WWWDIST)/kitchen.py \
 		$(WWWDIST)/kitchen.html \
+		$(WWWDIST)/favicon.ico \
 		$(WWWDIST)/index.html

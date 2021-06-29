@@ -13,12 +13,14 @@ def runtests(module):
 def run():
     from tests import test_token
     from tests import test_tokenizer
+    from tests import test_asciicanvas
     from tests import test_mutablestring
     from tests import test_sequence_interpreter
 
     for module in [
         test_token,
         test_tokenizer,
+        test_asciicanvas,
         test_mutablestring,
         test_sequence_interpreter,
     ]:
