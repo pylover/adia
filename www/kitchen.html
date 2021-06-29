@@ -13,13 +13,13 @@
 
 <body onload="brython({debug: 1})">
 
-<textarea cols="60" rows="40" id="target"></textarea>
+<textarea cols="60" rows="10" id="target"></textarea>
 
 <script type="text/python">
 from browser import document, bind
-import webtests
+import kitchen
 
-webtests.run();
+kitchen.run();
 
 </script>
 </body>

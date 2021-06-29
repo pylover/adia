@@ -51,23 +51,38 @@ $(WWWDIST)/index.html:
 $(WWWDIST)/test.html:
 	- ln -s $(shell readlink -f $(WWW))/test.html $(WWWDIST)
 
+$(WWWDIST)/kitchen.html:
+	- ln -s $(shell readlink -f $(WWW))/kitchen.html $(WWWDIST)
+
 $(WWWDIST)/webtests.py:
 	- ln -s $(shell readlink -f $(WWW))/webtests.py $(WWWDIST)
 
+$(WWWDIST)/kitchen.py:
+	- ln -s $(shell readlink -f $(WWW))/kitchen.py $(WWWDIST)
+
+$(WWWDIST)/tests:
+	- ln -s $(shell readlink -f tests) $(WWWDIST)
+
 .PHONY: www
-www: $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js $(WWWDIST)/index.html \
-	$(WWWDIST)/test.html $(WWWDIST)/webtests.py
+www: $(WWWDIST)/stdlib.full.js $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js \
+	$(WWWDIST)/index.html $(WWWDIST)/test.html $(WWWDIST)/webtests.py \
+	$(WWWDIST)/tests $(WWWDIST)/kitchen.py $(WWWDIST)/kitchen.html
 	- cp $(WWW)/brython.js $(WWWDIST)/runtime.js
 
 .PHONY: serve
 serve: www
-	brython -C$(WWWDIST) serve
+	brython -C$(WWWDIST) serve --port 9001
 
 .PHONY: clear
 clean::
+	- rm -rf $(DIAL)/__pycache__
 	- rm \
 		$(WWWDIST)/runtime.js \
 		$(WWWDIST)/stdlib.*.js \
 		$(WWWDIST)/dial.js \
+		$(WWWDIST)/tests \
+		$(WWWDIST)/webtests.py \
 		$(WWWDIST)/test.html \
+		$(WWWDIST)/kitchen.py \
+		$(WWWDIST)/kitchen.html \
 		$(WWWDIST)/index.html
