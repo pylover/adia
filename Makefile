@@ -60,18 +60,22 @@ $(WWWDIST)/webtests.py:
 $(WWWDIST)/kitchen.py:
 	- ln -s $(shell readlink -f $(WWW))/kitchen.py $(WWWDIST)
 
+$(WWWDIST)/favicon.ico:
+	- ln -s $(shell readlink -f $(WWW))/favicon.ico $(WWWDIST)
+
 $(WWWDIST)/tests:
 	- ln -s $(shell readlink -f tests) $(WWWDIST)
 
 .PHONY: www
 www: $(WWWDIST)/stdlib.full.js $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js \
 	$(WWWDIST)/index.html $(WWWDIST)/test.html $(WWWDIST)/webtests.py \
-	$(WWWDIST)/tests $(WWWDIST)/kitchen.py $(WWWDIST)/kitchen.html
+	$(WWWDIST)/tests $(WWWDIST)/kitchen.py $(WWWDIST)/kitchen.html \
+	$(WWWDIST)/favicon.ico
 	- cp $(WWW)/brython.js $(WWWDIST)/runtime.js
 
 .PHONY: serve
 serve: www
-	brython -C$(WWWDIST) serve --port 9001
+	brython -C$(WWWDIST) serve --port 8000
 
 .PHONY: clear
 clean::

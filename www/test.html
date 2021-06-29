@@ -19,7 +19,21 @@
 from browser import document, bind
 import webtests
 
-webtests.run();
+target = document['target']
+counter = 0
+
+start = 'Running Dial web tests'
+target.value += f'{start}\n'
+print(start)
+
+for test in webtests.run():
+  counter += 1
+  print(test)
+  target.value += f'{test}\n'
+
+final = f'{counter} tests are passed successfully.'
+target.value += f'{final}\n'
+print(final)
 
 </script>
 </body>

@@ -1,30 +1,30 @@
-def findtests(module):
+def runtests(module):
     global counter
     for k, v in module.__dict__.items():
         if k.startswith('test_'):
             try:
                 v()
             except Exception as ex:
-                print(k, f'Failed: {ex}')
+                yield f'Failed {k}: {ex}'
                 raise
             else:
-                counter += 1
-                print(k, 'Ok')
+                yield f'OK {k}'
 
 
 def run():
     global counter
     counter = 0
 
-    print('Running Dial web tests')
     from tests import test_token
     from tests import test_tokenizer
     from tests import test_mutablestring
     from tests import test_sequence_interpreter
 
-    findtests(test_token)
-    findtests(test_tokenizer)
-    findtests(test_mutablestring)
-    findtests(test_sequence_interpreter)
-
-    print(f'{counter} tests are passed successfully.')
+    for module in [
+        test_token,
+        test_tokenizer,
+        test_mutablestring,
+        test_sequence_interpreter,
+    ]:
+        for test in runtests(module):
+            yield test

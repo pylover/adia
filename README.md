@@ -14,9 +14,29 @@ Then:
 
 ```bash
 make env
+```
+
+### Running tests
+
+#### CPython Tests
+
+```bash
 make test
+```
+
+#### CPython Coverage
+
+```bash
 make cover
 ```
+
+#### Brython Tests
+
+```bash
+make clean server
+```
+
+Then open the browser and point http://localhost:8000/test.html to run tests.
 
 ### Web interface
 
@@ -37,7 +57,7 @@ Or just one line to do all the above commands in order:
 make clean serve
 ```
 
-then open http://localhost:8080 in your favorite browser to use `dial` wihtout
+then open http://localhost:8000 in your favorite browser to use `dial` wihtout
 the `CPython`.
 
 Isn't that nice?
