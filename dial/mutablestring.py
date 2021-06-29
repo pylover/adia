@@ -1,5 +1,5 @@
 class MutableString:
-    "A simple wrapper arround a list of str."""
+    """A simple wrapper arround a list of str."""
 
     def __init__(self, initial):
         self._backend = []
