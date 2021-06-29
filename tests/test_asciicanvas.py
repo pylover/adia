@@ -16,7 +16,7 @@ def test_asciicanvas_drawline():
     ..........
     ''')
 
-    c.draw_hline(3, 1, 4)
+    c.draw_hline(1, 3, 4)
     eq(str(c), '''\
     ..........
     .        .
@@ -43,9 +43,21 @@ def test_asciicanvas_drawbox():
     ''')
 
 
-def test_asciicanvas_drawtext():
+def test_asciicanvas_drawtextline():
+    c = ASCIICanvas(11, 3)
+    c.draw_textline(3, 1, 'foo')
+    eq(str(c), '''\
+    .............
+    .           .
+    .   foo     .
+    .           .
+    .............
+    ''')
+
+
+def test_asciicanvas_drawtextblock():
     c = ASCIICanvas(11, 5)
-    c.draw_text(3, 1, 'foo\n\n  bar')
+    c.draw_textblock(3, 1, 'foo\n\n  bar')
     eq(str(c), '''\
     .............
     .           .
@@ -97,4 +109,21 @@ def test_asciicanvas_drawtextbox():
     .  |       |   .
     .  +-------+   .
     ................
+    ''')
+
+
+def test_asciicanvas_drawarrow():
+    c = ASCIICanvas(12, 5)
+    c.draw_rightarrow(4, 1, 4)
+    c.draw_leftarrow(4, 3, 4)
+    c.draw_toparrow(2, 1, 3)
+    c.draw_bottomarrow(9, 1, 3)
+    eq(str(c), '''\
+    ..............
+    .            .
+    .  ^ ---> |  .
+    .  |      |  .
+    .  | <--- v  .
+    .            .
+    ..............
     ''')
