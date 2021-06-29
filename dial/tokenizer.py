@@ -199,11 +199,14 @@ class Tokenizer:
         eof = False
 
         while not eof:
-            for token in self.tokenizeline(readline()):
+            line = readline()
+            for token in self.tokenizeline(line):
                 yield token
                 eof = token.type == EOF
 
     def tokenizes(self, string):
+        if not string.endswith('\n'):
+            string += '\n'
         yield from self.tokenize(io.StringIO(string).readline)
 
 
