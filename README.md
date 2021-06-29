@@ -5,7 +5,7 @@
 Another language for diagrams.
 
 
-## Setup development evironment
+## Setup development environment
 
 Use your favorite virtual environment tool such as 
 https://pypi.org/project/virtualenvwrapper/.
