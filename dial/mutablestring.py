@@ -1,33 +1,41 @@
-class MutableString(list):
+class MutableString:
+    "A simple wrapper arround a list of str."""
 
     def __init__(self, initial):
+        self._backend = []
+
         if isinstance(initial, str):
-            self.size = len(initial)
-            self.extend(initial)
+            self += initial
         else:
-            self.size = initial
-            self.extend(' ' * initial)
+            self.extendright(initial)
+
+    def __iadd__(self, new):
+        self._backend.extend(new)
+        return self
+
+    def __len__(self):
+        return self._backend.__len__()
 
     def __eq__(self, other):
         if isinstance(other, str):
-            return str(self) == other
+            return self.__str__() == other
 
-        return super().__eq__(other)
+        return self._backend == other
 
     def __ne__(self, other):
         if isinstance(other, str):
-            return str(self) != other
+            return self.__str__() != other
 
-        return super().__ne__(other)
-
-    def __repr__(self):
-        return f'\'{"".join(self)}\''
+        return self._backend != other
 
     def __str__(self):
-        return ''.join(self)
+        return ''.join(self._backend)
+
+    def __repr__(self):
+        return f'\'{self.__str__()}\''
 
     def __getitem__(self, s):
-        return ''.join(super().__getitem__(s))
+        return ''.join(self._backend.__getitem__(s))
 
     def __setitem__(self, s, value):
         if isinstance(s, slice):
@@ -41,20 +49,33 @@ class MutableString(list):
                     f'attempt to assign sequence of size {vlen} to replace '
                     f'with slice of size {s.stop - s.start}'
                 )
-        return super().__setitem__(s, value)
+        return self._backend.__setitem__(s, value)
 
-    def pop(self, *args):
-        raise ValueError(
-            f'attempt to pop from MutableString of size {self.size}'
-        )
+    def __delitem__(self, s):
+        self._backend.__delitem__(s)
 
-    def append(self, s):
-        l = len(s)
-        if l == 0:
-            raise ValueError('attempt to append zero characters')
-        elif l > 1:
-            raise ValueError(
-                f'attempt to append multiple characters: {s}'
-            )
+    def reverse(self):
+        self._backend.reverse()
 
-        super().append(s)
+    def insert(self, index, s):
+        for i in s[::-1]:
+            self._backend.insert(index, i)
+
+    def extendright(self, size):
+        self._backend.extend(' ' * size)
+
+    def extendleft(self, size):
+        while size:
+            self._backend.insert(0, ' ')
+            size -= 1
+
+    def _trim(self, size, index=-1):
+        while size:
+            self._backend.pop(index)
+            size -= 1
+
+    def trimstart(self, size):
+        self._trim(size, index=0)
+
+    def trimend(self, size):
+        self._trim(size)

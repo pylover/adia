@@ -3,19 +3,28 @@ from dial.mutablestring import MutableString
 from .helpers import raises
 
 
-def test_mutablestring_remove():
-    s = MutableString('123')
-    s.remove('2')
-    assert s == '13'
+def test_mutablestring_trim():
+    s = MutableString('123456')
+    s.trimstart(2)
+    assert s == '3456'
+
+    s.trimend(2)
+    assert s == '34'
 
 
 def test_mutablestring_extend():
     s = MutableString('123')
-    s.extend('456')
-    assert s == '123456'
+    s.extendright(3)
+    assert s == '123   '
 
-    s += '78'
-    assert s == '12345678'
+    s.extendleft(3)
+    assert s == '   123   '
+
+
+def test_mutablestring_iadd():
+    s = MutableString('123')
+    s += '45'
+    assert s == '12345'
 
 
 def test_mutablestring_reverse():
@@ -24,35 +33,13 @@ def test_mutablestring_reverse():
     assert s == '654321'
 
 
-def test_mutablestring_append():
-    s = MutableString('1')
-    s.append('2')
-    assert s == '12'
-
-    with raises(ValueError) as e:
-        s.append('34')
-    assert str(e.value) == 'attempt to append multiple characters: 34'
-
-    with raises(ValueError) as e:
-        s.append('')
-    assert str(e.value) == 'attempt to append zero characters'
-
-
-def test_mutablestring_pop():
-    s = MutableString('123456')
-    with raises(ValueError) as e:
-        s.pop()
-
-    assert str(e.value) == 'attempt to pop from MutableString of size 6'
-
-
 def test_mutablestring_insert():
     s = MutableString('123456')
     s.insert(0, 'a')
     assert s == 'a123456'
 
-    s.insert(2, 'b')
-    assert s == 'a1b23456'
+    s.insert(2, 'bc')
+    assert s == 'a1bc23456'
 
 
 def test_mutablestring_len():
@@ -117,5 +104,5 @@ def test_mutablestring_setitem():
 
 def test_mutablestring_init():
     s = MutableString(5)
-    assert s.size == 5
+    assert len(s) == 5
     assert str(s) == '     '
