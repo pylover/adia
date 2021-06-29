@@ -15,9 +15,24 @@ class ASCIICanvas:
         for r in range(startrow, startrow + length):
             self._backend[r][col] = '|'
 
-    def draw_hline(self, col, row, length):
+    def write_hcenter(self, col, row, width, text):
+        tlen = len(text)
+        col = col + width // 2 - tlen // 2
+        self.write_textline(col, row, text)
+
+    def draw_hline(self, col, row, length, text=None, texttop=None,
+                   textbottom=None):
         for c in range(col, col + length):
             self._backend[row][c] = '-'
+
+        if text:
+            self.write_hcenter(col, row, length, text)
+
+        if texttop:
+            self.write_hcenter(col, row - 1, length, texttop)
+
+        if textbottom:
+            self.write_hcenter(col, row + 1, length, textbottom)
 
     def draw_box(self, col, row, width, height):
         lastrow = row + height - 1
@@ -36,12 +51,12 @@ class ASCIICanvas:
         self._backend[row + height - 1][col] = '+'
         self._backend[row + height - 1][col + width - 1] = '+'
 
-    def draw_textline(self, col, row, line):
+    def write_textline(self, col, row, line):
         self._backend[row][col:] = line
 
-    def draw_textblock(self, col, row, text):
+    def write_textblock(self, col, row, text):
         for line in text.splitlines():
-            self.draw_textline(col, row, line)
+            self.write_textline(col, row, line)
             row += 1
 
     def draw_textbox(self, col, row, text, hmargin=0, vmargin=0):
@@ -51,21 +66,21 @@ class ASCIICanvas:
 
         boxheight = textheight + (vmargin * 2) + 2
         boxwidth = width + (hmargin * 2) + 2
-        self.draw_textblock(col + hmargin + 1, row + vmargin + 1, text)
+        self.write_textblock(col + hmargin + 1, row + vmargin + 1, text)
         self.draw_box(col, row, boxwidth, boxheight)
 
-    def draw_rightarrow(self, col, row, length):
-        self.draw_hline(col, row, length - 1)
+    def draw_rightarrow(self, col, row, length, **kw):
+        self.draw_hline(col, row, length - 1, **kw)
         self._backend[row][col + length - 1] = '>'
 
-    def draw_leftarrow(self, col, row, length):
-        self.draw_hline(col + 1, row, length - 1)
+    def draw_leftarrow(self, col, row, length, **kw):
+        self.draw_hline(col + 1, row, length - 1, **kw)
         self._backend[row][col] = '<'
 
-    def draw_toparrow(self, col, row, length):
-        self.draw_vline(col, row + 1, length - 1)
+    def draw_toparrow(self, col, row, length, **kw):
+        self.draw_vline(col, row + 1, length - 1, **kw)
         self._backend[row][col] = '^'
 
-    def draw_bottomarrow(self, col, row, length):
-        self.draw_vline(col, row, length - 1)
+    def draw_bottomarrow(self, col, row, length, **kw):
+        self.draw_vline(col, row, length - 1, **kw)
         self._backend[row + length - 1][col] = 'v'

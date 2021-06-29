@@ -4,27 +4,27 @@ from .helpers import eq
 
 
 def test_asciicanvas_drawline():
-    c = ASCIICanvas(8, 5)
-    c.draw_vline(1, 1, 2)
+    c = ASCIICanvas(7, 5)
+    c.draw_vline(3, 1, 3)
     eq(str(c), '''\
-    ..........
-    .        .
-    . |      .
-    . |      .
-    .        .
-    .        .
-    ..........
+    .........
+    .       .
+    .   |   .
+    .   |   .
+    .   |   .
+    .       .
+    .........
     ''')
 
-    c.draw_hline(1, 3, 4)
+    c.draw_hline(1, 2, 5)
     eq(str(c), '''\
-    ..........
-    .        .
-    . |      .
-    . |      .
-    . ----   .
-    .        .
-    ..........
+    .........
+    .       .
+    .   |   .
+    . ----- .
+    .   |   .
+    .       .
+    .........
     ''')
 
 
@@ -44,20 +44,20 @@ def test_asciicanvas_drawbox():
 
 
 def test_asciicanvas_drawtextline():
-    c = ASCIICanvas(11, 3)
-    c.draw_textline(3, 1, 'foo')
+    c = ASCIICanvas(9, 3)
+    c.write_textline(3, 1, 'foo')
     eq(str(c), '''\
-    .............
-    .           .
-    .   foo     .
-    .           .
-    .............
+    ...........
+    .         .
+    .   foo   .
+    .         .
+    ...........
     ''')
 
 
 def test_asciicanvas_drawtextblock():
     c = ASCIICanvas(11, 5)
-    c.draw_textblock(3, 1, 'foo\n\n  bar')
+    c.write_textblock(3, 1, 'foo\n\n  bar')
     eq(str(c), '''\
     .............
     .           .
@@ -83,47 +83,72 @@ def test_asciicanvas_drawtextbox():
     .............
     ''')
 
-    c = ASCIICanvas(14, 6)
-    c.draw_textbox(2, 1, 'foo\n\n  bar', hmargin=1)
+    c = ASCIICanvas(15, 6)
+    c.draw_textbox(3, 1, 'foo\n\n  bar', hmargin=1)
     eq(str(c), '''\
-    ................
-    .              .
-    .  +-------+   .
-    .  | foo   |   .
-    .  |       |   .
-    .  |   bar |   .
-    .  +-------+   .
-    ................
+    .................
+    .               .
+    .   +-------+   .
+    .   | foo   |   .
+    .   |       |   .
+    .   |   bar |   .
+    .   +-------+   .
+    .................
     ''')
 
-    c = ASCIICanvas(14, 8)
-    c.draw_textbox(2, 1, 'foo\n\n  bar', hmargin=1, vmargin=1)
+    c = ASCIICanvas(15, 8)
+    c.draw_textbox(3, 1, 'foo\n\n  bar', hmargin=1, vmargin=1)
     eq(str(c), '''\
-    ................
-    .              .
-    .  +-------+   .
-    .  |       |   .
-    .  | foo   |   .
-    .  |       |   .
-    .  |   bar |   .
-    .  |       |   .
-    .  +-------+   .
-    ................
+    .................
+    .               .
+    .   +-------+   .
+    .   |       |   .
+    .   | foo   |   .
+    .   |       |   .
+    .   |   bar |   .
+    .   |       |   .
+    .   +-------+   .
+    .................
     ''')
 
 
 def test_asciicanvas_drawarrow():
-    c = ASCIICanvas(12, 5)
-    c.draw_rightarrow(4, 1, 4)
-    c.draw_leftarrow(4, 3, 4)
-    c.draw_toparrow(2, 1, 3)
-    c.draw_bottomarrow(9, 1, 3)
+    c = ASCIICanvas(20, 9)
+    c.draw_rightarrow(4, 2, 12)
+    c.draw_leftarrow(4, 6, 12)
+    c.draw_toparrow(2, 2, 5)
+    c.draw_bottomarrow(17, 2, 5)
     eq(str(c), '''\
-    ..............
-    .            .
-    .  ^ ---> |  .
-    .  |      |  .
-    .  | <--- v  .
-    .            .
-    ..............
+    ......................
+    .                    .
+    .                    .
+    .  ^ -----------> |  .
+    .  |              |  .
+    .  |              |  .
+    .  |              |  .
+    .  | <----------- v  .
+    .                    .
+    .                    .
+    ......................
+    ''')
+
+
+def test_asciicanvas_drawarrowtext():
+    c = ASCIICanvas(20, 9)
+    c.draw_rightarrow(4, 2, 12, texttop='foo', text='bar', textbottom='baz')
+    c.draw_leftarrow(5, 6, 10, texttop='foo', text='bar', textbottom='baz')
+    c.draw_toparrow(2, 2, 5)
+    c.draw_bottomarrow(17, 2, 5)
+    eq(str(c), '''\
+    ......................
+    .                    .
+    .        foo         .
+    .  ^ ----bar----> |  .
+    .  |     baz      |  .
+    .  |              |  .
+    .  |      foo     |  .
+    .  |  <---bar---  v  .
+    .         baz        .
+    .                    .
+    ......................
     ''')
