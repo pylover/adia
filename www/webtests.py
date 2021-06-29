@@ -1,5 +1,4 @@
 def runtests(module):
-    global counter
     for k, v in module.__dict__.items():
         if k.startswith('test_'):
             try:
@@ -12,9 +11,6 @@ def runtests(module):
 
 
 def run():
-    global counter
-    counter = 0
-
     from tests import test_token
     from tests import test_tokenizer
     from tests import test_mutablestring
