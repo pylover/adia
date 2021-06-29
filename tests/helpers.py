@@ -10,4 +10,5 @@ def raises(extype):
     try:
         yield p
     except Exception as e:
+        assert isinstance(e, extype)
         p.value = e

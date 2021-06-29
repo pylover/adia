@@ -117,5 +117,5 @@ def test_mutablestring_setitem():
 
 def test_mutablestring_init():
     s = MutableString(5)
-    assert s.length == 5
+    assert s.size == 5
     assert str(s) == '     '

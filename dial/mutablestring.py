@@ -2,10 +2,10 @@ class MutableString(list):
 
     def __init__(self, initial):
         if isinstance(initial, str):
-            self.length = len(initial)
+            self.size = len(initial)
             self.extend(initial)
         else:
-            self.length = initial
+            self.size = initial
             self.extend(' ' * initial)
 
     def __eq__(self, other):
@@ -45,7 +45,7 @@ class MutableString(list):
 
     def pop(self, *args):
         raise ValueError(
-            f'attempt to pop from MutableString of size {self.length}'
+            f'attempt to pop from MutableString of size {self.size}'
         )
 
     def append(self, s):
