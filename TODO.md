@@ -1,10 +1,3 @@
-
-```dial
-```
-- Brython fixmes
-- test for description and tags
-- set namespace for each state in interpreters
-
 # Current release
 
 - ASCII Canvas
@@ -16,15 +9,15 @@
   - note
   - loop
   - condition
-- load, dump
-- svg
 
 # Next release
 
-Gallery
-Syntaxt highlight
-Github Syntaxt highlight
-VIM Syntaxt highlight
+- Gallery
+
+## SVG
+## Syntaxt highlight
+  Github Syntaxt highlight
+  VIM Syntaxt highlight
 
 ## Sequence Diagram
 - Parallel
