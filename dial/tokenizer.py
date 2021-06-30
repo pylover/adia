@@ -24,11 +24,13 @@ class Tokenizer:
         self.indent = 0
         self.escape = False
         self.newline = True
-        # TODO: Rename to multiline_*
-        self._mlmatch = []
-        self._ml = False
-        self._mlindent = False
-        self._mllastlen = 0
+
+        # Multiline matching
+        self._multiline = False
+        self._multiline_matching = []
+        self._multiline_indent = False
+        self._multiline_lastlen = 0
+        self._multiline_token = None
 
     def _token(self, type_, string, start, end, line):
         return Token(
@@ -85,29 +87,29 @@ class Tokenizer:
     def _tokenizeline(self, line):
         self.lineno += 1
 
-        if self._ml:
+        if self._multiline:
             m = re.match(WHITESPACE_RE, line)
             end = m.span()[1] if m else 0
-            if self._mlindent == 0 and end > 0:
-                self._mlindent = end
-                self._mltoken = line[self._mlindent:]
-                self._mllastlen = len(line)
+            if self._multiline_indent == 0 and end > 0:
+                self._multiline_indent = end
+                self._multiline_token = line[self._multiline_indent:]
+                self._multiline_lastlen = len(line)
                 return
-            elif end < self._mlindent:
-                sl = self._mlmatch[-1].start[0]
-                self._mlmatch.clear()
+            elif end < self._multiline_indent:
+                sl = self._multiline_matching[-1].start[0]
+                self._multiline_matching.clear()
                 yield Token(
                     MULTILINE,
-                    self._mltoken[:-1],
-                    (sl + 1, self._mlindent),
-                    (self.lineno - 1, self._mllastlen - 1),
+                    self._multiline_token[:-1],
+                    (sl + 1, self._multiline_indent),
+                    (self.lineno - 1, self._multiline_lastlen - 1),
                     line
                 )
-                self._ml = False
-                self._mlindent = 0
+                self._multiline = False
+                self._multiline_indent = 0
             elif end > 0:
-                self._mltoken += line[self._mlindent:]
-                self._mllastlen = len(line)
+                self._multiline_token += line[self._multiline_indent:]
+                self._multiline_lastlen = len(line)
                 return
 
         if line == '':
@@ -184,13 +186,13 @@ class Tokenizer:
     def feedline(self, line):
         for token in self._tokenizeline(line):
             if token.type == PIPE:
-                self._mlmatch.append(token)
+                self._multiline_matching.append(token)
                 continue
-            elif token.type == NEWLINE and len(self._mlmatch) == 1:
-                self._mlmatch.append(token)
-                self._ml = True
+            elif token.type == NEWLINE and len(self._multiline_matching) == 1:
+                self._multiline_matching.append(token)
+                self._multiline = True
                 continue
             else:
-                while self._mlmatch:
-                    yield self._mlmatch.pop(0)
+                while self._multiline_matching:
+                    yield self._multiline_matching.pop(0)
                 yield token
