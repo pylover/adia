@@ -205,7 +205,7 @@ class Tokenizer:
                 eof = token.type == EOF
 
     def tokenizes(self, string):
-        # Added due the brython bug:
+        # FIXME: Added due the bug:
         # https://github.com/brython-dev/brython/issues/1716
         if not string.endswith('\n'):
             string += '\n'

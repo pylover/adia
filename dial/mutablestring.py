@@ -2,6 +2,10 @@ class MutableString:
     """A simple wrapper arround a list of str."""
 
     def __init__(self, initial):
+        # FIXME: Wrapping list instead of inherit, due the bug:
+        # https://github.com/brython-dev/brython/issues/1715
+        # And
+        # https://github.com/brython-dev/brython/issues/1714
         self._backend = []
 
         if isinstance(initial, str):

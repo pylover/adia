@@ -14,7 +14,9 @@ def annotate(s):
 def maxwidth(*args):
     m = 0
     for s in args:
-        m = max(m, max(len(l) for l in s.splitlines()))
+        ll = [len(l) for l in s.splitlines()]
+        if ll:
+            m = max(m, max(ll))
 
     return m - 5
 
