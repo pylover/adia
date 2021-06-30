@@ -58,11 +58,6 @@ class Diagram(Interpreter, Container):
 
     @classmethod
     def loads(cls, string):
-        # FIXME: Added due the bug:
-        # https://github.com/brython-dev/brython/issues/1716
-        if not string.endswith('\n'):
-            string += '\n'
-
         with StringIO(string) as f:
             return cls.load(f)
 

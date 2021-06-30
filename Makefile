@@ -77,6 +77,11 @@ www: $(WWWDIST)/stdlib.full.js $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js \
 serve: www
 	brython -C$(WWWDIST) serve --port 8000
 
+.PHONY: update-brython.js
+update-brython.js: www
+	cp ../brython/www/src/brython.js $(WWW)
+	cp ../brython/www/src/brython_stdlib.js $(WWW)
+
 .PHONY: clear
 clean::
 	- rm -rf $(DIAL)/__pycache__
