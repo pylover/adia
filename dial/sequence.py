@@ -298,6 +298,7 @@ class SequenceDiagram(Interpreter, Container):
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
             NAME: Switch(default=Goto(nextstate='  name'), **_keywords),
             AT: Ignore(nextstate='@'),
+            NEWLINE: Ignore(nextstate='start'),
         },
         'name': {
             RARROW: New(Call, callback=_new_call, nextstate='start'),

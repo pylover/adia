@@ -85,6 +85,7 @@ class Diagram(Interpreter, Container):
     statemap = {
         'start': {
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
+            INDENT: {NEWLINE: Ignore(nextstate='start')},
             NEWLINE: Ignore(nextstate='start'),
             EOF: Ignore(nextstate='start'),
             NAME: Switch(default=Goto(nextstate='name'), **_keywords),

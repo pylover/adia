@@ -6,6 +6,32 @@ from dial.exceptions import BadAttribute
 from .helpers import raises, eqbigstr
 
 
+def test_diagram_full():
+    s = '''
+        diagram: HTTPLoad
+        version: 1.0
+        author: Vahid Mardani
+
+        sequence: Event Loop
+
+        cli -> httpd: err_t start(httpd*)
+          for: i in range(forks)
+            httpd -> ev: server_start(evs*)
+              ev -> tcp: int listen(port)
+              ev -> ev_epoll: err_t server_init(evs*)
+              ev -> ev_common: err_t fork(evs*, epoll_loop)
+              if: err
+                ev -> ev_epoll: server_deinit(evs*)
+                @over: Error
+              else: ok
+                @over: Ok
+        cli -> httpd: err_t join(httpd*)
+    '''
+
+    diagram = Diagram(StringIO(s))
+    assert eqbigstr(diagram.dumps(), s)
+
+
 def test_diagram_parsefile():
     s = '''
         diagram: Foo
@@ -42,6 +68,16 @@ def test_diagram_repr():
 
     diagram.parseline('diagram: Foo')
     assert repr(diagram) == 'Diagram: Foo'
+
+
+def test_diagram_emptyline():
+    s = 'diagram: foo\n  \n'
+    diagram = Diagram(StringIO(s))
+    assert diagram.dumps() == 'diagram: foo\n'
+
+    s = 'sequence: foo\n  \n'
+    diagram = Diagram(StringIO(s))
+    assert diagram.dumps() == 'diagram: Untitled Diagram\n\nsequence: foo\n'
 
 
 def test_diagram_attr_error():
