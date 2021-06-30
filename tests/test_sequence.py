@@ -6,7 +6,7 @@ from .helpers import raises, eqbigstr
 
 
 def seq(s):
-    d = Diagram.loads(s)
+    d = Diagram(s)
     assert len(d) == 1
     assert isinstance(d[0], SequenceDiagram)
     return d[0]

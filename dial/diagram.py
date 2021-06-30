@@ -11,8 +11,15 @@ class Diagram(Interpreter, Container):
     version = None
     author = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, initial=None, *args, **kwargs):
         super().__init__('start', *args, **kwargs)
+        if initial is None:
+            return
+
+        if isinstance(initial, str):
+            self.parse(initial)
+        else:
+            self.parsefile(initial)
 
     def __repr__(self):
         return f'Diagram: {self.title}'
@@ -34,32 +41,25 @@ class Diagram(Interpreter, Container):
 
         return f.getvalue()
 
-    def __ilshift__(self, line):
-        if hasattr(line, 'readline'):
-            while True:
-                l = line.readline()
-                self <<= l
-                if not l:
-                    return self
+    def parsefile(self, f):
+        while True:
+            line = f.readline()
+            self.parseline(line)
+            if not line:
+                return
 
+    def parseline(self, line):
         if len(line) and not line.endswith('\n'):
             line += '\n'
 
         for token in self.tokenizer.feedline(line):
             self.eat_token(token)
 
-        return self
+        return
 
-    @classmethod
-    def load(cls, f):
-        diagram = cls()
-        diagram <<= f
-        return diagram
-
-    @classmethod
-    def loads(cls, string):
+    def parse(self, string):
         with StringIO(string) as f:
-            return cls.load(f)
+            self.parsefile(f)
 
     def _set_title(self, attr, value):
         self.title = value.strip()

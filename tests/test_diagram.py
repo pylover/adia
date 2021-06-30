@@ -1,13 +1,12 @@
 from io import StringIO
 
-from dial.exceptions import BadAttribute
 from dial.diagram import Diagram
+from dial.exceptions import BadAttribute
 
 from .helpers import raises, eqbigstr
 
 
-def test_diagram_full():
-    diagram = Diagram()
+def test_diagram_parsefile():
     s = '''
         diagram: Foo
         version: 1.0
@@ -23,7 +22,7 @@ def test_diagram_full():
           bar -> baz: init()
     '''
 
-    diagram <<= StringIO(s)
+    diagram = Diagram(StringIO(s))
     assert eqbigstr(diagram.dumps(), s)
 
 
@@ -32,7 +31,7 @@ def test_diagram_comment():
         diagram: Foo
         # This is Comment
     '''
-    assert eqbigstr(Diagram.loads(s).dumps(), '''
+    assert eqbigstr(Diagram(s).dumps(), '''
         diagram: Foo
     ''')
 
@@ -41,7 +40,7 @@ def test_diagram_repr():
     diagram = Diagram()
     assert repr(diagram) == 'Diagram: Untitled Diagram'
 
-    diagram <<= 'diagram: Foo'
+    diagram.parseline('diagram: Foo')
     assert repr(diagram) == 'Diagram: Foo'
 
 
@@ -51,7 +50,7 @@ def test_diagram_attr_error():
         invalid: invalid
     '''
     with raises(BadAttribute) as e:
-        Diagram.loads(s)
+        Diagram(s)
     assert eqbigstr(e.value, '''
         File "String", Interpreter Diagram, line 3, col 24
         Invalid attribute: invalid.

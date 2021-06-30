@@ -127,6 +127,7 @@ class Note(Item):
 class ContainerItem(Item, Container):
 
     def dumps(self):
+        # TODO: optimize
         result = super().dumps()
 
         if len(self):
