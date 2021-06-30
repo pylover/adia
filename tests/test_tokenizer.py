@@ -1,17 +1,32 @@
+import io
+
 from dial.token import *
-from dial.tokenizer import tokenizes as tokenizes_
+from dial.tokenizer import Tokenizer
 
 from .helpers import raises
 
 
-def tokenizes(string):
-    for t in tokenizes_(string):
-        yield t.type, t.string, t.start, t.end
+def tokenize(string):
+    # FIXME: Added due the bug:
+    # https://github.com/brython-dev/brython/issues/1716
+    if not string.endswith('\n'):
+        string += '\n'
+
+    tokenizer = Tokenizer()
+
+    with io.StringIO(string) as f:
+        while True:
+            line = f.readline()
+            for t in tokenizer.feedline(line):
+                yield t.type, t.string, t.start, t.end
+
+            if not line:
+                break
 
 
 def test_tokenizer_hash():
     exp = 'foo bar.baz(a, b): as return'
-    gen = tokenizes(f'#{exp}\n  foo')
+    gen = tokenize(f'#{exp}\n  foo')
     assert next(gen) == (HASH,       '#',   (1,  0), (1,  1))
     assert next(gen) == (EVERYTHING, exp,   (1,  1), (1, 29))
     assert next(gen) == (NEWLINE,    '\n',  (1, 29), (1, 30))
@@ -25,7 +40,7 @@ def test_tokenizer_hash():
 
 def test_tokenizer_colon():
     exp = 'foo bar.baz(a, b): as return'
-    gen = tokenizes(f':{exp}\n  foo')
+    gen = tokenize(f':{exp}\n  foo')
     assert next(gen) == (COLON,      ':',   (1,  0), (1,  1))
     assert next(gen) == (EVERYTHING, exp,   (1,  1), (1, 29))
     assert next(gen) == (NEWLINE,    '\n',  (1, 29), (1, 30))
@@ -38,7 +53,7 @@ def test_tokenizer_colon():
 
 
 def test_tokenizer_multiline():
-    gen = tokenizes('''
+    gen = tokenize('''
     |
         foo
         bar.
@@ -55,7 +70,7 @@ def test_tokenizer_multiline():
     with raises(StopIteration):
         next(gen)
 
-    gen = tokenizes('''
+    gen = tokenize('''
     | foo
     ''')
     assert next(gen) == (NEWLINE,   '\n',  (1,  0), (1,  1))
@@ -69,7 +84,7 @@ def test_tokenizer_multiline():
 
 
 def test_tokenizer_emptyinput():
-    gen = tokenizes('')
+    gen = tokenize('')
     assert next(gen) == (NEWLINE, '\n', (1, 0), (1, 1))
     assert next(gen) == (EOF,     '',   (2, 0), (2, 0))
     with raises(StopIteration):
@@ -77,7 +92,7 @@ def test_tokenizer_emptyinput():
 
 
 def test_tokenizer_sequencediagram_flat():
-    gen = tokenizes(
+    gen = tokenize(
         '@seq foo\n'
         'bar baz\n'
         'bar qux.quux(corge, fred) -> waldo'
@@ -107,7 +122,7 @@ def test_tokenizer_sequencediagram_flat():
 
 
 def test_tokenizer_sequencediagram_indented():
-    gen = tokenizes(
+    gen = tokenize(
         'foo\n'
         '  bar\n'
         '    thud\n'
@@ -145,7 +160,7 @@ def test_tokenizer_sequencediagram_indented():
 
 
 def test_tokenizer_sequencediagram_indented_autocoloffset():
-    gen = tokenizes('''
+    gen = tokenize('''
         foo bar
         bar
             baz
@@ -168,7 +183,7 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     with raises(StopIteration):
         next(gen)
 
-    gen = tokenizes('''
+    gen = tokenize('''
         foo bar
     ''')
     assert next(gen) == (NEWLINE, '\n',   (1,  0), (1,  1))
@@ -181,7 +196,7 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
         next(gen)
 
     # Automatic column offset detection
-    gen = tokenizes('''
+    gen = tokenize('''
         foo
           bar
         qux quux''')
@@ -199,7 +214,7 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     with raises(StopIteration):
         next(gen)
 
-    gen = tokenizes('''
+    gen = tokenize('''
       foo
         bar
       qux quux''')
@@ -219,7 +234,7 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
 
 
 def test_tokenizer_escapechar():
-    gen = tokenizes('\\@ \\: \\|')
+    gen = tokenize('\\@ \\: \\|')
     assert next(gen) == (NAME,      '@',     (1,  1), (1,  2))
     assert next(gen) == (NAME,      ':',     (1,  4), (1,  5))
     assert next(gen) == (NAME,      '|',     (1,  7), (1,  8))
@@ -228,20 +243,20 @@ def test_tokenizer_escapechar():
     with raises(StopIteration):
         next(gen)
 
-    gen = tokenizes('\\\n \n')
+    gen = tokenize('\\\n \n')
     assert next(gen) == (NEWLINE,   '\n',    (2,  1), (2,  2))
     assert next(gen) == (EOF,       '',      (3,  0), (3,  0))
     with raises(StopIteration):
         next(gen)
 
-    gen = tokenizes('\\\\')
+    gen = tokenize('\\\\')
     assert next(gen) == (BACKSLASH, '\\',    (1,  1), (1,  2))
     assert next(gen) == (NEWLINE,   '\n',    (1,  2), (1,  3))
     assert next(gen) == (EOF,       '',      (2,  0), (2,  0))
     with raises(StopIteration):
         next(gen)
 
-    gen = tokenizes(
+    gen = tokenize(
         'foo\\\n'
         '  bar\\\n.baz'
     )

@@ -24,6 +24,7 @@ MULTILINE = 16
 EVERYTHING = 17
 TILDA = 18
 
+
 TOKEN_NAMES = {
     value: name for name, value in globals().items()
     if isinstance(value, int) and not name.startswith('_')
@@ -34,18 +35,18 @@ __all__.extend(TOKEN_NAMES.values())
 
 
 EXACT_TOKENS = [
-    ('->', RARROW),
-    ('@',  AT),
-    ('.',  DOT),
-    (':',  COLON),
-    ('(',  LPAR),
-    (')',  RPAR),
-    (',',  COMMA),
-    ('\\', BACKSLASH),
-    ('/',  SLASH),
-    ('|',  PIPE),
-    ('#',  HASH),
-    ('~',  TILDA),
+    ('->',  RARROW),
+    ('@',   AT),
+    ('.',   DOT),
+    (':',   COLON),
+    ('(',   LPAR),
+    (')',   RPAR),
+    (',',   COMMA),
+    ('\\',  BACKSLASH),
+    ('/',   SLASH),
+    ('|',   PIPE),
+    ('#',   HASH),
+    ('~',   TILDA),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 

@@ -1,41 +1,60 @@
 import contextlib
 
 
-NEWLINE = '↵'
+def eqbigstr(a, b):
+    if hasattr(a, 'dumps'):
+        a = a.dumps()
+    elif not isinstance(a, str):
+        a = str(a)
+
+    bb = []
+    for l in b.splitlines():
+        bb.append(l[8:])
+
+    b = '\n'.join(bb[1:-1])
+
+    if a.endswith('\n'):
+        b += '\n'
+
+    if a != b:
+        print('######################## Given:')
+        print(a)
+        print('######################## Expected:')
+        print(b)
+        print('########################')
+        return False
+
+    return True
 
 
-def annotate(s):
-    i = 0
-    for l in s.splitlines():
-        yield f'{l}{NEWLINE} {i:3d}\n'
-        i += 1
+def eqdia(a, b):
+    NEWLINE = '↵'
 
+    def annotate(s):
+        i = 0
+        for l in s.splitlines():
+            yield f'{l}{NEWLINE} {i:3d}\n'
+            i += 1
 
-def maxwidth(*args):
-    m = 0
-    for s in args:
-        ll = [len(l) for l in s.splitlines()]
-        if ll:
-            m = max(m, max(ll))
+    def maxwidth(*args):
+        m = 0
+        for s in args:
+            ll = [len(l) for l in s.splitlines()]
+            if ll:
+                m = max(m, max(ll))
 
-    return m - 5
+        return m - 5
 
+    def print_columns(size):
+        first, second = '', ''
+        for i in range(size):
+            j = i % 10
+            if j == 0:
+                first += f'{i // 10}'
+            else:
+                first += ' '
+            second += f'{j}'
 
-def print_columns(size):
-    first, second = '', ''
-    for i in range(size):
-        j = i % 10
-        if j == 0:
-            first += f'{i // 10}'
-        else:
-            first += ' '
-        second += f'{j}'
-
-    print(first)
-    print(second)
-
-
-def eq(a, b):
     maxlen = maxwidth(a, b)
     b = b.strip()
 

@@ -1,4 +1,3 @@
-import io
 import re
 
 from .token import *
@@ -25,6 +24,7 @@ class Tokenizer:
         self.indent = 0
         self.escape = False
         self.newline = True
+        # TODO: Rename to multiline_*
         self._mlmatch = []
         self._ml = False
         self._mlindent = False
@@ -181,7 +181,7 @@ class Tokenizer:
                     self.newline = True
                     return
 
-    def tokenizeline(self, line):
+    def feedline(self, line):
         for token in self._tokenizeline(line):
             if token.type == PIPE:
                 self._mlmatch.append(token)
@@ -194,24 +194,3 @@ class Tokenizer:
                 while self._mlmatch:
                     yield self._mlmatch.pop(0)
                 yield token
-
-    def tokenize(self, readline):
-        eof = False
-
-        while not eof:
-            line = readline()
-            for token in self.tokenizeline(line):
-                yield token
-                eof = token.type == EOF
-
-    def tokenizes(self, string):
-        # FIXME: Added due the bug:
-        # https://github.com/brython-dev/brython/issues/1716
-        if not string.endswith('\n'):
-            string += '\n'
-
-        yield from self.tokenize(io.StringIO(string).readline)
-
-
-def tokenizes(string):
-    yield from Tokenizer().tokenizes(string)

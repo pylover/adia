@@ -1,11 +1,12 @@
-from .visible import Visible
+from io import StringIO
+
 from .container import Container
-from .interpreter import Interpreter, Consume, FinalConsume, New, Ignore, \
-    Goto, Switch
+from .interpreter import Interpreter, Consume, Final, FinalConsume, New, \
+    Ignore, Goto, Switch
 from .token import *
 
 
-class Module(Visible):
+class Module:
     title = None
     type = 'module'
 
@@ -13,7 +14,7 @@ class Module(Visible):
         self.title = title
 
 
-class Item(Visible, Interpreter):
+class Item(Interpreter):
     type_ = None
     args = None
     text = None
@@ -171,35 +172,48 @@ class Condition(ContainerItem):
     pass
 
 
-class SequenceDiagram(Visible, Interpreter, Container):
-    title = 'Untitled'
+class SequenceDiagram(Interpreter, Container):
+    title = 'Untitled Sequence Diagram'
+    description = None
+    tags = None
 
     def __init__(self, *args, **kwargs):
         super().__init__('start', *args, **kwargs)
         self.modules = {}
         self._callstack = []
 
-    def dumps(self):
-        result = f'# Sequence\ntitle: {self.title}\n'
+    def __repr__(self):
+        return f'SequenceDiagram: {self.title}'
 
-        attrs = ''
-        for k, v in self.modules.items():
+    def dumps(self):
+        f = StringIO()
+        f.write(f'sequence: {self.title}\n')
+
+        if self.description:
+            f.write(f'description: {self.description}\n')
+
+        if self.tags:
+            f.write(f'tags: {self.tags}\n')
+
+        modattrs = []
+        for k, v in sorted(self.modules.items()):
             if k != v.title:
-                attrs += f'{k}.title: {v.title}\n'
+                modattrs.append((k, 'title', v.title))
 
             if 'module' != v.type:
-                attrs += f'{k}.type: {v.type}\n'
+                modattrs.append((k, 'type', v.type))
 
-        if attrs:
-            result += f'\n{attrs}'
+        if modattrs:
+            f.write('\n# Modules\n')
+            for m, a, v in modattrs:
+                f.write(f'{m}.{a}: {v}\n')
 
         if len(self):
-            result += '\n'
+            f.write('\n')
             for c in self:
-                result += c.dumps()
-                result += '\n'
+                f.write(f'{c.dumps()}\n')
 
-        return result.rstrip('\n')
+        return f.getvalue()
 
     def _ensuremodule(self, name):
         if name not in self.modules:
@@ -239,10 +253,15 @@ class SequenceDiagram(Visible, Interpreter, Container):
     def _attr(self, attr, value):
         value = value.strip()
 
-        if attr == 'title':
-            self.title = value
+        if attr == 'description':
+            self.description = value
+        elif attr == 'tags':
+            self.tags = value
         else:
             raise AttributeError(attr)
+
+    def _set_title(self, attr, value):
+        self.title = value.strip()
 
     def _module_attr(self, module, attr, value):
         if not hasattr(Module, attr):
@@ -252,6 +271,9 @@ class SequenceDiagram(Visible, Interpreter, Container):
         setattr(self.modules[module], attr, value.strip())
 
     _keywords = {
+        'sequence': Goto(nextstate='title'),
+        'state': Final(nextstate='start'),
+        'class': Final(nextstate='start'),
         'for': New(Loop, callback=_new_loop, nextstate='start'),
         'while': New(Loop, callback=_new_loop, nextstate='start'),
         'loop': New(Loop, callback=_new_loop, nextstate='start'),
@@ -267,7 +289,7 @@ class SequenceDiagram(Visible, Interpreter, Container):
             NEWLINE: Ignore(nextstate='start'),
             INDENT: Ignore(callback=_indent, nextstate='indent'),
             DEDENT: Ignore(callback=_dedent, nextstate='start'),
-            EOF: Ignore(nextstate='start'),
+            EOF: Final(nextstate='start'),
             NAME: Switch(default=Goto(nextstate='name'), **_keywords),
             AT: Ignore(nextstate='@'),
         },
@@ -284,6 +306,11 @@ class SequenceDiagram(Visible, Interpreter, Container):
         '  name': {
             RARROW: New(Call, callback=_new_call, nextstate='start')
         },
+        'title': {
+            COLON: {EVERYTHING: {
+                NEWLINE: Consume(_set_title, nextstate='start')
+            }}
+        },
         'attr:': {
             EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
         },
@@ -294,23 +321,3 @@ class SequenceDiagram(Visible, Interpreter, Container):
             NAME: New(Note, callback=_new_note, nextstate='start'),
         }
     }
-
-    def feedline(self, line):
-        if len(line) and not line.endswith('\n'):
-            line += '\n'
-
-        for token in self.tokenizer.tokenizeline(line):
-            self.eat_token(token)
-
-    def feed(self, string):
-        for token in self.tokenizer.tokenizes(string):
-            self.eat_token(token)
-
-    def __repr__(self):
-        return f'SequenceDiagram: {self.title}'
-
-    @classmethod
-    def loads(cls, string):
-        diagram = cls()
-        diagram.feed(string)
-        return diagram

@@ -71,13 +71,16 @@ class Ignore(Consume):
         return super().__call__(interpreter, token)
 
 
-class FinalConsume(Consume):
-    def __init__(self, callback, **kw):
-        super().__init__(callback=callback, nextstate=None, **kw)
-
-    def __call__(self, interpreter, token):
+class Final(Action):
+    def __call__(self, interpreter, *args, **kw):
         interpreter.more = False
-        super().__call__(interpreter, token)
+        return super().__call__(interpreter, *args, **kw)
+
+
+class FinalConsume(Consume):
+    def __call__(self, interpreter, *args, **kw):
+        interpreter.more = False
+        return super().__call__(interpreter, *args, **kw)
 
 
 class New(Consume):
@@ -128,12 +131,13 @@ class Interpreter(metaclass=abc.ABCMeta):
 
     def _redirect(self, target, token):
         newstatekey = target.eat_token(token)
-        if newstatekey:
+        if newstatekey is not None:
             self._set_state(newstatekey)
 
     def eat_token(self, token):
         if isinstance(self.state, New):
-            return self._redirect(self.state, token)
+            self._redirect(self.state, token)
+            return self.more
 
         try:
             newstate = self.state[token.type]

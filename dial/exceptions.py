@@ -30,6 +30,7 @@ class BadSyntax(InterpreterError):
             EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
             for i in interpreter.state.keys()
         ]
+        expected = 'Expected Nothing'
         if len(validtokens) > 1:
             expected = f'Expected one of `{"|".join(validtokens)}`'
         elif len(validtokens) == 1:

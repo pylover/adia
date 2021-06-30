@@ -1,4 +1,9 @@
 
+```dial
+```
+- Brython fixmes
+- test for description and tags
+- set namespace for each state in interpreters
 # Current release
 
 - ASCII Canvas
@@ -16,6 +21,8 @@
 # Next release
 
 Syntaxt highlight
+Github Syntaxt highlight
+VIM Syntaxt highlight
 
 ## Sequence Diagram
 - Parallel
