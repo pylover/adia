@@ -7,11 +7,6 @@ from .helpers import raises
 
 
 def tokenize(string):
-    # FIXME: Added due the bug:
-    # https://github.com/brython-dev/brython/issues/1716
-    if not string.endswith('\n'):
-        string += '\n'
-
     tokenizer = Tokenizer()
 
     with io.StringIO(string) as f:
@@ -32,7 +27,6 @@ def test_tokenizer_hash():
     assert next(gen) == (NEWLINE,    '\n',  (1, 29), (1, 30))
     assert next(gen) == (INDENT,     '  ',  (2,  0), (2,  2))
     assert next(gen) == (NAME,      'foo',  (2,  2), (2,  5))
-    assert next(gen) == (NEWLINE,    '\n',  (2,  5), (2,  6))
     assert next(gen) == (EOF,        '',    (3,  0), (3,  0))
     with raises(StopIteration):
         next(gen)
@@ -46,7 +40,6 @@ def test_tokenizer_colon():
     assert next(gen) == (NEWLINE,    '\n',  (1, 29), (1, 30))
     assert next(gen) == (INDENT,     '  ',  (2,  0), (2,  2))
     assert next(gen) == (NAME,      'foo',  (2,  2), (2,  5))
-    assert next(gen) == (NEWLINE,    '\n',  (2,  5), (2,  6))
     assert next(gen) == (EOF,        '',    (3,  0), (3,  0))
     with raises(StopIteration):
         next(gen)
@@ -65,7 +58,6 @@ def test_tokenizer_multiline():
     assert next(gen) == (NAME,      'foo', (5,  4), (5,  7))
     assert next(gen) == (NAME,      'bar', (5,  8), (5, 11))
     assert next(gen) == (NEWLINE,   '\n',  (5, 11), (5, 12))
-    assert next(gen) == (NEWLINE,   '\n',  (6,  4), (6,  5))
     assert next(gen) == (EOF,       '',    (7,  0), (7,  0))
     with raises(StopIteration):
         next(gen)
@@ -77,7 +69,6 @@ def test_tokenizer_multiline():
     assert next(gen) == (PIPE,      '|',   (2,  4), (2,  5))
     assert next(gen) == (NAME,      'foo', (2,  6), (2,  9))
     assert next(gen) == (NEWLINE,   '\n',  (2,  9), (2, 10))
-    assert next(gen) == (NEWLINE,   '\n',  (3,  4), (3,  5))
     assert next(gen) == (EOF,       '',    (4,  0), (4,  0))
     with raises(StopIteration):
         next(gen)
@@ -85,8 +76,7 @@ def test_tokenizer_multiline():
 
 def test_tokenizer_emptyinput():
     gen = tokenize('')
-    assert next(gen) == (NEWLINE, '\n', (1, 0), (1, 1))
-    assert next(gen) == (EOF,     '',   (2, 0), (2, 0))
+    assert next(gen) == (EOF,     '',   (1, 0), (1, 0))
     with raises(StopIteration):
         next(gen)
 
@@ -115,7 +105,6 @@ def test_tokenizer_sequencediagram_flat():
     assert next(gen) == (RPAR,    ')',     (3, 24), (3, 25))
     assert next(gen) == (RARROW,  '->',    (3, 26), (3, 28))
     assert next(gen) == (NAME,    'waldo', (3, 29), (3, 34))
-    assert next(gen) == (NEWLINE, '\n',    (3, 34), (3, 35))
     assert next(gen) == (EOF,     '',      (4,  0), (4,  0))
     with raises(StopIteration):
         next(gen)
@@ -153,7 +142,6 @@ def test_tokenizer_sequencediagram_indented():
     assert next(gen) == (DEDENT,  '',       (7,  0), (7,  0))
     assert next(gen) == (NAME,    'qux',    (7,  0), (7,  3))
     assert next(gen) == (NAME,    'quux',   (7,  4), (7,  8))
-    assert next(gen) == (NEWLINE, '\n',     (7,  8), (7,  9))
     assert next(gen) == (EOF,     '',       (8,  0), (8,  0))
     with raises(StopIteration):
         next(gen)
@@ -178,7 +166,6 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     assert next(gen) == (NAME,    'qux',  (5, 12), (5, 15))
     assert next(gen) == (NEWLINE, '\n',   (5, 15), (5, 16))
     assert next(gen) == (DEDENT,  '',     (6,  8), (6,  8))
-    assert next(gen) == (NEWLINE, '\n',   (6,  4), (6,  5))
     assert next(gen) == (EOF,     '',     (7,  0), (7,  0))
     with raises(StopIteration):
         next(gen)
@@ -190,7 +177,6 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     assert next(gen) == (NAME,    'foo',  (2,  8), (2, 11))
     assert next(gen) == (NAME,    'bar',  (2, 12), (2, 15))
     assert next(gen) == (NEWLINE, '\n',   (2, 15), (2, 16))
-    assert next(gen) == (NEWLINE, '\n',   (3,  4), (3,  5))
     assert next(gen) == (EOF,     '',     (4,  0), (4,  0))
     with raises(StopIteration):
         next(gen)
@@ -209,7 +195,6 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     assert next(gen) == (DEDENT,  '',     (4,  8), (4,  8))
     assert next(gen) == (NAME,    'qux',  (4,  8), (4, 11))
     assert next(gen) == (NAME,    'quux', (4, 12), (4, 16))
-    assert next(gen) == (NEWLINE, '\n',   (4, 16), (4, 17))
     assert next(gen) == (EOF,     '',     (5,  0), (5,  0))
     with raises(StopIteration):
         next(gen)
@@ -227,7 +212,6 @@ def test_tokenizer_sequencediagram_indented_autocoloffset():
     assert next(gen) == (DEDENT,  '',     (4,  6), (4,  6))
     assert next(gen) == (NAME,    'qux',  (4,  6), (4,  9))
     assert next(gen) == (NAME,    'quux', (4, 10), (4, 14))
-    assert next(gen) == (NEWLINE, '\n',   (4, 14), (4, 15))
     assert next(gen) == (EOF,     '',     (5,  0), (5,  0))
     with raises(StopIteration):
         next(gen)
@@ -238,7 +222,6 @@ def test_tokenizer_escapechar():
     assert next(gen) == (NAME,      '@',     (1,  1), (1,  2))
     assert next(gen) == (NAME,      ':',     (1,  4), (1,  5))
     assert next(gen) == (NAME,      '|',     (1,  7), (1,  8))
-    assert next(gen) == (NEWLINE,   '\n',    (1,  8), (1,  9))
     assert next(gen) == (EOF,       '',      (2,  0), (2,  0))
     with raises(StopIteration):
         next(gen)
@@ -251,7 +234,6 @@ def test_tokenizer_escapechar():
 
     gen = tokenize('\\\\')
     assert next(gen) == (BACKSLASH, '\\',    (1,  1), (1,  2))
-    assert next(gen) == (NEWLINE,   '\n',    (1,  2), (1,  3))
     assert next(gen) == (EOF,       '',      (2,  0), (2,  0))
     with raises(StopIteration):
         next(gen)
@@ -264,7 +246,6 @@ def test_tokenizer_escapechar():
     assert next(gen) == (NAME,    'bar',   (2,  2), (2,  5))
     assert next(gen) == (DOT,     '.',     (3,  0), (3,  1))
     assert next(gen) == (NAME,    'baz',   (3,  1), (3,  4))
-    assert next(gen) == (NEWLINE, '\n',    (3,  4), (3,  5))
     assert next(gen) == (EOF,     '',      (4,  0), (4,  0))
     with raises(StopIteration):
         next(gen)
