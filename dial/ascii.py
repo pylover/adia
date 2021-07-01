@@ -43,10 +43,10 @@ class ASCIICanvas(Canvas):
         return '\n'.join(str(l) for l in self._backend)
 
     def set_char(self, col, row, char):
-        if self.cols <= col:
+        if col >= self.cols:
             self.extendright((col + 1) - self.cols)
 
-        if self.rows <= row:
+        if row >= self.rows:
             self.extendbottom((row + 1) - self.rows)
 
         self._backend[row][col] = char
@@ -55,8 +55,16 @@ class ASCIICanvas(Canvas):
         for r in range(startrow, startrow + length):
             self.set_char(col, r, '|')
 
+    def write_textline(self, col, row, line):
+        for c in line:
+            self.set_char(col, row, c)
+            col += 1
+
     def write_hcenter(self, col, row, text, width=None):
         tlen = len(text)
+        if tlen > self.cols:
+            self.extendright(tlen - self.cols)
+
         col = col + (width or self.cols) // 2 - tlen // 2
         self.write_textline(col, row, text)
 
@@ -90,11 +98,6 @@ class ASCIICanvas(Canvas):
         self.set_char(col + width - 1, row, '+')
         self.set_char(col, row + height - 1, '+')
         self.set_char(col + width - 1, row + height - 1, '+')
-
-    def write_textline(self, col, row, line):
-        for c in line:
-            self.set_char(col, row, c)
-            col += 1
 
     def write_textblock(self, col, row, text):
         for line in text.splitlines():
@@ -138,8 +141,7 @@ class ASCIIRenderer(Renderer):
 
     def _render_header(self):
         self._canvas.extendtop(2)
-        w = max(len(self.diagram.title), self._canvas.cols)
-        self._canvas.write_hcenter(0, 0, self.diagram.title, w)
+        self._canvas.write_hcenter(0, 0, self.diagram.title)
 
     def _render_sequence(self, dia):
         # Modules
