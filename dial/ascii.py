@@ -1,5 +1,6 @@
 from .mutablestring import MutableString
 from .renderer import Canvas, Renderer
+from .sequence import SequenceDiagram
 
 
 class ASCIICanvas(Canvas):
@@ -41,28 +42,37 @@ class ASCIICanvas(Canvas):
     def __str__(self):
         return '\n'.join(str(l) for l in self._backend)
 
+    def set_char(self, col, row, char):
+        if self.cols <= col:
+            self.extendright((col + 1) - self.cols)
+
+        if self.rows <= row:
+            self.extendbottom((row + 1) - self.rows)
+
+        self._backend[row][col] = char
+
     def draw_vline(self, col, startrow, length):
         for r in range(startrow, startrow + length):
-            self._backend[r][col] = '|'
+            self.set_char(col, r, '|')
 
-    def write_hcenter(self, col, row, width, text):
+    def write_hcenter(self, col, row, text, width=None):
         tlen = len(text)
-        col = col + width // 2 - tlen // 2
+        col = col + (width or self.cols) // 2 - tlen // 2
         self.write_textline(col, row, text)
 
     def draw_hline(self, col, row, length, text=None, texttop=None,
                    textbottom=None):
         for c in range(col, col + length):
-            self._backend[row][c] = '-'
+            self.set_char(c, row, '-')
 
         if text:
-            self.write_hcenter(col, row, length, text)
+            self.write_hcenter(col, row, text, length)
 
         if texttop:
-            self.write_hcenter(col, row - 1, length, texttop)
+            self.write_hcenter(col, row - 1, texttop, length)
 
         if textbottom:
-            self.write_hcenter(col, row + 1, length, textbottom)
+            self.write_hcenter(col, row + 1, textbottom, length)
 
     def draw_box(self, col, row, width, height):
         lastrow = row + height - 1
@@ -76,13 +86,15 @@ class ASCIICanvas(Canvas):
         self.draw_hline(hline_start, lastrow, hline_end)
         self.draw_vline(col, vline_start, vline_end)
         self.draw_vline(lastcol, vline_start, vline_end)
-        self._backend[row][col] = '+'
-        self._backend[row][col + width - 1] = '+'
-        self._backend[row + height - 1][col] = '+'
-        self._backend[row + height - 1][col + width - 1] = '+'
+        self.set_char(col, row, '+')
+        self.set_char(col + width - 1, row, '+')
+        self.set_char(col, row + height - 1, '+')
+        self.set_char(col + width - 1, row + height - 1, '+')
 
     def write_textline(self, col, row, line):
-        self._backend[row][col:] = line
+        for c in line:
+            self.set_char(col, row, c)
+            col += 1
 
     def write_textblock(self, col, row, text):
         for line in text.splitlines():
@@ -101,24 +113,47 @@ class ASCIICanvas(Canvas):
 
     def draw_rightarrow(self, col, row, length, **kw):
         self.draw_hline(col, row, length - 1, **kw)
-        self._backend[row][col + length - 1] = '>'
+        self.set_char(col + length - 1, row, '>')
 
     def draw_leftarrow(self, col, row, length, **kw):
         self.draw_hline(col + 1, row, length - 1, **kw)
-        self._backend[row][col] = '<'
+        self.set_char(col, row, '<')
 
     def draw_toparrow(self, col, row, length, **kw):
         self.draw_vline(col, row + 1, length - 1, **kw)
-        self._backend[row][col] = '^'
+        self.set_char(col, row, '^')
 
     def draw_bottomarrow(self, col, row, length, **kw):
         self.draw_vline(col, row, length - 1, **kw)
-        self._backend[row + length - 1][col] = 'v'
+        self.set_char(col, row + length - 1, 'v')
 
 
 class ASCIIRenderer(Renderer):
-    def __init__(self):
-        self.canvas = ASCIICanvas()
+    def __init__(self, diagram):
+        self.diagram = diagram
+        self._canvas = ASCIICanvas()
 
-    def render(self, diagram):
+    def _getcolumns(self):
         raise NotImplementedError()
+
+    def _render_header(self):
+        self._canvas.extendtop(2)
+        w = max(len(self.diagram.title), self._canvas.cols)
+        self._canvas.write_hcenter(0, 0, self.diagram.title, w)
+
+    def _render_sequence(self, dia):
+        # Modules
+        # columns
+        # Total width
+        # Title
+        # Version
+        # Author
+        raise NotImplementedError()
+
+    def render(self):
+        for unit in self.diagram:
+            if isinstance(unit, SequenceDiagram):
+                self._render_sequence(unit)
+
+        self._render_header()
+        return self._canvas

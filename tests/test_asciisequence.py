@@ -1,13 +1,14 @@
-# from dial import Diagram
-#
+# from dial.ascii import ASCIIRenderer
+# from dial.diagram import Diagram
+
 # from .helpers import eqdia
-#
-#
+
+
 # def test_asciisequence():
-#     s = '''
+#     r = ASCIIRenderer(Diagram('''
 #         diagram: Foo
-#     '''
-#     assert eqdia(Diagram(s).ascii(), '''
+#     '''))
+#     assert eqdia(str(r.render()), '''
 #     .......
 #     . Foo .
 #     .......
