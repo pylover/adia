@@ -55,7 +55,10 @@ def eqdia(a, b):
                 first += ' '
             second += f'{j}'
 
-    maxlen = maxwidth(a, b)
+        print(first)
+        print(second)
+
+    maxlen = maxwidth(a, b) + 2
     b = b.strip()
 
     bb = []

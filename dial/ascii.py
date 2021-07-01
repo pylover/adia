@@ -1,13 +1,42 @@
 from .mutablestring import MutableString
-from .renderer import Renderer
+from .renderer import Canvas, Renderer
 
 
-class ASCIICanvas:
+class ASCIICanvas(Canvas):
 
-    def __init__(self, cols, rows):
+    def __init__(self, size=(0, 0)):
         self._backend = []
-        for r in range(rows):
-            self._backend.append(MutableString(cols))
+        self.cols = size[0]
+        self.rows = 0
+        self.extendbottom(size[1])
+
+    @property
+    def size(self):
+        return self.cols, self.rows
+
+    def extendright(self, addcols):
+        for r in self._backend:
+            r.extendright(addcols)
+
+        self.cols += addcols
+
+    def extendleft(self, addcols):
+        for r in self._backend:
+            r.extendleft(addcols)
+
+        self.cols += addcols
+
+    def extendbottom(self, addrows):
+        for i in range(addrows):
+            self._backend.append(MutableString(self.cols))
+
+        self.rows += addrows
+
+    def extendtop(self, addrows):
+        for i in range(addrows):
+            self._backend.insert(0, MutableString(self.cols))
+
+        self.rows += addrows
 
     def __str__(self):
         return '\n'.join(str(l) for l in self._backend)
@@ -88,4 +117,8 @@ class ASCIICanvas:
 
 
 class ASCIIRenderer(Renderer):
-    pass
+    def __init__(self):
+        self.canvas = ASCIICanvas()
+
+    def render(self, diagram):
+        raise NotImplementedError()
