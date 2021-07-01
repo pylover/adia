@@ -81,7 +81,7 @@ def eqdia(a, b):
 
 
 @contextlib.contextmanager
-def raises(extype):
+def raises(exttype):
     class ExceptionProxy:
         value = None
 
@@ -89,5 +89,9 @@ def raises(extype):
     try:
         yield p
     except Exception as e:
-        assert isinstance(e, extype)
+        if not isinstance(e, exttype):
+            raise
+
+        # Allow pytest count asserts
+        assert isinstance(e, exttype)
         p.value = e

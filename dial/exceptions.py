@@ -1,4 +1,5 @@
 from .token import TOKEN_NAMES, EXACT_TOKENS_DICT
+from .token import *
 
 
 class InterpreterError(Exception):
@@ -19,23 +20,25 @@ class BadAttribute(InterpreterError):
 
 
 class BadSyntax(InterpreterError):
-    def __init__(self, interpreter, token):
-        got = TOKEN_NAMES[token.type]
-        if token.string.strip():
-            gotstr = f' "{token.string}"'
+    def __init__(self, interpreter, token, expected=None):
+        if token.type in [NEWLINE, EOF, INDENT, DEDENT, MULTILINE, EVERYTHING]:
+            got = TOKEN_NAMES[token.type]
         else:
-            gotstr = ''
+            got = token.string
 
-        validtokens = [
-            EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
-            for i in interpreter.state.keys()
-        ]
-        expected = 'Expected Nothing'
+        if expected:
+            validtokens = [k for k in expected]
+        else:
+            validtokens = [
+                EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
+                for i in interpreter.state.keys()
+            ]
+
         if len(validtokens) > 1:
             expected = f'Expected one of `{"|".join(validtokens)}`'
         elif len(validtokens) == 1:
             expected = f'Expected `{validtokens[0]}`'
 
         super().__init__(
-            interpreter, token, f'{expected}, got: {got}{gotstr}.'
+            interpreter, token, f'{expected}, got: `{got}`.'
         )

@@ -22,9 +22,9 @@ def test_diagram_full():
               ev -> ev_common: err_t fork(evs*, epoll_loop)
               if: err
                 ev -> ev_epoll: server_deinit(evs*)
-                @over: Error
+                @over ev: Error
               else: ok
-                @over: Ok
+                @over ev: Ok
         cli -> httpd: err_t join(httpd*)
     '''
 

@@ -113,6 +113,7 @@ class Note(Item):
 
     @property
     def left(self):
+        # TODO: optimize
         result = f'@{self.position}'
 
         if self.position != 'over':
@@ -122,6 +123,52 @@ class Note(Item):
             result += f' {" ".join(self.args)}'
 
         return result
+
+    statemap = {
+        'start': {
+            AT: Ignore(nextstate='@'),
+        },
+        '@': {
+            NAME: Switch(
+                over=Goto(nextstate='over'),
+                left=Goto(nextstate='left/right'),
+                right=Goto(nextstate='left/right'),
+            )
+        },
+        'over': {
+            NAME: {
+                TILDA: {
+                    COLON: Goto(nextstate=':'),
+                    NAME: {
+                        COLON: Goto(nextstate=':'),
+                    },
+                },
+                COLON: Goto(nextstate=':'),
+            },
+            TILDA: {
+                COLON: Goto(nextstate=':'),
+                NAME: {
+                    COLON: Goto(nextstate=':'),
+                },
+            },
+        },
+        'left/right': {
+            NAME: Switch(
+                of=Goto(nextstate='of'),
+            )
+        },
+        'of': {
+            NAME: {
+                COLON: Goto(nextstate=':'),
+            }
+        },
+        ':': {
+            MULTILINE: FinalConsume(Item._finish_multiline, alltokens=True),
+            EVERYTHING: {
+                NEWLINE: FinalConsume(Item._finish, alltokens=True)
+            }
+        },
+    }
 
 
 class ContainerItem(Item, Container):
@@ -243,6 +290,7 @@ class SequenceDiagram(Interpreter, Container):
     def _new_note(self, note):
         for m in note.modules:
             self._ensuremodule(m)
+
         self.current.append(note)
 
     def _new_loop(self, loop):
@@ -292,12 +340,12 @@ class SequenceDiagram(Interpreter, Container):
             DEDENT: Ignore(callback=_dedent, nextstate='start'),
             EOF: Final(nextstate='start'),
             NAME: Switch(default=Goto(nextstate='name'), **_keywords),
-            AT: Ignore(nextstate='@'),
+            AT: Goto(nextstate='@'),
         },
         'indent': {
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
             NAME: Switch(default=Goto(nextstate='  name'), **_keywords),
-            AT: Ignore(nextstate='@'),
+            AT: Goto(nextstate='@'),
             NEWLINE: Ignore(nextstate='start'),
         },
         'name': {

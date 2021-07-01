@@ -1,4 +1,5 @@
 from .mutablestring import MutableString
+from .renderer import Renderer
 
 
 class ASCIICanvas:
@@ -84,3 +85,7 @@ class ASCIICanvas:
     def draw_bottomarrow(self, col, row, length, **kw):
         self.draw_vline(col, row, length - 1, **kw)
         self._backend[row + length - 1][col] = 'v'
+
+
+class ASCIIRenderer(Renderer):
+    pass

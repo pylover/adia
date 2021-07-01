@@ -21,6 +21,9 @@ class Switch(Action):
 
     def __call__(self, interpreter, token, *args):
         action = self.cases.get(token.string, self.default)
+        if action is None:
+            raise BadSyntax(interpreter, token, expected=self.cases.keys())
+
         return action(interpreter, token, *args)
 
 

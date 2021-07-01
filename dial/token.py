@@ -1,6 +1,8 @@
 from collections import namedtuple
 
 
+# TODO: Append all signs
+
 __all__ = []
 
 
@@ -23,6 +25,7 @@ HASH = 15
 MULTILINE = 16
 EVERYTHING = 17
 TILDA = 18
+EXCLAMATION = 19
 
 
 TOKEN_NAMES = {
@@ -47,6 +50,7 @@ EXACT_TOKENS = [
     ('|',   PIPE),
     ('#',   HASH),
     ('~',   TILDA),
+    ('!',   EXCLAMATION),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 
