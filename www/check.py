@@ -17,6 +17,8 @@ def run():
     from tests import test_mutablestring
     from tests import test_sequence
     from tests import test_diagram
+    from tests import test_ascii_diagram
+    from tests import test_ascii_sequence
 
     for module in [
         test_token,
@@ -25,6 +27,8 @@ def run():
         test_mutablestring,
         test_sequence,
         test_diagram,
+        test_ascii_diagram,
+        test_ascii_sequence,
     ]:
         for test in runtests(module):
             yield test

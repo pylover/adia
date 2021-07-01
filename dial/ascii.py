@@ -140,14 +140,26 @@ class ASCIIRenderer(Renderer):
         raise NotImplementedError()
 
     def _render_header(self):
+        dia = self.diagram
+
+        if dia.author or dia.version:
+            self._canvas.extendtop(1)
+
+        if dia.version:
+            self._canvas.extendtop(1)
+            self._canvas.write_textline(0, 0, f'version: {dia.version}')
+
+        if dia.author:
+            self._canvas.extendtop(1)
+            self._canvas.write_textline(0, 0, f'author: {dia.author}')
+
         self._canvas.extendtop(2)
-        self._canvas.write_hcenter(0, 0, self.diagram.title)
+        self._canvas.write_textline(0, 0, self.diagram.title)
 
     def _render_sequence(self, dia):
         # Modules
         # columns
         # Total width
-        # Title
         # Version
         # Author
         raise NotImplementedError()
