@@ -20,6 +20,19 @@ def test_asciisequence_header():
     .................
     ''')
 
+    r = ASCIIRenderer(Diagram('''
+        diagram: Foo
+        version: 1.0
+        sequence:
+    '''))
+    assert eqdia(str(r.render()), '''
+    ................
+    . DIAGRAM: Foo .
+    . version: 1.0 .
+    .              .
+    ................
+    ''')
+
 
 # noqa
 """

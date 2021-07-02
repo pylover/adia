@@ -168,9 +168,10 @@ class ASCIIRenderer(Renderer):
         self._extend(1)
 
     def _render_sequence(self, dia):
-        self._extend(1)
-        self.canvas.write_textline(1, self.row, f'SEQUENCE: {dia.title} ')
-        self._extend(1)
+        if dia.title:
+            self._extend(1)
+            self.canvas.write_textline(1, self.row, f'SEQUENCE: {dia.title} ')
+            self._extend(1)
 
         # Modules
         # columns
