@@ -1,4 +1,4 @@
-from .token import TOKEN_NAMES, EXACT_TOKENS_DICT
+from .token import TOKEN_NAMES
 from .token import *
 
 
@@ -26,18 +26,10 @@ class BadSyntax(InterpreterError):
         else:
             got = token.string
 
-        if expected:
-            validtokens = [k for k in expected]
-        else:
-            validtokens = [
-                EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
-                for i in interpreter.state.keys()
-            ]
-
-        if len(validtokens) > 1:
-            expected = f'Expected one of `{"|".join(validtokens)}`'
-        elif len(validtokens) == 1:
-            expected = f'Expected `{validtokens[0]}`'
+        if len(expected) > 1:
+            expected = f'Expected one of `{"|".join(expected)}`'
+        elif len(expected) == 1:
+            expected = f'Expected `{expected[0]}`'
 
         super().__init__(
             interpreter, token, f'{expected}, got: `{got}`.'

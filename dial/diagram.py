@@ -71,14 +71,14 @@ class Diagram(Interpreter, Container):
             self.version = value
         elif attr == 'author':
             self.author = value
-        else:
-            raise AttributeError(attr)
 
     def _new_seq(self, sequence):
         self.append(sequence)
 
     _keywords = {
         'diagram': Goto(nextstate='title'),
+        'author': Goto(nextstate='attr'),
+        'version': Goto(nextstate='attr'),
         'sequence': New(SequenceDiagram, callback=_new_seq, nextstate='start'),
     }
 
@@ -88,17 +88,16 @@ class Diagram(Interpreter, Container):
             INDENT: {NEWLINE: Ignore(nextstate='start')},
             NEWLINE: Ignore(nextstate='start'),
             EOF: Ignore(nextstate='start'),
-            NAME: Switch(default=Goto(nextstate='name'), **_keywords),
+            NAME: Switch(**_keywords),
         },
         'title': {
             COLON: {EVERYTHING: {
                 NEWLINE: Consume(_set_title, nextstate='start')
             }}
         },
-        'name': {
-            COLON: Goto(nextstate='attr:'),
-        },
-        'attr:': {
-            EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
+        'attr': {
+            COLON: {
+                EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
+            },
         },
     }

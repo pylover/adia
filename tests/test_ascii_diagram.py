@@ -5,6 +5,19 @@ from .helpers import eqdia
 
 
 def test_asciidiagram_header():
+    r = ASCIIRenderer(Diagram('''
+        diagram: Foo
+        version: 1.0
+    '''))
+    eqdia(str(r.render()), '''
+    ..............
+    .Foo         .
+    .            .
+    .version: 1.0.
+    .            .
+    ..............
+    ''')
+
     r = ASCIIRenderer(Diagram())
     eqdia(str(r.render()), '''
     ..................
@@ -21,19 +34,6 @@ def test_asciidiagram_header():
     .Foo.
     .   .
     .....
-    ''')
-
-    r = ASCIIRenderer(Diagram('''
-        diagram: Foo
-        version: 1.0
-    '''))
-    eqdia(str(r.render()), '''
-    ..............
-    .Foo         .
-    .            .
-    .version: 1.0.
-    .            .
-    ..............
     ''')
 
     r = ASCIIRenderer(Diagram('''

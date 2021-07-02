@@ -1,7 +1,7 @@
 from io import StringIO
 
 from dial.diagram import Diagram
-from dial.exceptions import BadAttribute
+from dial.exceptions import BadSyntax
 
 from .helpers import raises, eqbigstr
 
@@ -22,9 +22,9 @@ def test_diagram_full():
               ev -> ev_common: err_t fork(evs*, epoll_loop)
               if: err
                 ev -> ev_epoll: server_deinit(evs*)
-                @over ev: Error
+                @ev: Error
               else: ok
-                @over ev: Ok
+                @ev: Ok
         cli -> httpd: err_t join(httpd*)
     '''
 
@@ -85,9 +85,9 @@ def test_diagram_attr_error():
         diagram: Foo
         invalid: invalid
     '''
-    with raises(BadAttribute) as e:
+    with raises(BadSyntax) as e:
         Diagram(s)
     assert eqbigstr(e.value, '''
-        File "String", Interpreter Diagram, line 3, col 24
-        Invalid attribute: invalid.
+        File "String", Interpreter Diagram, line 3, col 8
+        Expected one of `diagram|author|version|sequence`, got: `invalid`.
     ''')

@@ -1,5 +1,5 @@
 from dial.exceptions import BadSyntax, BadAttribute
-from dial.sequence import SequenceDiagram, Note
+from dial.sequence import SequenceDiagram
 from dial.diagram import Diagram
 
 from .helpers import raises, eqbigstr
@@ -16,76 +16,34 @@ def eqrepr(s):
     assert eqbigstr(seq(s), s)
 
 
-def test_sequence_not_positionerror():
+def test_sequence_note_errors():
     with raises(BadSyntax) as e:
         seq('''
             sequence: foo
-            @badposition
+            @~:
         ''')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 13
-        Expected one of `over|left|right`, got: `badposition`.
+        File "String", Interpreter SequenceDiagram, line 3, col 13
+        Expected `NAME`, got: `~`.
     ''')
 
-
-def test_sequence_noteover_errors():
     with raises(BadSyntax) as e:
         seq('''
             sequence: foo
-            @over:
+            @foo bar
         ''')
     assert eqbigstr(e.value, '''
         File "String", Interpreter Note, line 3, col 17
-        Expected one of `NAME|~`, got: `:`.
+        Expected one of `~|:`, got: `bar`.
     ''')
 
     with raises(BadSyntax) as e:
         seq('''
             sequence: foo
-            @over !
+            @foo ~ bar ~
         ''')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 18
-        Expected one of `NAME|~`, got: `!`.
-    ''')
-
-    with raises(BadSyntax) as e:
-        seq('''
-            sequence: foo
-            @over ~ ~
-        ''')
-    assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 20
-        Expected one of `:|NAME`, got: `~`.
-    ''')
-
-    with raises(BadSyntax) as e:
-        seq('''
-            sequence: foo
-            @over foo ~ ~
-        ''')
-    assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 24
-        Expected one of `:|NAME`, got: `~`.
-    ''')
-
-    with raises(BadSyntax) as e:
-        seq('''
-            sequence: foo
-            @over ~ foo ~
-        ''')
-    assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 24
-        Expected `:`, got: `~`.
-    ''')
-
-    with raises(BadSyntax) as e:
-        seq('''
-            sequence: foo
-            @over foo ~ bar ~
-        ''')
-    assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 28
+        File "String", Interpreter Note, line 3, col 23
         Expected `:`, got: `~`.
     ''')
 
@@ -94,71 +52,14 @@ def test_sequence_noteover():
     s = '''
         sequence: note over
 
-        @over ~: from start to the end
-        @over ~ foo: from start to the Foo
-        @over foo ~: from Foo to the end
-        @over foo ~ bar: from Foo to the Bar
-        @over foo: Over Foo
-        @over baz: |
+        @foo: over Foo.
+        @foo ~ bar: from Foo to the Bar
+        @foo ~ baz: |
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore.
 
         foo -> bar
-          @over foo: Over Foo
-    '''
-    d = seq(s)
-    assert eqbigstr(d, s)
-    assert 'foo' in d.modules
-    assert 'bar' in d.modules
-    assert 'baz' in d.modules
-    assert list(d[0].modules) == []
-    assert list(d[1].modules) == ['foo']
-    assert list(d[2].modules) == ['foo']
-    assert list(d[3].modules) == ['foo', 'bar']
-    assert list(d[4].modules) == ['foo']
-    assert list(d[5].modules) == ['baz']
-    for n in d:
-        if not isinstance(n, Note):
-            continue
-        assert n.position == 'over'
-
-    assert d[6][0].position == 'over'
-
-
-def test_sequence_noteleftright_errors():
-    with raises(BadSyntax) as e:
-        seq('''
-            sequence: foo
-            @left foo
-        ''')
-    assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 18
-        Expected `of`, got: `foo`.
-    ''')
-
-    with raises(BadSyntax) as e:
-        seq('''
-            sequence: foo
-            @right foo
-        ''')
-    assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 19
-        Expected `of`, got: `foo`.
-    ''')
-
-
-def test_sequence_noteleftright():
-    s = '''
-        sequence: note left
-
-        @left of foo: before Foo
-        @right of bar: before Bar
-        @right of baz: |
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore.
-
-        foo -> bar
-          @left of foo: before Foo
+          @foo: Over Foo
     '''
     d = seq(s)
     assert eqbigstr(d, s)
@@ -166,14 +67,9 @@ def test_sequence_noteleftright():
     assert 'bar' in d.modules
     assert 'baz' in d.modules
     assert list(d[0].modules) == ['foo']
-    assert list(d[1].modules) == ['bar']
-    assert list(d[2].modules) == ['baz']
+    assert list(d[1].modules) == ['foo', 'bar']
+    assert list(d[2].modules) == ['foo', 'baz']
     assert list(d[3][0].modules) == ['foo']
-
-    assert d[0].position == 'left'
-    assert d[1].position == 'right'
-    assert d[2].position == 'right'
-    assert d[3][0].position == 'left'
 
 
 def test_sequenceitem_repr():

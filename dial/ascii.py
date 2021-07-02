@@ -140,34 +140,33 @@ class ASCIIRenderer(Renderer):
         raise NotImplementedError()
 
     def _render_header(self):
+        row = 0
         dia = self.diagram
-
-        if dia.author or dia.version:
-            self._canvas.extendtop(1)
-
-        if dia.version:
-            self._canvas.extendtop(1)
-            self._canvas.write_textline(0, 0, f'version: {dia.version}')
+        self._canvas.write_textline(0, row, dia.title)
+        self._canvas.extendbottom(1)
+        row += 1
 
         if dia.author:
-            self._canvas.extendtop(1)
-            self._canvas.write_textline(0, 0, f'author: {dia.author}')
+            row += 1
+            self._canvas.write_textline(0, row, f'author: {dia.author}')
 
-        self._canvas.extendtop(2)
-        self._canvas.write_textline(0, 0, self.diagram.title)
+        if dia.version:
+            row += 1
+            self._canvas.write_textline(0, row, f'version: {dia.version}')
 
-    def _render_sequence(self, dia):
-        # Modules
-        # columns
-        # Total width
-        # Version
-        # Author
-        raise NotImplementedError()
+        if dia.author or dia.version:
+            self._canvas.extendbottom(1)
 
     def render(self):
+        self._render_header()
+
         for unit in self.diagram:
             if isinstance(unit, SequenceDiagram):
                 self._render_sequence(unit)
 
-        self._render_header()
         return self._canvas
+
+    def _render_sequence(self, dia):
+        # Modules
+        # columns
+        raise NotImplementedError()

@@ -1,6 +1,7 @@
 import abc
 
 from .token import *
+from .token import TOKEN_NAMES, EXACT_TOKENS_DICT
 from .tokenizer import Tokenizer
 from .exceptions import BadSyntax, BadAttribute
 
@@ -145,7 +146,11 @@ class Interpreter(metaclass=abc.ABCMeta):
         try:
             newstate = self.state[token.type]
         except KeyError:
-            raise BadSyntax(self, token)
+            validtokens = [
+                EXACT_TOKENS_DICT.get(i, TOKEN_NAMES[i])
+                for i in self.state.keys()
+            ]
+            raise BadSyntax(self, token, expected=validtokens)
 
         self.tokenstack.append(token)
 
