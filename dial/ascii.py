@@ -134,28 +134,14 @@ class ASCIICanvas(Canvas):
 class ASCIIRenderer(Renderer):
     def __init__(self, diagram):
         self.diagram = diagram
-        self._canvas = ASCIICanvas()
+        self.canvas = ASCIICanvas()
 
-    def _getcolumns(self):
-        raise NotImplementedError()
+    def _extend(self, i):
+        self.canvas.extendbottom(i)
 
-    def _render_header(self):
-        row = 0
-        dia = self.diagram
-        self._canvas.write_textline(0, row, dia.title)
-        self._canvas.extendbottom(1)
-        row += 1
-
-        if dia.author:
-            row += 1
-            self._canvas.write_textline(0, row, f'author: {dia.author}')
-
-        if dia.version:
-            row += 1
-            self._canvas.write_textline(0, row, f'version: {dia.version}')
-
-        if dia.author or dia.version:
-            self._canvas.extendbottom(1)
+    @property
+    def row(self):
+        return self.canvas.rows - 1
 
     def render(self):
         self._render_header()
@@ -164,9 +150,27 @@ class ASCIIRenderer(Renderer):
             if isinstance(unit, SequenceDiagram):
                 self._render_sequence(unit)
 
-        return self._canvas
+        return self.canvas
+
+    def _render_header(self):
+        dia = self.diagram
+        self._extend(1)
+        self.canvas.write_textline(1, self.row, f'DIAGRAM: {dia.title} ')
+
+        if dia.author:
+            self._extend(1)
+            self.canvas.write_textline(1, self.row, f'author: {dia.author} ')
+
+        if dia.version:
+            self._extend(1)
+            self.canvas.write_textline(1, self.row, f'version: {dia.version} ')
+
+        self._extend(1)
 
     def _render_sequence(self, dia):
+        self._extend(1)
+        self.canvas.write_textline(1, self.row, f'SEQUENCE: {dia.title} ')
+        self._extend(1)
+
         # Modules
         # columns
-        raise NotImplementedError()

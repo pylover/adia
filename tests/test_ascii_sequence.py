@@ -1,30 +1,35 @@
-# from dial.ascii import ASCIIRenderer
-# from dial.diagram import Diagram
+from dial.ascii import ASCIIRenderer
+from dial.diagram import Diagram
 
-# from .helpers import eqdia
+from .helpers import eqdia
 
 
-# def test_ascii_sequence_header():
-#     r = ASCIIRenderer(Diagram())
-#     eqdia(str(r.render()), '''
-#     ..................
-#     .Untitled Diagram.
-#     .                .
-#     ..................
-#     ''')
+def test_asciisequence_header():
+    r = ASCIIRenderer(Diagram('''
+        diagram: Foo
+        version: 1.0
+        sequence: Bar
+    '''))
+    assert eqdia(str(r.render()), '''
+    .................
+    . DIAGRAM: Foo  .
+    . version: 1.0  .
+    .               .
+    . SEQUENCE: Bar .
+    .               .
+    .................
+    ''')
 
 
 # noqa
 """
 ....................................................................
                                                                    .
-Foo Diagram                                                        .
+DIAGRAM: Foo                                                       .
 author: alice                                                      .
 version: 1.0                                                       .
                                                                    .
-    +---------------------------------------------------------+    .
-    |                    Sequence Title                       |    .
-    +---------------------------------------------------------+    .
+SEQUENCE: Title                                                    .
                                                                    .
       +-----+            +-------+               +-----+           .
       | foo |            | thud  |               | bar |           .

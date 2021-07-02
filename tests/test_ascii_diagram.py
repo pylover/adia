@@ -9,44 +9,42 @@ def test_asciidiagram_header():
         diagram: Foo
         version: 1.0
     '''))
-    eqdia(str(r.render()), '''
-    ..............
-    .Foo         .
-    .            .
-    .version: 1.0.
-    .            .
-    ..............
+    assert eqdia(str(r.render()), '''
+    ................
+    . DIAGRAM: Foo .
+    . version: 1.0 .
+    .              .
+    ................
     ''')
 
     r = ASCIIRenderer(Diagram())
-    eqdia(str(r.render()), '''
-    ..................
-    .Untitled Diagram.
-    .                .
-    ..................
+    assert eqdia(str(r.render()), '''
+    .............................
+    . DIAGRAM: Untitled Diagram .
+    .                           .
+    .............................
     ''')
 
     r = ASCIIRenderer(Diagram('''
         diagram: Foo
     '''))
-    eqdia(str(r.render()), '''
-    .....
-    .Foo.
-    .   .
-    .....
+    assert eqdia(str(r.render()), '''
+    ................
+    . DIAGRAM: Foo .
+    .              .
+    ................
     ''')
 
     r = ASCIIRenderer(Diagram('''
         diagram: Foo
         author: alice
     '''))
-    eqdia(str(r.render()), '''
-    ...............
-    .Foo          .
-    .             .
-    .author: alice.
-    .             .
-    ...............
+    assert eqdia(str(r.render()), '''
+    .................
+    . DIAGRAM: Foo  .
+    . author: alice .
+    .               .
+    .................
     ''')
 
     r = ASCIIRenderer(Diagram('''
@@ -54,12 +52,11 @@ def test_asciidiagram_header():
         author: alice
         version: 1.0
     '''))
-    eqdia(str(r.render()), '''
-    ...............
-    .Foo          .
-    .             .
-    .author: alice.
-    .version: 1.0 .
-    .             .
-    ...............
+    assert eqdia(str(r.render()), '''
+    .................
+    . DIAGRAM: Foo  .
+    . author: alice .
+    . version: 1.0  .
+    .               .
+    .................
     ''')

@@ -43,7 +43,7 @@ def eqdia(a, b):
             if ll:
                 m = max(m, max(ll))
 
-        return m - 5
+        return m
 
     def print_columns(size):
         first, second = '', ''
@@ -71,16 +71,16 @@ def eqdia(a, b):
     b = '\n'.join(bb)
 
     a += '\n'
-    try:
-        assert a == b
-    except AssertionError:
+    if a != b:
         print('Given:')
         print_columns(maxlen)
         print(''.join(annotate(a)))
         print('Expected:')
         print_columns(maxlen)
         print(''.join(annotate(b)))
-        raise ValueError()
+        return False
+
+    return True
 
 
 @contextlib.contextmanager
