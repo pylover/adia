@@ -5,9 +5,12 @@ from .canvas import ASCIICanvas
 
 
 class ASCIIRenderer(Renderer):
-    def __init__(self, diagram):
+    def __init__(self, diagram, canvas=None):
         self.diagram = diagram
-        self.canvas = ASCIICanvas()
+        if canvas is None:
+            self.canvas = ASCIICanvas()
+        else:
+            self.canvas = canvas
 
     def _extend(self, i):
         self.canvas.extendbottom(i)
@@ -16,12 +19,14 @@ class ASCIIRenderer(Renderer):
     def row(self):
         return self.canvas.rows - 1
 
+
+class ASCIIDiagramRenderer(ASCIIRenderer):
     def render(self):
         self._render_header()
 
         for unit in self.diagram:
             if isinstance(unit, SequenceDiagram):
-                self._render_sequence(unit)
+                ASCIISequenceRenderer(unit, self.canvas).render()
 
         return self.canvas
 
@@ -40,17 +45,28 @@ class ASCIIRenderer(Renderer):
 
         self._extend(1)
 
+
+class Plan:
+    pass
+
+
+class ModulePlan(Plan):
+    pass
+
+
+class ASCIISequenceRenderer(ASCIIRenderer):
+
     # Sequence
-    def _render_sequencemodules(self, dia):
-        if not dia.modules_order:
+    def _render_modules(self):
+        if not self.diagram.modules_order:
             return
 
         gutter = 1
         col = gutter
         self._extend(1)
         row = self.row
-        for m in dia.modules_order:
-            t = dia.modules[m].title
+        for m in self.diagram.modules_order:
+            t = self.diagram.modules[m].title
             lpad = 1
             rpad = 1 if len(t) % 2 else 2
             self.canvas.draw_textbox(col, row, t, hpadding=(lpad, rpad))
@@ -58,13 +74,14 @@ class ASCIIRenderer(Renderer):
 
         self.canvas.extendright(gutter)
 
-    def _render_sequence(self, dia):
+    def render(self):
         # Sequence Header
-        if dia.title:
+        if self.diagram.title:
             self._extend(1)
-            self.canvas.write_textline(1, self.row, f'SEQUENCE: {dia.title} ')
+            self.canvas.write_textline(
+                1, self.row, f'SEQUENCE: {self.diagram.title} ')
             self._extend(1)
 
-        self._render_sequencemodules(dia)
+        self._render_modules()
         # Modules
         # columns

@@ -1,11 +1,11 @@
-from dial.ascii import ASCIIRenderer
+from dial.ascii import ASCIIDiagramRenderer
 from dial.diagram import Diagram
 
 from .helpers import eqdia
 
 
 def test_asciidiagram_header():
-    r = ASCIIRenderer(Diagram('''
+    r = ASCIIDiagramRenderer(Diagram('''
         diagram: Foo
         version: 1.0
     '''))
@@ -17,7 +17,7 @@ def test_asciidiagram_header():
     ................
     ''')
 
-    r = ASCIIRenderer(Diagram())
+    r = ASCIIDiagramRenderer(Diagram())
     assert eqdia(str(r.render()), '''
     .............................
     . DIAGRAM: Untitled Diagram .
@@ -25,7 +25,7 @@ def test_asciidiagram_header():
     .............................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    r = ASCIIDiagramRenderer(Diagram('''
         diagram: Foo
     '''))
     assert eqdia(str(r.render()), '''
@@ -35,7 +35,7 @@ def test_asciidiagram_header():
     ................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    r = ASCIIDiagramRenderer(Diagram('''
         diagram: Foo
         author: alice
     '''))
@@ -47,7 +47,7 @@ def test_asciidiagram_header():
     .................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    r = ASCIIDiagramRenderer(Diagram('''
         diagram: Foo
         author: alice
         version: 1.0
