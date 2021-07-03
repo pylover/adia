@@ -104,14 +104,19 @@ class ASCIICanvas(Canvas):
             self.write_textline(col, row, line)
             row += 1
 
-    def draw_textbox(self, col, row, text, hmargin=0, vmargin=0):
+    def draw_textbox(self, col, row, text, hpadding=0, vpadding=0):
         lines = text.splitlines()
         textheight = len(lines)
         width = max(len(l) for l in lines)
 
-        boxheight = textheight + (vmargin * 2) + 2
-        boxwidth = width + (hmargin * 2) + 2
-        self.write_textblock(col + hmargin + 1, row + vmargin + 1, text)
+        if not isinstance(hpadding, int):
+            lpad, rpad = hpadding
+        else:
+            lpad = rpad = hpadding
+
+        boxheight = textheight + (vpadding * 2) + 2
+        boxwidth = width + lpad + rpad + 2
+        self.write_textblock(col + lpad + 1, row + vpadding + 1, text)
         self.draw_box(col, row, boxwidth, boxheight)
 
     def draw_rightarrow(self, col, row, length, **kw):
@@ -167,11 +172,31 @@ class ASCIIRenderer(Renderer):
 
         self._extend(1)
 
+    # Sequence
+    def _render_sequencemodules(self, dia):
+        if not dia.modules_order:
+            return
+
+        gutter = 1
+        col = gutter
+        self._extend(1)
+        row = self.row
+        for m in dia.modules_order:
+            t = dia.modules[m].title
+            lpad = 1
+            rpad = 1 if len(t) % 2 else 2
+            self.canvas.draw_textbox(col, row, t, hpadding=(lpad, rpad))
+            col += gutter + len(t) + lpad + rpad + 2
+
+        self.canvas.extendright(gutter)
+
     def _render_sequence(self, dia):
+        # Sequence Header
         if dia.title:
             self._extend(1)
             self.canvas.write_textline(1, self.row, f'SEQUENCE: {dia.title} ')
             self._extend(1)
 
+        self._render_sequencemodules(dia)
         # Modules
         # columns

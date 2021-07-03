@@ -188,6 +188,7 @@ class SequenceDiagram(Interpreter, Container):
     def __init__(self, *args, **kwargs):
         super().__init__('start', *args, **kwargs)
         self.modules = {}
+        self.modules_order = []
         self._callstack = []
 
     def __repr__(self):
@@ -223,9 +224,12 @@ class SequenceDiagram(Interpreter, Container):
 
         return f.getvalue()
 
-    def _ensuremodule(self, name):
+    def _ensuremodule(self, name, visible=False):
         if name not in self.modules:
             self.modules[name] = Module(name)
+
+        if visible and name not in self.modules_order:
+            self.modules_order.append(name)
 
     @property
     def current(self):
@@ -243,13 +247,13 @@ class SequenceDiagram(Interpreter, Container):
             self._callstack.pop()
 
     def _new_call(self, call):
-        self._ensuremodule(call.caller)
-        self._ensuremodule(call.callee)
+        self._ensuremodule(call.caller, visible=True)
+        self._ensuremodule(call.callee, visible=True)
         self.current.append(call)
 
     def _new_note(self, note):
         for m in note.modules:
-            self._ensuremodule(m)
+            self._ensuremodule(m, visible=True)
 
         self.current.append(note)
 

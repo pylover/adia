@@ -136,6 +136,28 @@ def test_asciicanvas_drawtextblock():
 
 def test_asciicanvas_drawtextbox():
     c = ASCIICanvas()
+    c.draw_textbox(1, 1, 'foo')
+    assert eqdia(str(c), '''
+    ........
+    .      .
+    . +---+.
+    . |foo|.
+    . +---+.
+    ........
+    ''')
+
+    c = ASCIICanvas()
+    c.draw_textbox(1, 1, 'foo', hpadding=(1, 2))
+    assert eqdia(str(c), '''
+    ...........
+    .         .
+    . +------+.
+    . | foo  |.
+    . +------+.
+    ...........
+    ''')
+
+    c = ASCIICanvas()
     c.draw_textbox(2, 1, 'foo\n\n  bar')
     assert eqdia(str(c), '''
     ...........
@@ -149,7 +171,7 @@ def test_asciicanvas_drawtextbox():
     ''')
 
     c = ASCIICanvas()
-    c.draw_textbox(3, 1, 'foo\n\n  bar', hmargin=1)
+    c.draw_textbox(3, 1, 'foo\n\n  bar', hpadding=1)
     assert eqdia(str(c), '''
     ..............
     .            .
@@ -162,7 +184,7 @@ def test_asciicanvas_drawtextbox():
     ''')
 
     c = ASCIICanvas()
-    c.draw_textbox(3, 1, 'foo\n\n  bar', hmargin=1, vmargin=1)
+    c.draw_textbox(3, 1, 'foo\n\n  bar', hpadding=1, vpadding=1)
     assert eqdia(str(c), '''
     ..............
     .            .
