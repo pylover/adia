@@ -51,30 +51,95 @@ class Plan:
 
 
 class ModulePlan(Plan):
-    pass
+    col = 0
+    row = 0
+    lpad = 1
+    rpad = 1
+
+    def __init__(self, module):
+        self.module = module
+        if len(self.title) % 2 == 0:
+            self.rpad = 2
+
+    @property
+    def box_hpadding(self):
+        return 1, int(not(len(self.title) % 2)) + 1
+
+    @property
+    def boxlen(self):
+        lp, rp = self.box_hpadding
+        return len(self.title) + lp + rp + 2
+
+    @property
+    def title(self):
+        return self.module.title
+
+    def drawbox(self, canvas, col=None, row=None):
+        if col:
+            self.col = col
+
+        if row:
+            self.row = row
+
+        canvas.draw_textbox(self.col, self.row, self.title,
+                            hpadding=(self.box_hpadding))
+
+    def drawpipe(self, canvas, row):
+        canvas.set_char(self.col + self.boxlen // 2, row, '|')
+
+
+def twiniter(l):
+    if not hasattr(l, '__next__'):
+        l = iter(l)
+
+    try:
+        f = next(l)
+        while True:
+            n = next(l)
+            yield f, n
+            f = n
+    except StopIteration:
+        yield f, None
 
 
 class ASCIISequenceRenderer(ASCIIRenderer):
+    modules = None
+
+    def _planmodules(self):
+        self.modules = []
+
+        for m in self.diagram.modules_order:
+            module = ModulePlan(self.diagram.modules[m])
+            self.modules.append(module)
+
+    def plan(self):
+        self._planmodules()
+        # self._plancallstack()
 
     # Sequence
     def _render_modules(self):
-        if not self.diagram.modules_order:
+        if not self.modules:
             return
 
-        gutter = 1
-        col = gutter
         self._extend(1)
+        fm = self.modules[0]
         row = self.row
-        for m in self.diagram.modules_order:
-            t = self.diagram.modules[m].title
-            lpad = 1
-            rpad = 1 if len(t) % 2 else 2
-            self.canvas.draw_textbox(col, row, t, hpadding=(lpad, rpad))
-            col += gutter + len(t) + lpad + rpad + 2
+        col = max(1, fm.lpad)
 
-        self.canvas.extendright(gutter)
+        for m, nm in twiniter(self.modules):
+            m.drawbox(self.canvas, col, row)
+            col += m.boxlen + max(m.rpad, nm.lpad if nm else 1)
+
+        self.canvas.extendright(col - self.canvas.cols - 1)
+        self._extend(1)
+
+    def _render_emptyline(self):
+        for m in self.modules:
+            m.drawpipe(self.canvas, self.row)
 
     def render(self):
+        self.plan()
+
         # Sequence Header
         if self.diagram.title:
             self._extend(1)
@@ -83,5 +148,8 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             self._extend(1)
 
         self._render_modules()
+        self._render_emptyline()
+
         # Modules
         # columns
+        self._render_modules()
