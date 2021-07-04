@@ -132,7 +132,6 @@ def test_asciisequence_call_notext():
     ''')
 
 
-
 def test_asciisequence_calltext_minimum():
     r = ASCIIDiagramRenderer(Diagram('''
         diagram: Foo
@@ -175,7 +174,6 @@ def test_asciisequence_calltext_minimum():
     .                              .
     ................................
     ''')
-
 
 
 def test_asciisequence_calltext():

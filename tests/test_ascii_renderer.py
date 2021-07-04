@@ -17,5 +17,5 @@ def test_asciirenderer_itemplans():
     p = ItemStartPlan(item, Module('foo'), Module('bar'), RIGHT, 0)
     assert repr(p) == '~~~> foo -> bar'
 
-    p = ItemEndPlan(item, Module('foo'), Module('bar'), RIGHT, 0)
+    p = ItemEndPlan(item, Module('foo'), Module('bar'), LEFT, 0)
     assert repr(p) == '<--- foo -> bar'

@@ -215,7 +215,6 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                         return
                     yield m, nm
 
-
         def _availspace(from_, to, reverse=False):
             result = 0
             for m, nm in _fromto_modules(from_, to, reverse):

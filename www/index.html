@@ -16,33 +16,24 @@
 <a href="/check.html">Jump to tests</a>
 <br />
 
+<textarea cols="100%" rows="8" id="error"></textarea>
+<br />
 <textarea cols="55" rows="40" id="source">
 diagram: HTTPLoad
 version: 1.0
-author: Vahid Mardani
+author: pylover
 
-sequence: Event Loop
+sequence: Demo
 
-cli -> httpd: err_t start(httpd*)
-  for: i in range(forks)
-    httpd -> ev: server_start(evs*)
-      ev -> tcp: int listen(port)
-      ev -> ev_epoll: err_t server_init(evs*)
-      ev -> ev_common: err_t fork(evs*, epoll_loop)
-      if: err
-        ev -> ev_epoll: server_deinit(evs*)
-        @over: Error
-      else: ok
-        @over: Ok
-cli -> httpd: err_t join(httpd*)
+foo -> bar: hello()
 </textarea>
-<textarea cols="55" rows="40" id="target"></textarea>
-<textarea cols="55" rows="40" id="error"></textarea>
+<textarea cols="120" rows="40" id="target"></textarea>
 
 <script type="text/python">
 from browser import document, bind
 
 from dial import Diagram, InterpreterError
+from dial.ascii import ASCIIDiagramRenderer
 
 source = document['source']
 target = document['target']
@@ -64,7 +55,8 @@ def update(e):
     error.value = ''
     v = source.value
     d = Diagram(v)
-    target.value = d.dumps()
+    r = ASCIIDiagramRenderer(d)
+    target.value = str(r.render())
   except InterpreterError as ex:
     error.value = str(ex)
     print('error')
