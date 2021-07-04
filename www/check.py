@@ -17,6 +17,7 @@ def run():
     from tests import test_mutablestring
     from tests import test_sequence
     from tests import test_diagram
+    from tests import test_ascii_renderer
     from tests import test_ascii_diagram
     from tests import test_ascii_sequence
 
@@ -27,6 +28,7 @@ def run():
         test_mutablestring,
         test_sequence,
         test_diagram,
+        test_ascii_renderer,
         test_ascii_diagram,
         test_ascii_sequence,
     ]:

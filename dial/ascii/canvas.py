@@ -68,9 +68,9 @@ class ASCIICanvas(Canvas):
         self.write_textline(col, row, text)
 
     def draw_hline(self, col, row, length, text=None, texttop=None,
-                   textbottom=None):
+                   textbottom=None, char='-'):
         for c in range(col, col + length):
-            self.set_char(c, row, '-')
+            self.set_char(c, row, char)
 
         if text:
             self.write_hcenter(col, row, text, length)
