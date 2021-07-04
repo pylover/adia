@@ -1,5 +1,6 @@
 from dial.sequence import Module
-from dial.ascii.renderer import ModulePlan, ItemStartPlan, ItemEndPlan
+from dial.ascii.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, \
+    RIGHT
 
 
 def test_asciirenderer_moduleplan():
@@ -13,8 +14,8 @@ def test_asciirenderer_itemplans():
             return 'foo -> bar'
 
     item = Item()
-    p = ItemStartPlan(item, Module('foo'), Module('bar'), 0)
+    p = ItemStartPlan(item, Module('foo'), Module('bar'), RIGHT, 0)
     assert repr(p) == '~~~> foo -> bar'
 
-    p = ItemEndPlan(item, Module('foo'), Module('bar'), 0)
+    p = ItemEndPlan(item, Module('foo'), Module('bar'), RIGHT, 0)
     assert repr(p) == '<--- foo -> bar'

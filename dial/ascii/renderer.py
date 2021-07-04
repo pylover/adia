@@ -80,15 +80,18 @@ class ModulePlan(Plan):
     def __repr__(self):
         return f'ModulePlan: {self.title}'
 
+    # TODO: lazyattr
     @property
     def box_hpadding(self):
         return 1, int(not(len(self.title) % 2)) + 1
 
+    # TODO: lazyattr
     @property
     def boxlen(self):
         lp, rp = self.box_hpadding
         return len(self.title) + lp + rp + 2
 
+    # TODO: lazyattr
     @property
     def title(self):
         return self.module.title
@@ -120,14 +123,28 @@ class ItemStartPlan(Plan):
     start = 0
     end = 0
 
-    def __init__(self, item, caller, callee, level):
+    def __init__(self, item, caller, callee, direction, level):
         self.item = item
         self.level = level  # TODO: Maybe remove it
         self.caller = caller
         self.callee = callee
+        self.direction = direction
 
     def __repr__(self):
         return f'{self.repr_symbol} {repr(self.item)}'
+
+    # TODO: lazyattr
+    @property
+    def text(self):
+        return self.item.text
+
+    # TODO: lazyattr
+    @property
+    def textlen(self):
+        if self.text:
+            return len(self.text)
+
+        return 0
 
     def calc(self):
         self.start = self.caller.middlecol
@@ -147,7 +164,7 @@ class ItemStartPlan(Plan):
 
     def draw(self, canvas, row):
         [canvas.draw_leftarrow, canvas.draw_rightarrow][self.direction](
-            self.start, row, self.length, char=self.char
+            self.start, row, self.length, char=self.char, text=self.text
         )
 
 
@@ -155,6 +172,10 @@ class ItemEndPlan(ItemStartPlan):
     char = '-'
     repr_symbol = '<---'
     reverse = True
+
+    @property
+    def text(self):
+        return None
 
 
 class ASCIISequenceRenderer(ASCIIRenderer):
@@ -174,18 +195,65 @@ class ASCIISequenceRenderer(ASCIIRenderer):
     def _planitems(self):
         self._itemplans = []
 
+        def _fromto_modules(from_, to, reverse=False):
+            capt = False
+
+            it = self._moduleplans
+            if reverse:
+                it = reversed(it)
+
+            for m, nm in twiniter(it):
+                if not capt and m is not from_:
+                    continue
+
+                if m is from_:
+                    capt = True
+
+                if capt:
+                    if m is to:
+                        yield m, None
+                        return
+                    yield m, nm
+
+
+        def _availspace(from_, to, reverse=False):
+            result = 0
+            for m, nm in _fromto_modules(from_, to, reverse):
+                result += m.boxlen
+                if nm is not None:
+                    if reverse:
+                        result += max(m.lpad, nm.rpad)
+                    else:
+                        result += max(m.rpad, nm.lpad)
+
+            result -= from_.boxlen // 2 + 1
+            result -= to.boxlen // 2 + 1
+            return result - 5
+
         def _recurse(parent, level=0):
             for item in parent:
                 caller = self._moduleplans_dict[item.caller]
                 callee = self._moduleplans_dict[item.callee]
-                plan = ItemStartPlan(item, caller, callee, level)
-                self._itemplans.append(plan)
+                diff = self._moduleplans.index(callee) - \
+                    self._moduleplans.index(caller)
+
+                dir_ = LEFT if diff < 0 else RIGHT
+                itemplan = ItemStartPlan(item, caller, callee, dir_, level)
+
+                self._itemplans.append(itemplan)
+
+                avail = _availspace(caller, callee, reverse=dir_ == LEFT)
+                if itemplan.textlen > avail:
+                    if dir_ == LEFT:
+                        callee.rpad += itemplan.textlen - avail
+                    else:
+                        callee.lpad += itemplan.textlen - avail
 
                 if len(item):
                     _recurse(item, level + 1)
 
-                plan = ItemEndPlan(item, caller, callee, level)
-                self._itemplans.append(plan)
+                itemplan = ItemEndPlan(item, caller, callee, not(dir_), level)
+                self._itemplans.append(itemplan)
 
         _recurse(self.diagram)
 
@@ -215,17 +283,20 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             m.drawpipe(self.canvas, self.row)
 
     def _render_items(self):
-        last = None
+        lastdir = None
+        lasttype = None
 
         for c in self._itemplans:
             self._render_emptyline()
             c.calc()
 
-            if c.direction != last:
+            if c.direction != lastdir or not lasttype or \
+                    not isinstance(c, lasttype):
                 self._extend(1)
                 self._render_emptyline()
 
-            last = c.direction
+            lastdir = c.direction
+            lasttype = type(c)
             c.draw(self.canvas, self.row)
             self._extend(1)
 
