@@ -151,13 +151,7 @@ class ItemStartPlan(Plan):
         self.end = self.callee.middlecol
 
         if self.start > self.end:
-            self.direction = LEFT
             self.start, self.end = self.end, self.start
-        else:
-            self.direction = RIGHT
-
-        if self.reverse:
-            self.direction ^= 1
 
         self.start += 1
         self.length = self.end - self.start
