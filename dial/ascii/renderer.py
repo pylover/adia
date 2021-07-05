@@ -172,10 +172,23 @@ class ItemEndPlan(ItemStartPlan):
         return None
 
 
+# TODO: Inherit from  ItemPlan
 class ConditionPlan(Plan):
-    def __init__(self, item, level):
+    char = '?'
+    direction = RIGHT
+    start = None
+    length = None
+
+    def __init__(self, item, children, level):
         self.item = item
+        self.children = children
         self.level = level
+
+    def calc(self):
+        pass
+
+    def draw(self, canvas, row):
+        canvas.draw_hline(self.start, row, self.length, char=self.char)
 
 
 class ASCIISequenceRenderer(ASCIIRenderer):
@@ -230,7 +243,6 @@ class ASCIISequenceRenderer(ASCIIRenderer):
 
     def _plancondition(self, item, level):
         condstart_plan = ConditionPlan(item, level)
-
         self._itemplans.append(condstart_plan)
 
         if len(item):

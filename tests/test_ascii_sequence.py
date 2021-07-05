@@ -227,6 +227,7 @@ def test_asciisequence_condition():
         sequence:
 
         f -> b
+        if: Ok
     '''))
     assert eqdia(str(r.render()), '''
     ................
