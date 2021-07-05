@@ -1,5 +1,5 @@
 from ..renderer import Renderer
-from ..sequence import SequenceDiagram
+from ..sequence import SequenceDiagram, Call, Condition
 
 from .canvas import ASCIICanvas
 
@@ -172,6 +172,12 @@ class ItemEndPlan(ItemStartPlan):
         return None
 
 
+class ConditionPlan(Plan):
+    def __init__(self, item, level):
+        self.item = item
+        self.level = level
+
+
 class ASCIISequenceRenderer(ASCIIRenderer):
     _moduleplans = None
     _moduleplans_dict = None
@@ -186,69 +192,87 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             self._moduleplans.append(module)
             self._moduleplans_dict[m] = module
 
+    def _fromto_modules(self, from_, to, reverse=False):
+        capt = False
+
+        it = self._moduleplans
+        if reverse:
+            it = reversed(it)
+
+        for m, nm in twiniter(it):
+            if not capt and m is not from_:
+                continue
+
+            if m is from_:
+                capt = True
+
+            if capt:
+                if m is to:
+                    yield m, None
+                    return
+                yield m, nm
+
+    def _availspace(self, from_, to, reverse=False):
+        result = 0
+        for m, nm in self._fromto_modules(from_, to, reverse):
+            result += m.boxlen
+            if nm is None:
+                continue
+
+            if reverse:
+                result += max(m.lpad, nm.rpad)
+            else:
+                result += max(m.rpad, nm.lpad)
+
+        result -= from_.boxlen // 2 + 1
+        result -= to.boxlen // 2 + 1
+        return result - 5
+
+    def _plancondition(self, item, level):
+        condstart_plan = ConditionPlan(item, level)
+
+        self._itemplans.append(condstart_plan)
+
+        if len(item):
+            self._recurse(item, level + 1)
+
+        condend_plan = ConditionPlan(item, level)
+        self._itemplans.append(condend_plan)
+
+    def _plancall(self, item, level):
+        caller = self._moduleplans_dict[item.caller]
+        callee = self._moduleplans_dict[item.callee]
+        diff = self._moduleplans.index(callee) - \
+            self._moduleplans.index(caller)
+
+        dir_ = LEFT if diff < 0 else RIGHT
+        itemplan = ItemStartPlan(item, caller, callee, dir_, level)
+
+        self._itemplans.append(itemplan)
+
+        avail = self._availspace(caller, callee, reverse=dir_ == LEFT)
+        if itemplan.textlen > avail:
+            if dir_ == LEFT:
+                callee.rpad += itemplan.textlen - avail
+            else:
+                callee.lpad += itemplan.textlen - avail
+
+        if len(item):
+            self._recurse(item, level + 1)
+
+        itemplan = ItemEndPlan(item, caller, callee, not(dir_), level)
+        self._itemplans.append(itemplan)
+
+    def _recurse(self, parent, level):
+        for item in parent:
+            if isinstance(item, Call):
+                self._plancall(item, level)
+            elif isinstance(item, Condition):
+                self._plancondition(item, level)
+
     def _planitems(self):
         self._itemplans = []
-
-        def _fromto_modules(from_, to, reverse=False):
-            capt = False
-
-            it = self._moduleplans
-            if reverse:
-                it = reversed(it)
-
-            for m, nm in twiniter(it):
-                if not capt and m is not from_:
-                    continue
-
-                if m is from_:
-                    capt = True
-
-                if capt:
-                    if m is to:
-                        yield m, None
-                        return
-                    yield m, nm
-
-        def _availspace(from_, to, reverse=False):
-            result = 0
-            for m, nm in _fromto_modules(from_, to, reverse):
-                result += m.boxlen
-                if nm is not None:
-                    if reverse:
-                        result += max(m.lpad, nm.rpad)
-                    else:
-                        result += max(m.rpad, nm.lpad)
-
-            result -= from_.boxlen // 2 + 1
-            result -= to.boxlen // 2 + 1
-            return result - 5
-
-        def _recurse(parent, level=0):
-            for item in parent:
-                caller = self._moduleplans_dict[item.caller]
-                callee = self._moduleplans_dict[item.callee]
-                diff = self._moduleplans.index(callee) - \
-                    self._moduleplans.index(caller)
-
-                dir_ = LEFT if diff < 0 else RIGHT
-                itemplan = ItemStartPlan(item, caller, callee, dir_, level)
-
-                self._itemplans.append(itemplan)
-
-                avail = _availspace(caller, callee, reverse=dir_ == LEFT)
-                if itemplan.textlen > avail:
-                    if dir_ == LEFT:
-                        callee.rpad += itemplan.textlen - avail
-                    else:
-                        callee.lpad += itemplan.textlen - avail
-
-                if len(item):
-                    _recurse(item, level + 1)
-
-                itemplan = ItemEndPlan(item, caller, callee, not(dir_), level)
-                self._itemplans.append(itemplan)
-
-        _recurse(self.diagram)
+        self._recurse(self.diagram, 0)
 
     def plan(self):
         self._planmodules()
@@ -268,7 +292,9 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             m.drawbox(self.canvas, col, row)
             col += m.boxlen + max(m.rpad, nm.lpad if nm else 1)
 
-        self.canvas.extendright(col - self.canvas.cols)
+        if col > self.canvas.cols:
+            self.canvas.extendright(col - self.canvas.cols)
+
         self._extend(1)
 
     def _render_emptyline(self):

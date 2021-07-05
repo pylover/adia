@@ -15,24 +15,28 @@ class ASCIICanvas(Canvas):
         return self.cols, self.rows
 
     def extendright(self, addcols):
+        assert addcols >= 0
         for r in self._backend:
             r.extendright(addcols)
 
         self.cols += addcols
 
     def extendleft(self, addcols):
+        assert addcols >= 0
         for r in self._backend:
             r.extendleft(addcols)
 
         self.cols += addcols
 
     def extendbottom(self, addrows):
+        assert addrows >= 0
         for i in range(addrows):
             self._backend.append(MutableString(self.cols))
 
         self.rows += addrows
 
     def extendtop(self, addrows):
+        assert addrows >= 0
         for i in range(addrows):
             self._backend.insert(0, MutableString(self.cols))
 
