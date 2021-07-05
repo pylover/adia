@@ -2,7 +2,7 @@ import abc
 import itertools
 
 from ..renderer import Renderer
-from ..sequence import SequenceDiagram, Call, Condition
+from ..sequence import SequenceDiagram, Call, Condition, Loop
 
 from .canvas import ASCIICanvas
 
@@ -246,7 +246,10 @@ class ConditionEndPlan(ConditionStartPlan):
 
     @property
     def text(self):
-        return 'end if'
+        if self.type_ in ('if', 'elif', 'else'):
+            return 'end if'
+
+        return f'end {self.type_}'
 
 
 class ASCIISequenceRenderer(ASCIIRenderer):
@@ -283,12 +286,9 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                     return
                 yield m, nm
 
-    def _availspace(self, from_, to, reverse=False):
+    def _availspacefor_call(self, from_, to, reverse=False):
         result = 0
         for m, nm in self._fromto_modules(from_, to, reverse):
-            if m is None:
-                break
-
             result += m.boxlen
             if nm is None:
                 continue
@@ -305,6 +305,21 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             result -= to.boxlen // 2 + 1
 
         result -= 5
+        return 0 if result < 0 else result
+
+    def _availspacefor_condition(self, from_, to):
+        result = 0
+        for m, nm in self._fromto_modules(from_, to, False):
+            if m is None:
+                break
+
+            result += m.boxlen
+            if nm is None:
+                continue
+
+            result += max(m.rpad, nm.lpad)
+
+        result -= 4
         if result < 0:
             return 0
 
@@ -329,7 +344,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         if self._itemplans:
             last = self._itemplans[-1]
             if isinstance(last, ConditionEndPlan):
-                if item.type_ != 'if':
+                if item.type_ not in ('if', 'for', 'while'):
                     old = self._itemplans.pop()
                     start = old.startmodule
                     end = old.endmodule
@@ -346,6 +361,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                 self._find_condition_startend(self._itemplans[s:])
 
             for p in self._itemplans[s::-1]:
+                # TODO: Cannot cover
                 if p.level > level:
                     continue
 
@@ -367,14 +383,17 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                     elif mi > si:
                         end = p.endmodule
 
-                if p.type_ == 'if':
+                if p.type_ in ('if', 'for', 'while'):
                     break
 
-        avail = self._availspace(start, end)
-        avail += 7
-
+        avail = self._availspacefor_condition(start, end)
         if condstart_plan.textlen > avail:
-            start.rpad += condstart_plan.textlen - avail
+            amount = condstart_plan.textlen - avail
+            if start:
+                start.rpad += amount
+
+            if end:
+                end.lpad += amount
 
         condend_plan = ConditionEndPlan(item, start, end, level)
         self._itemplans.append(condend_plan)
@@ -392,12 +411,13 @@ class ASCIISequenceRenderer(ASCIIRenderer):
 
         self._itemplans.append(itemplan)
 
-        avail = self._availspace(caller, callee, reverse=dir_ == LEFT)
+        avail = self._availspacefor_call(caller, callee, reverse=dir_ == LEFT)
         if itemplan.textlen > avail:
+            amount = itemplan.textlen - avail
             if dir_ == LEFT:
-                callee.rpad += itemplan.textlen - avail
+                callee.rpad += amount
             else:
-                callee.lpad += itemplan.textlen - avail
+                callee.lpad += amount
 
         if len(item):
             self._recurse(item, level + 1)
@@ -409,7 +429,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         for item in parent:
             if isinstance(item, Call):
                 self._plancall(item, level)
-            elif isinstance(item, Condition):
+            elif isinstance(item, (Condition, Loop)):
                 self._plancondition(item, level)
 
     def _planitems(self):
