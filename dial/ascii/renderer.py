@@ -1,3 +1,6 @@
+import abc
+import itertools
+
 from ..renderer import Renderer
 from ..sequence import SequenceDiagram, Call, Condition
 
@@ -12,6 +15,7 @@ def twiniter(l):
     if not hasattr(l, '__next__'):
         l = iter(l)
 
+    f = None
     try:
         f = next(l)
         while True:
@@ -114,20 +118,17 @@ class ModulePlan(Plan):
         canvas.set_char(self.middlecol, row, '|')
 
 
-class ItemStartPlan(Plan):
-    char = '~'
-    repr_symbol = '~~~>'
-    reverse = False
+class ItemPlan(Plan, metaclass=abc.ABCMeta):
+    char = '!'
+    repr_symbol = '!!!!'
     direction = RIGHT
     length = 0
     start = 0
     end = 0
 
-    def __init__(self, item, caller, callee, direction, level):
+    def __init__(self, item, direction, level):
         self.item = item
         self.level = level  # TODO: Maybe remove it
-        self.caller = caller
-        self.callee = callee
         self.direction = direction
 
     def __repr__(self):
@@ -146,6 +147,21 @@ class ItemStartPlan(Plan):
 
         return 0
 
+    @abc.abstractmethod
+    def calc(self):
+        raise NotImplementedError()
+
+
+class ItemStartPlan(ItemPlan):
+    char = '~'
+    repr_symbol = '~~~>'
+    reverse = False
+
+    def __init__(self, item, caller, callee, direction, level):
+        super().__init__(item, direction, level)
+        self.caller = caller
+        self.callee = callee
+
     def calc(self):
         self.start = self.caller.middlecol
         self.end = self.callee.middlecol
@@ -155,6 +171,7 @@ class ItemStartPlan(Plan):
 
         self.start += 1
         self.length = self.end - self.start
+        return 1
 
     def draw(self, canvas, row):
         [canvas.draw_leftarrow, canvas.draw_rightarrow][self.direction](
@@ -172,23 +189,64 @@ class ItemEndPlan(ItemStartPlan):
         return None
 
 
-# TODO: Inherit from  ItemPlan
-class ConditionPlan(Plan):
-    char = '?'
-    direction = RIGHT
-    start = None
-    length = None
+class ConditionStartPlan(ItemPlan):
+    char = '*'
+    startmodule = None
+    endmodule = None
+    children = None
 
-    def __init__(self, item, children, level):
-        self.item = item
-        self.children = children
-        self.level = level
+    def __init__(self, item, startmodule, endmodule, level):
+        super().__init__(item, RIGHT, level)
+        self.startmodule = startmodule
+        self.endmodule = endmodule
+
+    # TODO: lazyattr
+    @property
+    def type_(self):
+        return self.item.type_
+
+    # TODO: lazyattr
+    @property
+    def text(self):
+        # TODO: Optimize
+        result = f'{self.item.type_}'
+        if self.item.text:
+            result += f' {self.item.text}'
+
+        return result
 
     def calc(self):
-        pass
+        if self.startmodule is None:
+            self.start = 1
+            self.length = max(10, self.textlen + 4)
+            self.end = self.length + 1
+            return 3
+
+        self.start = self.startmodule.col
+        self.end = self.endmodule.col + self.endmodule.boxlen
+
+        self.length = self.end - self.start
+
+        return 3
 
     def draw(self, canvas, row):
         canvas.draw_hline(self.start, row, self.length, char=self.char)
+
+        row += 1
+        canvas.write_textline(self.start, row, ' ' * self.length)
+        canvas.set_char(self.start, row, '*')
+        canvas.set_char(self.end - 1, row, '*')
+        canvas.write_textline(self.start + 2, row, self.text)
+
+        row += 1
+        canvas.draw_hline(self.start, row, self.length, char=self.char)
+
+
+class ConditionEndPlan(ConditionStartPlan):
+
+    @property
+    def text(self):
+        return 'end if'
 
 
 class ASCIISequenceRenderer(ASCIIRenderer):
@@ -228,6 +286,9 @@ class ASCIISequenceRenderer(ASCIIRenderer):
     def _availspace(self, from_, to, reverse=False):
         result = 0
         for m, nm in self._fromto_modules(from_, to, reverse):
+            if m is None:
+                break
+
             result += m.boxlen
             if nm is None:
                 continue
@@ -237,19 +298,88 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             else:
                 result += max(m.rpad, nm.lpad)
 
-        result -= from_.boxlen // 2 + 1
-        result -= to.boxlen // 2 + 1
-        return result - 5
+        if from_:
+            result -= from_.boxlen // 2 + 1
+
+        if to:
+            result -= to.boxlen // 2 + 1
+
+        result -= 5
+        if result < 0:
+            return 0
+
+        return result
+
+    def _find_condition_startend(self, children):
+        l = [
+            (
+                self._moduleplans.index(i.caller),
+                self._moduleplans.index(i.callee)
+            )
+            for i in children
+            if isinstance(i, ItemStartPlan)
+        ]
+
+        l = sorted(list(set(itertools.chain(*l))))
+        s, e = l[0], l[-1]
+        return self._moduleplans[s], self._moduleplans[e], s, e
 
     def _plancondition(self, item, level):
-        condstart_plan = ConditionPlan(item, level)
+        start, end = None, None
+        if self._itemplans:
+            last = self._itemplans[-1]
+            if isinstance(last, ConditionEndPlan):
+                if item.type_ != 'if':
+                    old = self._itemplans.pop()
+                    start = old.startmodule
+                    end = old.endmodule
+
+        condstart_plan = ConditionStartPlan(item, start, end, level)
         self._itemplans.append(condstart_plan)
 
         if len(item):
             self._recurse(item, level + 1)
 
-        condend_plan = ConditionPlan(item, level)
+        s = self._itemplans.index(condstart_plan) + 1
+        if len(self._itemplans) > s:
+            start, end, si, ei = \
+                self._find_condition_startend(self._itemplans[s:])
+
+            for p in self._itemplans[s::-1]:
+                if p.level > level:
+                    continue
+
+                if p.startmodule is None:
+                    p.startmodule = start
+                else:
+                    mi = self._moduleplans.index(p.startmodule)
+                    if mi > si:
+                        p.startmodule = start
+                    elif mi < si:
+                        start = p.startmodule
+
+                if p.endmodule is None:
+                    p.endmodule = end
+                else:
+                    mi = self._moduleplans.index(p.endmodule)
+                    if mi < ei:
+                        p.endmodule = end
+                    elif mi > si:
+                        end = p.endmodule
+
+                if p.type_ == 'if':
+                    break
+
+        avail = self._availspace(start, end)
+        avail += 7
+
+        if condstart_plan.textlen > avail:
+            start.rpad += condstart_plan.textlen - avail
+
+        condend_plan = ConditionEndPlan(item, start, end, level)
         self._itemplans.append(condend_plan)
+
+        condstart_plan.children = self._itemplans
 
     def _plancall(self, item, level):
         caller = self._moduleplans_dict[item.caller]
@@ -319,7 +449,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
 
         for c in self._itemplans:
             self._render_emptyline()
-            c.calc()
+            extrarows = c.calc() - 1
 
             if c.direction != lastdir or not lasttype or \
                     not isinstance(c, lasttype):
@@ -328,7 +458,11 @@ class ASCIISequenceRenderer(ASCIIRenderer):
 
             lastdir = c.direction
             lasttype = type(c)
-            c.draw(self.canvas, self.row)
+            for i in range(extrarows):
+                self._extend(1)
+                self._render_emptyline()
+
+            c.draw(self.canvas, self.row - extrarows)
             self._extend(1)
 
     def render(self):
