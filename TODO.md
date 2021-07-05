@@ -1,6 +1,7 @@
 # Current release
 
 - ASCII Canvas
+- Test self calls
 
 ## Sequence Diagram
 

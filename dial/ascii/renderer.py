@@ -2,7 +2,7 @@ import abc
 import itertools
 
 from ..renderer import Renderer
-from ..sequence import SequenceDiagram, Call, Condition, Loop
+from ..sequence import SequenceDiagram, Call, Condition, Loop, Note
 
 from .canvas import ASCIICanvas
 
@@ -230,6 +230,7 @@ class ConditionStartPlan(ItemPlan):
         return 3
 
     def draw(self, canvas, row):
+        # TODO: draw_textbox instead
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
         row += 1
@@ -250,6 +251,44 @@ class ConditionEndPlan(ConditionStartPlan):
             return 'end if'
 
         return f'end {self.type_}'
+
+
+class NotePlan(ItemPlan):
+    char = '-'
+    repr_symbol = '@'
+    startmodule = None
+    endmodule = None
+
+    def __init__(self, item, startmodule, endmodule, level):
+        super().__init__(item, RIGHT, level)
+        self.startmodule = startmodule
+        self.endmodule = endmodule
+
+    def calc(self):
+        self.start = self.startmodule.col
+
+        if self.endmodule is None:
+            self.length = self.startmodule.boxlen
+        else:
+            self.length = (self.endmodule.col + self.endmodule.boxlen) - \
+                self.start
+
+        self.length = max(self.length, self.textlen + 4)
+        self.end = self.start + self.length
+        return 3
+
+    def draw(self, canvas, row):
+        # TODO: draw_textbox instead
+        canvas.draw_hline(self.start, row, self.length, char=self.char)
+
+        row += 1
+        canvas.write_textline(self.start, row, ' ' * self.length)
+        canvas.write_textline(self.start + 2, row, self.text)
+        canvas.set_char(self.start, row, '|')
+        canvas.set_char(self.end - 1, row, '|')
+
+        row += 1
+        canvas.draw_hline(self.start, row, self.length, char=self.char)
 
 
 class ASCIISequenceRenderer(ASCIIRenderer):
@@ -322,6 +361,24 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         result -= 4
         if result < 0:
             return 0
+
+        return result
+
+    def _availspacefor_note(self, from_, to):
+        result = 0
+        if to is None:
+            result += from_.boxlen
+        else:
+            for m, nm in self._fromto_modules(from_, to, False):
+                result += m.boxlen
+                if nm is None:
+                    continue
+
+                result += max(m.rpad, nm.lpad)
+
+            # result -= to.boxlen
+
+        result -= 4
 
         return result
 
@@ -400,6 +457,26 @@ class ASCIISequenceRenderer(ASCIIRenderer):
 
         condstart_plan.children = self._itemplans
 
+    def _plannote(self, item, level):
+        modules = list(item.modules)
+        start = self._moduleplans_dict[modules[0]]
+        if len(modules) > 1:
+            end = self._moduleplans_dict[modules[1]]
+        else:
+            end = None
+
+        noteplan = NotePlan(item, start, end, level)
+        self._itemplans.append(noteplan)
+
+        avail = self._availspacefor_note(start, end)
+        if noteplan.textlen > avail:
+            amount = noteplan.textlen - avail
+            if start:
+                start.rpad += amount
+
+            if end:
+                end.lpad += amount
+
     def _plancall(self, item, level):
         caller = self._moduleplans_dict[item.caller]
         callee = self._moduleplans_dict[item.callee]
@@ -431,6 +508,8 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                 self._plancall(item, level)
             elif isinstance(item, (Condition, Loop)):
                 self._plancondition(item, level)
+            elif isinstance(item, Note):
+                self._plannote(item, level)
 
     def _planitems(self):
         self._itemplans = []

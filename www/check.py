@@ -23,6 +23,7 @@ def run():
     from tests import test_ascii_sequence_callstack
     from tests import test_ascii_sequence_condition
     from tests import test_ascii_sequence_loop
+    from tests import test_ascii_sequence_note
 
     for module in [
         test_token,
@@ -37,6 +38,7 @@ def run():
         test_ascii_sequence_callstack,
         test_ascii_sequence_condition,
         test_ascii_sequence_loop,
+        test_ascii_sequence_note,
     ]:
         for test in runtests(module):
             yield test

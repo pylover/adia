@@ -54,9 +54,9 @@ class ASCIICanvas(Canvas):
 
         self._backend[row][col] = char
 
-    def draw_vline(self, col, startrow, length):
+    def draw_vline(self, col, startrow, length, char='|'):
         for r in range(startrow, startrow + length):
-            self.set_char(col, r, '|')
+            self.set_char(col, r, char)
 
     def write_textline(self, col, row, line):
         for c in line:
@@ -85,7 +85,8 @@ class ASCIICanvas(Canvas):
         if textbottom:
             self.write_hcenter(col, row + 1, textbottom, length)
 
-    def draw_box(self, col, row, width, height):
+    def draw_box(self, col, row, width, height, hlinechar='-', vlinechar='|',
+                 cornerchar='+'):
         lastrow = row + height - 1
         lastcol = col + width - 1
         hline_start = col + 1
@@ -93,24 +94,25 @@ class ASCIICanvas(Canvas):
         vline_start = row + 1
         vline_end = height - 2
 
-        self.draw_hline(hline_start, row, hline_end)
-        self.draw_hline(hline_start, lastrow, hline_end)
-        self.draw_vline(col, vline_start, vline_end)
-        self.draw_vline(lastcol, vline_start, vline_end)
-        self.set_char(col, row, '+')
-        self.set_char(col + width - 1, row, '+')
-        self.set_char(col, row + height - 1, '+')
-        self.set_char(col + width - 1, row + height - 1, '+')
+        self.draw_hline(hline_start, row, hline_end, char=hlinechar)
+        self.draw_hline(hline_start, lastrow, hline_end, char=hlinechar)
+        self.draw_vline(col, vline_start, vline_end, char=vlinechar)
+        self.draw_vline(lastcol, vline_start, vline_end, char=vlinechar)
+        self.set_char(col, row, cornerchar)
+        self.set_char(col + width - 1, row, cornerchar)
+        self.set_char(col, row + height - 1, cornerchar)
+        self.set_char(col + width - 1, row + height - 1, cornerchar)
 
     def write_textblock(self, col, row, text):
         for line in text.splitlines():
             self.write_textline(col, row, line)
             row += 1
 
-    def draw_textbox(self, col, row, text, hpadding=0, vpadding=0):
+    def draw_textbox(self, col, row, text, mincols=0, hpadding=0, vpadding=0,
+                     **kw):
         lines = text.splitlines()
         textheight = len(lines)
-        width = max(len(l) for l in lines)
+        width = max(mincols, max(len(l) for l in lines))
 
         if not isinstance(hpadding, int):
             lpad, rpad = hpadding
@@ -120,7 +122,7 @@ class ASCIICanvas(Canvas):
         boxheight = textheight + (vpadding * 2) + 2
         boxwidth = width + lpad + rpad + 2
         self.write_textblock(col + lpad + 1, row + vpadding + 1, text)
-        self.draw_box(col, row, boxwidth, boxheight)
+        self.draw_box(col, row, boxwidth, boxheight, **kw)
 
     def draw_rightarrow(self, col, row, length, **kw):
         self.draw_hline(col, row, length - 1, **kw)
