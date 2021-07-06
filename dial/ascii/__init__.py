@@ -2,4 +2,4 @@
 
 
 from .canvas import ASCIICanvas
-from .renderer import ASCIIDiagramRenderer
+from .renderer import ASCIIRenderer

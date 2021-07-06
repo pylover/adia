@@ -1,11 +1,11 @@
-from dial.ascii import ASCIIDiagramRenderer
+from dial.ascii import ASCIIRenderer
 from dial.diagram import Diagram
 
 from .helpers import eqdia
 
 
 def test_asciisequence_condition():
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -22,7 +22,7 @@ def test_asciisequence_condition():
           b -> d
 
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     .................................
     . DIAGRAM: Foo                  .
     . version: 1.0                  .
@@ -86,7 +86,7 @@ def test_asciisequence_condition():
 
 
 def test_asciisequence_conditiontext():
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -100,7 +100,7 @@ def test_asciisequence_conditiontext():
         else: foo bar baz qux
           c -> b: foo bar
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     ...................................
     . DIAGRAM: Foo                    .
     . version: 1.0                    .
@@ -154,14 +154,14 @@ def test_asciisequence_conditiontext():
 
 
 def test_asciisequence_emptyif():
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
 
         if
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
@@ -176,7 +176,7 @@ def test_asciisequence_emptyif():
     ................
     ''')
 
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -184,7 +184,7 @@ def test_asciisequence_emptyif():
         if
         else
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
@@ -204,7 +204,7 @@ def test_asciisequence_emptyif():
 
 
 def test_asciisequence_condition_on_reversecall():
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -214,7 +214,7 @@ def test_asciisequence_condition_on_reversecall():
         if
           b -> a
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     .....................
     . DIAGRAM: Foo      .
     . version: 1.0      .

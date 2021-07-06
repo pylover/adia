@@ -1,11 +1,11 @@
-from dial.ascii import ASCIIDiagramRenderer
+from dial.ascii import ASCIIRenderer
 from dial.diagram import Diagram
 
 from .helpers import eqdia
 
 
 def test_asciisequence_loop():
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -16,7 +16,7 @@ def test_asciisequence_loop():
             while: True
               a -> c
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     ........................
     . DIAGRAM: Foo         .
     . version: 1.0         .
@@ -63,7 +63,7 @@ def test_asciisequence_loop():
 
 
 def test_asciisequence_loop_isolation():
-    r = ASCIIDiagramRenderer(Diagram('''
+    r = ASCIIRenderer(Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -73,7 +73,7 @@ def test_asciisequence_loop_isolation():
          a -> b: hello()
 
     '''))
-    assert eqdia(str(r.render()), '''
+    assert eqdia(r.dumps(), '''
     ..........................................
     . DIAGRAM: Foo                           .
     . version: 1.0                           .

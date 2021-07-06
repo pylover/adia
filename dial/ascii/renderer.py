@@ -42,16 +42,14 @@ class ASCIIRenderer(Renderer):
     def row(self):
         return self.canvas.rows - 1
 
-
-class ASCIIDiagramRenderer(ASCIIRenderer):
-    def render(self):
+    def dumps(self):
         self._render_header()
 
         for unit in self.diagram:
             if isinstance(unit, SequenceDiagram):
                 ASCIISequenceRenderer(unit, self.canvas).render()
 
-        return self.canvas
+        return str(self.canvas)
 
     def _render_header(self):
         dia = self.diagram
