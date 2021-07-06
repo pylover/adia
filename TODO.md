@@ -1,62 +1,33 @@
-# Current release
+### Current release
 
-- ASCII Canvas
-- Test self calls
-- Personalize
+- A complete example in readme.
+- Remove SVG support and just support ASCII.
+
+#### Tokenizer
 - Better error message for bad syntaxt, PIPE is annoying
 
-## Sequence Diagram
+#### Sequence Diagram
+- self calls
 
-- ascii
-  - call hierarchy
-  - note
-  - loop
-  - condition
 
-# Next release
+### Next release
 
+- Personalize & configrations
 - Gallery
 
-## SVG
-## Syntaxt highlight
-  Github Syntaxt highlight
-  VIM Syntaxt highlight
+#### Syntaxt highlight
 
-## Sequence Diagram
+- Github Syntaxt highlight
+- VIM Syntaxt highlight
+
+
+#### Sequence Diagram
+
 - Parallel
 - Include
 
-## Class Diagram
-## State Diagram
 
-``` 
-
-   test             pcap         main            httpd
-    .                .            .               .
-    .                .            .               .
-  START              .            .               .
-    |                .            .               .
-    |________________             .               .
-                     |            .               .
-                    fork          .               .
-     ________________|\___________                .
-    |                             |               .
-   test                           |               .
-    |                             |               .
-   stop                          fork             .
-    |________________             |\______________ 
-                     |            |               |
-                    kill ------> kill ---------> loop 
-                     |            | ______________|    
-                    wait          |/                   
-                     |           join
-                     | ___________|
-                     |/
-                    join
-     ________________|
-    |
-   EXIT
-```
+#### Class Diagram
 
 ```
 
@@ -96,3 +67,43 @@
   +---------------+        +----------------+
 
 ```
+
+#### Fork Diagram
+
+- Example of Git branching
+- Example of Unix fork
+
+``` 
+
+   test             pcap         main            httpd
+    .                .            .               .
+    .                .            .               .
+  START              .            .               .
+    |                .            .               .
+    |________________             .               .
+                     |            .               .
+                    fork          .               .
+     ________________|\___________                .
+    |                             |               .
+   test                           |               .
+    |                             |               .
+   stop                          fork             .
+    |________________             |\______________ 
+                     |            |               |
+                    kill ------> kill ---------> loop 
+                     |            | ______________|    
+                    wait          |/                   
+                     |           join
+                     | ___________|
+                     |/
+                    join
+     ________________|
+    |
+   EXIT
+```
+
+#### State Diagram
+
+- Need help for design
+
+

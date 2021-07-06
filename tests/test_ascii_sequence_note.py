@@ -3,7 +3,45 @@ from dial.diagram import Diagram
 
 from .helpers import eqdia
 
-# TODO: test multiline comments
+
+def test_asciisequence_multilinenote():
+    r = ASCIIDiagramRenderer(Diagram('''
+        diagram: Foo
+        version: 1.0
+        sequence:
+
+        @foo: |
+            THUD Qux Quux
+            Foo Bar Baz
+        @foo ~ bar: |
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
+            sollicitudin sem eget ligula imperdiet, sit amet gravida mi tempor.
+
+    '''))
+    assert eqdia(str(r.render()), '''
+    ...........................................................................
+    . DIAGRAM: Foo                                                            .
+    . version: 1.0                                                            .
+    .                                                                         .
+    . +-----+                                                         +-----+ .
+    . | foo |                                                         | bar | .
+    . +-----+                                                         +-----+ .
+    .    |                                                               |    .
+    . -----------------                                                  |    .
+    . | THUD Qux Quux |                                                  |    .
+    . | Foo Bar Baz   |                                                  |    .
+    . -----------------                                                  |    .
+    . ----------------------------------------------------------------------- .
+    . | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam     | .
+    . | sollicitudin sem eget ligula imperdiet, sit amet gravida mi tempor. | .
+    . ----------------------------------------------------------------------- .
+    .    |                                                               |    .
+    . +-----+                                                         +-----+ .
+    . | foo |                                                         | bar | .
+    . +-----+                                                         +-----+ .
+    .                                                                         .
+    ...........................................................................
+    ''')
 
 
 def test_asciisequence_note():

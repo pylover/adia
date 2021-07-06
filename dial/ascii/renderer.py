@@ -133,15 +133,19 @@ class ItemPlan(Plan, metaclass=abc.ABCMeta):
         return f'{self.repr_symbol} {repr(self.item)}'
 
     @LazyAttribute
-    def text(self):
-        return self.item.text
-
-    @LazyAttribute
-    def textlen(self):
+    def textwidth(self):
         if self.text:
             return len(self.text)
 
         return 0
+
+    @property
+    def kind(self):
+        return self.item.kind
+
+    @property
+    def text(self):
+        return self.item.text
 
     @abc.abstractmethod
     def calc(self):
@@ -197,10 +201,6 @@ class ConditionStartPlan(ItemPlan):
         self.endmodule = endmodule
 
     @LazyAttribute
-    def kind(self):
-        return self.item.kind
-
-    @LazyAttribute
     def text(self):
         result = f'{self.item.kind}'
         if self.item.text:
@@ -211,7 +211,7 @@ class ConditionStartPlan(ItemPlan):
     def calc(self):
         if self.startmodule is None:
             self.start = 1
-            self.length = max(10, self.textlen + 4)
+            self.length = max(10, self.textwidth + 4)
             self.end = self.length + 1
             return 3
 
@@ -256,6 +256,14 @@ class NotePlan(ItemPlan):
         self.startmodule = startmodule
         self.endmodule = endmodule
 
+    @LazyAttribute
+    def lines(self):
+        return self.text.splitlines()
+
+    @LazyAttribute
+    def textwidth(self):
+        return max(len(x) for x in self.lines)
+
     def calc(self):
         self.start = self.startmodule.col
 
@@ -265,18 +273,19 @@ class NotePlan(ItemPlan):
             self.length = (self.endmodule.col + self.endmodule.boxlen) - \
                 self.start
 
-        self.length = max(self.length, self.textlen + 4)
+        self.length = max(self.length, self.textwidth + 4)
         self.end = self.start + self.length
-        return 3
+        return len(self.lines) + 2
 
     def draw(self, canvas, row):
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
-        row += 1
-        canvas.write_textline(self.start, row, ' ' * self.length)
-        canvas.write_textline(self.start + 2, row, self.text)
-        canvas.set_char(self.start, row, '|')
-        canvas.set_char(self.end - 1, row, '|')
+        for l in self.lines:
+            row += 1
+            canvas.write_textline(self.start, row, ' ' * self.length)
+            canvas.write_textline(self.start + 2, row, l)
+            canvas.set_char(self.start, row, '|')
+            canvas.set_char(self.end - 1, row, '|')
 
         row += 1
         canvas.draw_hline(self.start, row, self.length, char=self.char)
@@ -434,8 +443,8 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                     break
 
         avail = self._availspacefor_condition(start, end)
-        if condstart_plan.textlen > avail:
-            amount = condstart_plan.textlen - avail
+        if condstart_plan.textwidth > avail:
+            amount = condstart_plan.textwidth - avail
             if start:
                 start.rpad += amount
 
@@ -459,8 +468,8 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         self._itemplans.append(noteplan)
 
         avail = self._availspacefor_note(start, end)
-        if noteplan.textlen > avail:
-            amount = noteplan.textlen - avail
+        if noteplan.textwidth > avail:
+            amount = noteplan.textwidth - avail
             if start:
                 start.rpad += amount
 
@@ -479,8 +488,8 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         self._itemplans.append(itemplan)
 
         avail = self._availspacefor_call(caller, callee, reverse=dir_ == LEFT)
-        if itemplan.textlen > avail:
-            amount = itemplan.textlen - avail
+        if itemplan.textwidth > avail:
+            amount = itemplan.textwidth - avail
             if dir_ == LEFT:
                 callee.rpad += amount
             else:
