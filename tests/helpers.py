@@ -28,12 +28,11 @@ def eqbigstr(a, b):
 
 
 def eqdia(a, b):
-    NEWLINE = '↵'
 
     def annotate(s):
         i = 0
         for l in s.splitlines():
-            yield f'{l}{NEWLINE} {i:3d}\n'
+            yield f'.{l}. {i:3d}\n'
             i += 1
 
     def maxwidth(*args):
@@ -74,7 +73,9 @@ def eqdia(a, b):
     if a != b:
         print('Given:')
         print_columns(maxlen)
-        print(''.join(annotate(a)))
+        print('.' * (maxlen - 3))
+        print(''.join(annotate(a)), end='')
+        print('.' * (maxlen - 3))
         print('Expected:')
         print_columns(maxlen)
         print(''.join(annotate(b)))

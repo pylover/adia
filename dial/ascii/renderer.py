@@ -386,7 +386,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         if to:
             result -= to.boxlen // 2 + 1
 
-        result -= 5
+        result -= 8
         return 0 if result < 0 else result
 
     def _availspacefor_condition(self, from_, to):

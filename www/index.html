@@ -19,13 +19,17 @@
 <textarea cols="100%" rows="8" id="error"></textarea>
 <br />
 <textarea cols="55" rows="40" id="source">
-diagram: HTTPLoad
+diagram: diaL demo
 version: 1.0
 author: pylover
 
-sequence: Demo
+sequence:
 
-foo -> bar: hello()
+@foo: Start
+foo -> bar: hello() -> HI
+  bar -> baz: hey() -> Hey
+
+@foo: End
 </textarea>
 <textarea cols="120" rows="40" id="target"></textarea>
 
