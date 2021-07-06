@@ -1,3 +1,5 @@
+## Dial roadmap
+
 ### Current release
 
 - A complete example in readme.
@@ -6,19 +8,18 @@
 #### Tokenizer
 - Better error message for bad syntaxt, PIPE is annoying
 
-#### Sequence Diagram
-- self calls
-
 
 ### Next release
 
 - Personalize & configrations
 - Gallery
+- How to use inside javascript
 
 #### Syntaxt highlight
 
 - Github Syntaxt highlight
 - VIM Syntaxt highlight
+- VIM plugin to auto-render commented blocks
 
 
 #### Sequence Diagram

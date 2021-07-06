@@ -156,13 +156,28 @@ class ItemStartPlan(ItemPlan):
     char = '~'
     repr_symbol = '~~~>'
     reverse = False
+    selfcall = False
 
     def __init__(self, item, caller, callee, direction, level):
         super().__init__(item, direction, level)
         self.caller = caller
         self.callee = callee
+        if caller is callee:
+            self.selfcall = True
 
-    def calc(self):
+    def _calc_selfcall(self):
+        self.start = self.caller.middlecol
+        if self.item.text:
+            self.length = len(self.item.text)
+        else:
+            self.length = 0
+
+        self.length += 5
+        self.end = self.start + self.length
+        self.start += 1
+        return 1
+
+    def _calc_otherscall(self):
         self.start = self.caller.middlecol
         self.end = self.callee.middlecol
 
@@ -173,10 +188,22 @@ class ItemStartPlan(ItemPlan):
         self.length = self.end - self.start
         return 1
 
+    def calc(self):
+        if self.selfcall:
+            return self._calc_selfcall()
+        else:
+            return self._calc_otherscall()
+
     def draw(self, canvas, row):
         [canvas.draw_leftarrow, canvas.draw_rightarrow][self.direction](
             self.start, row, self.length, char=self.char, text=self.text
         )
+        if not self.selfcall:
+            return
+
+        canvas.set_char(self.end, row, '+')
+        if canvas.cols - self.end == 1:
+            canvas.extendright(1)
 
 
 class ItemEndPlan(ItemStartPlan):
@@ -187,6 +214,11 @@ class ItemEndPlan(ItemStartPlan):
     @property
     def text(self):
         return None
+
+    def draw(self, canvas, row):
+        super().draw(canvas, row)
+        if self.selfcall:
+            canvas.set_char(self.end, row - 1, '|')
 
 
 class ConditionStartPlan(ItemPlan):
@@ -491,6 +523,8 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         if itemplan.textwidth > avail:
             amount = itemplan.textwidth - avail
             if dir_ == LEFT:
+                callee.rpad += amount
+            elif itemplan.selfcall:
                 callee.rpad += amount
             else:
                 callee.lpad += amount

@@ -188,3 +188,37 @@ def test_asciisequence_calltext():
     .                                                  .
     ....................................................
     ''')
+
+
+def test_asciisequence_selfcall():
+    r = ASCIIDiagramRenderer(Diagram('''
+        diagram: Foo
+        version: 1.0
+        sequence:
+
+        foo -> foo: init()
+        bar -> bar:
+    '''))
+    assert eqdia(str(r.render()), '''
+    ...........................
+    . DIAGRAM: Foo            .
+    . version: 1.0            .
+    .                         .
+    . +-----+       +-----+   .
+    . | foo |       | bar |   .
+    . +-----+       +-----+   .
+    .    |             |      .
+    .    |~~init()~~+  |      .
+    .    |          |  |      .
+    .    |<---------+  |      .
+    .    |             |      .
+    .    |             |~~~~+ .
+    .    |             |    | .
+    .    |             |<---+ .
+    .    |             |      .
+    . +-----+       +-----+   .
+    . | foo |       | bar |   .
+    . +-----+       +-----+   .
+    .                         .
+    ...........................
+    ''')
