@@ -81,35 +81,6 @@ def test_tokenizer_emptyinput():
         next(gen)
 
 
-def test_tokenizer_sequencediagram_flat():
-    gen = tokenize(
-        '@seq foo\n'
-        'bar baz\n'
-        'bar qux.quux(corge, fred) -> waldo'
-    )
-    assert next(gen) == (AT,      '@',     (1,  0), (1,  1))
-    assert next(gen) == (NAME,    'seq',   (1,  1), (1,  4))
-    assert next(gen) == (NAME,    'foo',   (1,  5), (1,  8))
-    assert next(gen) == (NEWLINE, '\n',    (1,  8), (1,  9))
-    assert next(gen) == (NAME,    'bar',   (2,  0), (2,  3))
-    assert next(gen) == (NAME,    'baz',   (2,  4), (2,  7))
-    assert next(gen) == (NEWLINE, '\n',    (2,  7), (2,  8))
-    assert next(gen) == (NAME,    'bar',   (3,  0), (3,  3))
-    assert next(gen) == (NAME,    'qux',   (3,  4), (3,  7))
-    assert next(gen) == (DOT,     '.',     (3,  7), (3,  8))
-    assert next(gen) == (NAME,    'quux',  (3,  8), (3, 12))
-    assert next(gen) == (LPAR,    '(',     (3, 12), (3, 13))
-    assert next(gen) == (NAME,    'corge', (3, 13), (3, 18))
-    assert next(gen) == (COMMA,   ',',     (3, 18), (3, 19))
-    assert next(gen) == (NAME,    'fred',  (3, 20), (3, 24))
-    assert next(gen) == (RPAR,    ')',     (3, 24), (3, 25))
-    assert next(gen) == (RARROW,  '->',    (3, 26), (3, 28))
-    assert next(gen) == (NAME,    'waldo', (3, 29), (3, 34))
-    assert next(gen) == (EOF,     '',      (4,  0), (4,  0))
-    with raises(StopIteration):
-        next(gen)
-
-
 def test_tokenizer_sequencediagram_indented():
     gen = tokenize(
         'foo\n'

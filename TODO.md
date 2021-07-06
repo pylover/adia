@@ -3,7 +3,8 @@
 - ASCII Canvas
 - Test self calls
 - Personalize
--
+- Better error message for bad syntaxt, PIPE is annoying
+
 ## Sequence Diagram
 
 - ascii
