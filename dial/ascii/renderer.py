@@ -28,8 +28,11 @@ def twiniter(l):
 
 
 class ASCIIRenderer(Renderer):
+    dirty = True
+
     def __init__(self, diagram, canvas=None):
         self.diagram = diagram
+
         if canvas is None:
             self.canvas = ASCIICanvas()
         else:
@@ -42,14 +45,14 @@ class ASCIIRenderer(Renderer):
     def row(self):
         return self.canvas.rows - 1
 
-    def dumps(self):
+    def render(self):
         self._render_header()
 
         for unit in self.diagram:
             if isinstance(unit, SequenceDiagram):
                 ASCIISequenceRenderer(unit, self.canvas).render()
 
-        return str(self.canvas)
+        self.dirty = False
 
     def _render_header(self):
         dia = self.diagram
@@ -65,6 +68,19 @@ class ASCIIRenderer(Renderer):
             self.canvas.write_textline(1, self.row, f'version: {dia.version} ')
 
         self._extend(1)
+
+    def dump(self, filelike):
+        if self.dirty:
+            self.render()
+
+        for l in self.canvas:
+            filelike.write(str(l))
+            filelike.write('\n')
+
+    def dumps(self):
+        if self.dirty:
+            self.render()
+        return str(self.canvas)
 
 
 class Plan:

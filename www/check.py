@@ -25,6 +25,7 @@ def run():
     from tests import test_ascii_sequence_condition
     from tests import test_ascii_sequence_loop
     from tests import test_ascii_sequence_note
+    from tests import test_api
 
     for module in [
         test_lazyattr,
@@ -41,6 +42,7 @@ def run():
         test_ascii_sequence_condition,
         test_ascii_sequence_loop,
         test_ascii_sequence_note,
+        test_api,
     ]:
         for test in runtests(module):
             yield test

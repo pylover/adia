@@ -10,6 +10,10 @@ class ASCIICanvas(Canvas):
         self.rows = 0
         self.extendbottom(size[1])
 
+    def __iter__(self):
+        for l in self._backend:
+            yield l
+
     @property
     def size(self):
         return self.cols, self.rows
