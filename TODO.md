@@ -3,7 +3,6 @@
 ### Current release
 
 - A complete example in readme.
-- Remove SVG support and just support ASCII.
 
 ### Next release
 
@@ -103,4 +102,8 @@
 
 - Need help for design
 
+
+### Future Release
+
+- SVG support
 
