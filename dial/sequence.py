@@ -1,5 +1,6 @@
 from io import StringIO
 
+from .lazyattr import LazyAttribute
 from .container import Container
 from .interpreter import Interpreter, Consume, Final, FinalConsume, New, \
     Ignore, Goto, Switch
@@ -53,6 +54,7 @@ class Item(Interpreter):
         return self.kind
 
     def __repr__(self):
+        # TODO: Optimize
         result = self.left
 
         if self.text:
@@ -92,16 +94,18 @@ class Item(Interpreter):
 class Note(Item):
     multiline = False
 
-    @property
+    @LazyAttribute
     def modules(self):
+        result = []
         for m in self.args:
             if m == '~':
                 continue
-            yield m
+            result.append(m)
 
-    @property
+        return result
+
+    @LazyAttribute
     def left(self):
-        # TODO: optimize
         result = self.kind
 
         if self.args:
@@ -150,7 +154,7 @@ class Call(ContainerItem):
     caller = None
     callee = None
 
-    @property
+    @LazyAttribute
     def left(self):
         return f'{self.caller} -> {self.callee}'
 

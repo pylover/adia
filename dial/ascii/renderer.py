@@ -126,7 +126,7 @@ class ItemPlan(Plan, metaclass=abc.ABCMeta):
 
     def __init__(self, item, direction, level):
         self.item = item
-        self.level = level  # TODO: Maybe remove it
+        self.level = level
         self.direction = direction
 
     def __repr__(self):
@@ -448,7 +448,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         condstart_plan.children = self._itemplans
 
     def _plannote(self, item, level):
-        modules = list(item.modules)
+        modules = item.modules
         start = self._moduleplans_dict[modules[0]]
         if len(modules) > 1:
             end = self._moduleplans_dict[modules[1]]
