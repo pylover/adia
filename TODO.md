@@ -6,10 +6,6 @@
 
 ### Next release
 
-- Personalize & configrations
-- Gallery
-- How to use inside javascript
-
 #### Syntaxt highlight
 
 - Github Syntaxt highlight
@@ -96,11 +92,19 @@
      ________________|
     |
    EXIT
+
 ```
 
 #### State Diagram
 
 - Need help for design
+
+
+#### MISC
+
+- Personalize & configrations
+- Gallery
+- How to use inside javascript
 
 
 ### Future Release
