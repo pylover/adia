@@ -196,14 +196,13 @@ class ConditionStartPlan(ItemPlan):
         self.startmodule = startmodule
         self.endmodule = endmodule
 
-    # TODO: rename to type
     @LazyAttribute
-    def type_(self):
-        return self.item.type_
+    def kind(self):
+        return self.item.kind
 
     @LazyAttribute
     def text(self):
-        result = f'{self.item.type_}'
+        result = f'{self.item.kind}'
         if self.item.text:
             result += f' {self.item.text}'
 
@@ -240,10 +239,10 @@ class ConditionEndPlan(ConditionStartPlan):
 
     @property
     def text(self):
-        if self.type_ in ('if', 'elif', 'else'):
+        if self.kind in ('if', 'elif', 'else'):
             return 'end if'
 
-        return f'end {self.type_}'
+        return f'end {self.kind}'
 
 
 class NotePlan(ItemPlan):
@@ -393,7 +392,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
         if self._itemplans:
             last = self._itemplans[-1]
             if isinstance(last, ConditionEndPlan):
-                if item.type_ not in ('if', 'for', 'while'):
+                if item.kind not in ('if', 'for', 'while'):
                     old = self._itemplans.pop()
                     start = old.startmodule
                     end = old.endmodule
@@ -431,7 +430,7 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                     elif mi > si:
                         end = p.endmodule
 
-                if p.type_ in ('if', 'for', 'while'):
+                if p.kind in ('if', 'for', 'while'):
                     break
 
         avail = self._availspacefor_condition(start, end)

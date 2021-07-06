@@ -15,7 +15,7 @@ class Module:
 
 
 class Item(Interpreter):
-    type_ = None
+    kind = None
     args = None
     text = None
     multiline = None
@@ -23,16 +23,16 @@ class Item(Interpreter):
     def __init__(self, *args, **kw):
         super().__init__('start', *args, **kw)
 
-    def _complete(self, type_, *args, text=None, multiline=False):
-        self.type_ = type_
+    def _complete(self, kind, *args, text=None, multiline=False):
+        self.kind = kind
         self.args = args
         self.text = text.strip() if text else None
         self.multiline = multiline
 
-    def _finish_multiline(self, type_, *args):
-        return self._finish(type_, *args, multiline=True)
+    def _finish_multiline(self, kind, *args):
+        return self._finish(kind, *args, multiline=True)
 
-    def _finish(self, type_, *args, **kw):
+    def _finish(self, kind, *args, **kw):
         args = list(args)
         nargs = []
         while args:
@@ -46,11 +46,11 @@ class Item(Interpreter):
             text = args[0]
         else:
             text = None
-        return self._complete(type_, *nargs, text=text, **kw)
+        return self._complete(kind, *nargs, text=text, **kw)
 
     @property
     def left(self):
-        return self.type_
+        return self.kind
 
     def __repr__(self):
         result = self.left
@@ -102,7 +102,7 @@ class Note(Item):
     @property
     def left(self):
         # TODO: optimize
-        result = self.type_
+        result = self.kind
 
         if self.args:
             result += f'{" ".join(self.args)}'
