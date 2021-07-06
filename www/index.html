@@ -34,10 +34,10 @@ foo -> bar: hello() -> HI
 <textarea cols="120" rows="40" id="target"></textarea>
 
 <script type="text/python">
-from browser import document, bind
+from browser import window, document, bind
 
 from dial import Diagram, InterpreterError
-from dial.ascii import ASCIIDiagramRenderer
+from dial.ascii import ASCIIRenderer
 
 source = document['source']
 target = document['target']
@@ -59,8 +59,8 @@ def update(e):
     error.value = ''
     v = source.value
     d = Diagram(v)
-    r = ASCIIDiagramRenderer(d)
-    target.value = str(r.render())
+    r = ASCIIRenderer(d)
+    target.value = r.dumps()
   except InterpreterError as ex:
     error.value = str(ex)
     print('error')

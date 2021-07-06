@@ -2,7 +2,9 @@
 
 ### Current release
 
-- A complete example in readme.
+- A complete example
+- Quickstart in readme.
+- Profile
 
 ### Next release
 
