@@ -220,8 +220,8 @@ def test_asciicanvas_drawarrow():
 
 def test_asciicanvas_drawarrowtext():
     c = ASCIICanvas()
-    c.draw_rightarrow(4, 2, 12, texttop='foo', text='bar', textbottom='baz')
-    c.draw_leftarrow(5, 6, 10, texttop='foo', text='bar', textbottom='baz')
+    c.draw_rightarrow(4, 2, 12, texttop='foo', text='bar', textbottom='thud')
+    c.draw_leftarrow(5, 6, 10, texttop='foo', text='bar', textbottom='thud')
     c.draw_toparrow(2, 2, 5)
     c.draw_bottomarrow(17, 2, 5)
     assert eqdia(str(c), '''
@@ -229,10 +229,10 @@ def test_asciicanvas_drawarrowtext():
     .                  .
     .        foo       .
     .  ^ ----bar----> |.
-    .  |     baz      |.
+    .  |    thud      |.
     .  |              |.
     .  |      foo     |.
     .  |  <---bar---  v.
-    .         baz      .
+    .        thud      .
     ....................
     ''')

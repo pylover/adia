@@ -293,3 +293,14 @@ def test_interpreter_badsyntax():
         File "String", Interpreter SequenceDiagram, line 3, col 17
         Expected `->`, got: `:`.
     ''')
+
+
+def test_sequence_returntext():
+    s = '''
+        sequence:
+
+        foo -> bar: hello() -> hi
+    '''
+    d = seq(s)
+    assert eqbigstr(d, s)
+    assert d[0].returntext == 'hi'

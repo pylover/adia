@@ -167,14 +167,17 @@ class ItemStartPlan(ItemPlan):
 
     def _calc_selfcall(self):
         self.start = self.caller.middlecol
-        if self.item.text:
-            self.length = len(self.item.text)
-        else:
-            self.length = 0
 
-        self.length += 5
-        self.end = self.start + self.length
+        l = 0
+        if self.item.text:
+            l = len(self.item.text)
+
+        if self.item.returntext:
+            l = max(len(self.item.returntext), l)
+
+        self.length = l + 6
         self.start += 1
+        self.end = self.start + self.length
         return 1
 
     def _calc_otherscall(self):
@@ -186,6 +189,7 @@ class ItemStartPlan(ItemPlan):
 
         self.start += 1
         self.length = self.end - self.start
+
         return 1
 
     def calc(self):
@@ -195,13 +199,20 @@ class ItemStartPlan(ItemPlan):
             return self._calc_otherscall()
 
     def draw(self, canvas, row):
-        [canvas.draw_leftarrow, canvas.draw_rightarrow][self.direction](
-            self.start, row, self.length, char=self.char, text=self.text
-        )
+        canvas.draw_hline(self.start, row, self.length, char=self.char)
+        if self.direction == LEFT:
+            canvas.set_char(self.start, row, '<')
+        else:
+            canvas.set_char(self.end - 1, row, '>')
+
+        if self.text:
+            canvas.write_textline(self.start + 3, row, self.text)
+
         if not self.selfcall:
             return
 
         canvas.set_char(self.end, row, '+')
+        canvas.set_char(self.end - 1, row, self.char)
         if canvas.cols - self.end == 1:
             canvas.extendright(1)
 
@@ -213,7 +224,7 @@ class ItemEndPlan(ItemStartPlan):
 
     @property
     def text(self):
-        return None
+        return self.item.returntext
 
     def draw(self, canvas, row):
         super().draw(canvas, row)
@@ -508,6 +519,20 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             if end:
                 end.lpad += amount
 
+    def _calculate_paddings(self, itemplan, callee, caller, dir_):
+        if itemplan.selfcall:
+            if itemplan.selfcall:
+                callee.rpad = max(callee.rpad, itemplan.textwidth + 3)
+        else:
+            avail = self._availspacefor_call(caller, callee,
+                                             reverse=dir_ == LEFT)
+            if itemplan.textwidth > avail:
+                amount = itemplan.textwidth - avail
+                if dir_ == LEFT:
+                    callee.rpad += amount
+                else:
+                    callee.lpad += amount
+
     def _plancall(self, item, level):
         caller = self._moduleplans_dict[item.caller]
         callee = self._moduleplans_dict[item.callee]
@@ -516,24 +541,17 @@ class ASCIISequenceRenderer(ASCIIRenderer):
 
         dir_ = LEFT if diff < 0 else RIGHT
         itemplan = ItemStartPlan(item, caller, callee, dir_, level)
-
         self._itemplans.append(itemplan)
-
-        avail = self._availspacefor_call(caller, callee, reverse=dir_ == LEFT)
-        if itemplan.textwidth > avail:
-            amount = itemplan.textwidth - avail
-            if dir_ == LEFT:
-                callee.rpad += amount
-            elif itemplan.selfcall:
-                callee.rpad += amount
-            else:
-                callee.lpad += amount
+        self._calculate_paddings(itemplan, callee, caller, dir_)
 
         if len(item):
             self._recurse(item, level + 1)
 
         itemplan = ItemEndPlan(item, caller, callee, not(dir_), level)
         self._itemplans.append(itemplan)
+
+        if itemplan.text:
+            self._calculate_paddings(itemplan, callee, caller, dir_)
 
     def _recurse(self, parent, level):
         for item in parent:

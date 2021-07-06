@@ -53,6 +53,10 @@ class Item(Interpreter):
     def left(self):
         return self.kind
 
+    @property
+    def right(self):
+        return self.text
+
     def __repr__(self):
         return f'SequenceItem: {self.left}'
 
@@ -60,14 +64,14 @@ class Item(Interpreter):
         f = StringIO()
         f.write(self.left)
 
-        if self.text:
+        if self.right:
             f.write(': ')
             if self.multiline:
                 f.write('|\n')
-                for l in self.text.splitlines():
+                for l in self.right.splitlines():
                     f.write(f'  {l}\n')
             else:
-                f.write(f'{self.text}')
+                f.write(f'{self.right}')
 
         return f.getvalue()
 
@@ -152,14 +156,31 @@ class ContainerItem(Item, Container):
 class Call(ContainerItem):
     caller = None
     callee = None
+    returntext = None
+    returnsign = '->'
 
     @LazyAttribute
     def left(self):
         return f'{self.caller} -> {self.callee}'
 
+    @LazyAttribute
+    def right(self):
+        if not self.text:
+            return
+
+        f = StringIO()
+        f.write(self.text)
+        if self.returntext:
+            f.write(f' {self.returnsign} {self.returntext}')
+
+        return f.getvalue()
+
     def _complete(self, caller, callee, text=None):
         self.caller = caller
         self.callee = callee
+        if text and self.returnsign in text:
+            text, returntext = text.rsplit(self.returnsign, 1)
+            self.returntext = returntext.strip()
         super()._complete('call', text=text)
 
     statemap = {
@@ -199,7 +220,12 @@ class SequenceDiagram(Interpreter, Container):
 
     def dumps(self):
         f = StringIO()
-        f.write(f'sequence: {self.title}\n')
+        f.write('sequence:')
+
+        if self.title:
+            f.write(f' {self.title}')
+
+        f.write('\n')
 
         if self.description:
             f.write(f'description: {self.description}\n')
