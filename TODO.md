@@ -2,7 +2,8 @@
 
 - ASCII Canvas
 - Test self calls
-
+- Personalize
+-
 ## Sequence Diagram
 
 - ascii

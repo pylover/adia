@@ -11,6 +11,7 @@ def runtests(module):
 
 
 def run():
+    from tests import test_lazyattr
     from tests import test_token
     from tests import test_tokenizer
     from tests import test_mutablestring
@@ -26,6 +27,7 @@ def run():
     from tests import test_ascii_sequence_note
 
     for module in [
+        test_lazyattr,
         test_token,
         test_tokenizer,
         test_mutablestring,

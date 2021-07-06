@@ -1,6 +1,7 @@
 import abc
 import itertools
 
+from ..lazyattr import LazyAttribute
 from ..renderer import Renderer
 from ..sequence import SequenceDiagram, Call, Condition, Loop, Note
 
@@ -84,19 +85,16 @@ class ModulePlan(Plan):
     def __repr__(self):
         return f'ModulePlan: {self.title}'
 
-    # TODO: lazyattr
-    @property
+    @LazyAttribute
     def box_hpadding(self):
         return 1, int(not(len(self.title) % 2)) + 1
 
-    # TODO: lazyattr
-    @property
+    @LazyAttribute
     def boxlen(self):
         lp, rp = self.box_hpadding
         return len(self.title) + lp + rp + 2
 
-    # TODO: lazyattr
-    @property
+    @LazyAttribute
     def title(self):
         return self.module.title
 
@@ -134,13 +132,11 @@ class ItemPlan(Plan, metaclass=abc.ABCMeta):
     def __repr__(self):
         return f'{self.repr_symbol} {repr(self.item)}'
 
-    # TODO: lazyattr
-    @property
+    @LazyAttribute
     def text(self):
         return self.item.text
 
-    # TODO: lazyattr
-    @property
+    @LazyAttribute
     def textlen(self):
         if self.text:
             return len(self.text)
@@ -200,15 +196,13 @@ class ConditionStartPlan(ItemPlan):
         self.startmodule = startmodule
         self.endmodule = endmodule
 
-    # TODO: lazyattr
-    @property
+    # TODO: rename to type
+    @LazyAttribute
     def type_(self):
         return self.item.type_
 
-    # TODO: lazyattr
-    @property
+    @LazyAttribute
     def text(self):
-        # TODO: Optimize
         result = f'{self.item.type_}'
         if self.item.text:
             result += f' {self.item.text}'
@@ -230,7 +224,6 @@ class ConditionStartPlan(ItemPlan):
         return 3
 
     def draw(self, canvas, row):
-        # TODO: draw_textbox instead
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
         row += 1
@@ -278,7 +271,6 @@ class NotePlan(ItemPlan):
         return 3
 
     def draw(self, canvas, row):
-        # TODO: draw_textbox instead
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
         row += 1
@@ -418,7 +410,6 @@ class ASCIISequenceRenderer(ASCIIRenderer):
                 self._find_condition_startend(self._itemplans[s:])
 
             for p in self._itemplans[s::-1]:
-                # TODO: Cannot cover
                 if p.level > level:
                     continue
 

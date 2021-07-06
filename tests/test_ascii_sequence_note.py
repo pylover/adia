@@ -3,6 +3,8 @@ from dial.diagram import Diagram
 
 from .helpers import eqdia
 
+# TODO: test multiline comments
+
 
 def test_asciisequence_note():
     r = ASCIIDiagramRenderer(Diagram('''
