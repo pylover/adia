@@ -81,10 +81,10 @@ def test_sequenceitem_repr():
         for: i in range(10)
           foo -> baz
     ''')
-    assert repr(d[0]) == 'foo -> bar'
-    assert repr(d[1]) == 'foo -> bar'
-    assert repr(d[2]) == 'foo -> bar: baz'
-    assert repr(d[3]) == 'for: i in range(10)'
+    assert repr(d[0]) == 'SequenceItem: foo -> bar'
+    assert repr(d[1]) == 'SequenceItem: foo -> bar'
+    assert repr(d[2]) == 'SequenceItem: foo -> bar'
+    assert repr(d[3]) == 'SequenceItem: for'
 
 
 def test_sequence_repr():

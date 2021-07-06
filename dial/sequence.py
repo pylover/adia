@@ -54,23 +54,22 @@ class Item(Interpreter):
         return self.kind
 
     def __repr__(self):
-        # TODO: Optimize
-        result = self.left
-
-        if self.text:
-            result += ': '
-
-            if self.multiline:
-                result += '|\n'
-                for l in self.text.splitlines():
-                    result += f'  {l}\n'
-            else:
-                result += f'{self.text}'
-
-        return result
+        return f'SequenceItem: {self.left}'
 
     def dumps(self):
-        return repr(self)
+        f = StringIO()
+        f.write(self.left)
+
+        if self.text:
+            f.write(': ')
+            if self.multiline:
+                f.write('|\n')
+                for l in self.text.splitlines():
+                    f.write(f'  {l}\n')
+            else:
+                f.write(f'{self.text}')
+
+        return f.getvalue()
 
     statemap = {
         'start': {
@@ -138,16 +137,16 @@ class Note(Item):
 class ContainerItem(Item, Container):
 
     def dumps(self):
-        # TODO: optimize
-        result = super().dumps()
+        f = StringIO()
+        f.write(super().dumps())
 
         if len(self):
-            result += '\n'
+            f.write('\n')
             for c in self:
                 for line in c.dumps().splitlines():
-                    result += f'  {line}\n'
+                    f.write(f'  {line}\n')
 
-        return result.rstrip('\n')
+        return f.getvalue().rstrip('\n')
 
 
 class Call(ContainerItem):
