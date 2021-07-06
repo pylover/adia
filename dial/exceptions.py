@@ -27,7 +27,7 @@ class BadSyntax(InterpreterError):
             got = token.string
 
         if len(expected) > 1:
-            expected = f'Expected one of `{"|".join(expected)}`'
+            expected = f'Expected one of `{" ".join(expected)}`'
         elif len(expected) == 1:
             expected = f'Expected `{expected[0]}`'
 

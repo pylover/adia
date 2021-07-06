@@ -89,5 +89,5 @@ def test_diagram_attr_error():
         Diagram(s)
     assert eqbigstr(e.value, '''
         File "String", Interpreter Diagram, line 3, col 8
-        Expected one of `diagram|author|version|sequence`, got: `invalid`.
+        Expected one of `diagram author version sequence`, got: `invalid`.
     ''')

@@ -34,7 +34,7 @@ def test_sequence_note_errors():
         ''')
     assert eqbigstr(e.value, '''
         File "String", Interpreter Note, line 3, col 17
-        Expected one of `~|:`, got: `bar`.
+        Expected one of `~ :`, got: `bar`.
     ''')
 
     with raises(BadSyntax) as e:
@@ -274,7 +274,7 @@ def test_interpreter_badsyntax():
         seq('sequence: foo\nfoo')
     assert eqbigstr(e.value, '''
         File "String", Interpreter SequenceDiagram, line 2, col 3
-        Expected one of `->|:|.`, got: `NEWLINE`.
+        Expected one of `-> : .`, got: `NEWLINE`.
     ''')
 
     with raises(BadSyntax) as e:

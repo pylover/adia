@@ -5,10 +5,6 @@
 - A complete example in readme.
 - Remove SVG support and just support ASCII.
 
-#### Tokenizer
-- Better error message for bad syntaxt, PIPE is annoying
-
-
 ### Next release
 
 - Personalize & configrations
