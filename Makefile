@@ -43,7 +43,10 @@ $(WWWDIST)/stdlib.min.js:
 		--filename stdlib.min.js
 
 $(WWWDIST)/stdlib.full.js:
-	- cp $(WWW)/brython_stdlib.js $(WWWDIST)/stdlib.full.js
+	- ln -s $(shell readlink -f $(WWW))/stdlib.full.js $(WWWDIST)
+
+$(WWWDIST)/runtime.js:
+	- ln -s $(shell readlink -f $(WWW))/brython.js $(WWWDIST)/runtime.js
 
 $(WWWDIST)/index.html:
 	- ln -s $(shell readlink -f $(WWW))/index.html $(WWWDIST)
@@ -67,11 +70,18 @@ $(WWWDIST)/tests:
 	- ln -s $(shell readlink -f tests) $(WWWDIST)
 
 .PHONY: www
-www: $(WWWDIST)/stdlib.full.js $(WWWDIST)/stdlib.min.js $(WWWDIST)/dial.js \
-	$(WWWDIST)/index.html $(WWWDIST)/check.html $(WWWDIST)/check.py \
-	$(WWWDIST)/tests $(WWWDIST)/kitchen.py $(WWWDIST)/kitchen.html \
-	$(WWWDIST)/favicon.ico
-	- cp $(WWW)/brython.js $(WWWDIST)/runtime.js
+www: \
+	$(WWWDIST)/stdlib.full.js \
+	$(WWWDIST)/stdlib.min.js \
+	$(WWWDIST)/dial.js \
+	$(WWWDIST)/index.html \
+	$(WWWDIST)/check.html \
+	$(WWWDIST)/check.py \
+	$(WWWDIST)/tests \
+	$(WWWDIST)/kitchen.py \
+	$(WWWDIST)/kitchen.html \
+	$(WWWDIST)/favicon.ico \
+	$(WWWDIST)/runtime.js
 
 .PHONY: serve
 serve: www
