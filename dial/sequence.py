@@ -282,7 +282,7 @@ class SequenceDiagram(Interpreter, Container):
 
     def _new_note(self, note):
         for m in note.modules:
-            self._ensuremodule(m, visible=True)
+            self._ensuremodule(m, visible=False)
 
         self.current.append(note)
 

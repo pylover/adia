@@ -348,6 +348,12 @@ class ASCIISequenceRenderer(ASCIIRenderer):
             self._moduleplans.append(module)
             self._moduleplans_dict[m] = module
 
+        for k, v in self.diagram.modules.items():
+            if k not in self._moduleplans_dict:
+                module = ModulePlan(self.diagram.modules[k])
+                self._moduleplans.append(module)
+                self._moduleplans_dict[k] = module
+
     def _fromto_modules(self, from_, to, reverse=False):
         capt = False
 
