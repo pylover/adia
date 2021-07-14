@@ -33,7 +33,7 @@ make cover
 #### Brython Tests
 
 ```bash
-make clean server
+make clean serve
 ```
 
 Then open the browser and point http://localhost:8000/check.html to run tests.
