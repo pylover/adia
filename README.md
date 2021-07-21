@@ -39,7 +39,7 @@ source = '''
   
   sequence:
   foo -> bar: Hello World!
-  '''
+'''
 
 print(Diagram(source).renders())
 ```
