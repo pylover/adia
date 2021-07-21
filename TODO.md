@@ -10,6 +10,7 @@
 
 ### Next release
 
+- Command line interface
 - Profile
 
 #### Syntaxt highlight
