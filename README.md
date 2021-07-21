@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/dobisel/dial/badge.svg?branch=master)](https://coveralls.io/github/dobisel/dial?branch=master)
 
 # dial
-Another language for diagrams.
+ASCII diagram language.
 
 ```dial
 diagram: Foo
