@@ -4,13 +4,14 @@
 # dial
 Another language for diagrams.
 
-
 ```dial
 diagram: Foo
-sequence:
 
-foo -> bar
+sequence:
+foo -> bar: Hello World!
 ```
+
+Output: 
 
 ```
  DIAGRAM: Foo                             
