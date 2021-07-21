@@ -34,14 +34,14 @@ Output:
 ```python
 from dial import Diagram
 
-source = '''
+diagram = Diagram('''
   diagram: Foo
   
   sequence:
   foo -> bar: Hello World!
-'''
+''')
 
-print(Diagram(source).renders())
+print(diagram.renders())
 ```
 
 ## Setup development environment
