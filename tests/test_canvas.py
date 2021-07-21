@@ -1,10 +1,10 @@
-from dial.ascii import ASCIICanvas
+from dial.canvas import Canvas
 
 from .helpers import eqdia
 
 
-def test_asciicanvas_extend():
-    c = ASCIICanvas()
+def test_canvas_extend():
+    c = Canvas()
     assert c.size == (0, 0)
     c.extendright(1)
     c.extendbottom(3)
@@ -63,8 +63,8 @@ def test_asciicanvas_extend():
     ''')
 
 
-def test_asciicanvas_write_hcenter():
-    c = ASCIICanvas()
+def test_canvas_write_hcenter():
+    c = Canvas()
     c.write_hcenter(0, 0, 'Foo Bar Baz')
     assert eqdia(str(c), '''
     .............
@@ -73,8 +73,8 @@ def test_asciicanvas_write_hcenter():
     ''')
 
 
-def test_asciicanvas_drawline():
-    c = ASCIICanvas()
+def test_canvas_drawline():
+    c = Canvas()
     c.draw_vline(3, 1, 3)
     assert eqdia(str(c), '''
     ......
@@ -96,8 +96,8 @@ def test_asciicanvas_drawline():
     ''')
 
 
-def test_asciicanvas_drawbox():
-    c = ASCIICanvas()
+def test_canvas_drawbox():
+    c = Canvas()
     c.draw_box(3, 1, 5, 4)
     assert eqdia(str(c), '''
     ..........
@@ -110,8 +110,8 @@ def test_asciicanvas_drawbox():
     ''')
 
 
-def test_asciicanvas_drawtextline():
-    c = ASCIICanvas()
+def test_canvas_drawtextline():
+    c = Canvas()
     c.write_textline(3, 1, 'foo')
     assert eqdia(str(c), '''
     ........
@@ -121,8 +121,8 @@ def test_asciicanvas_drawtextline():
     ''')
 
 
-def test_asciicanvas_drawtextblock():
-    c = ASCIICanvas()
+def test_canvas_drawtextblock():
+    c = Canvas()
     c.write_textblock(3, 1, 'foo\n\n  bar')
     assert eqdia(str(c), '''
     ..........
@@ -134,8 +134,8 @@ def test_asciicanvas_drawtextblock():
     ''')
 
 
-def test_asciicanvas_drawtextbox():
-    c = ASCIICanvas()
+def test_canvas_drawtextbox():
+    c = Canvas()
     c.draw_textbox(1, 1, 'foo')
     assert eqdia(str(c), '''
     ........
@@ -146,7 +146,7 @@ def test_asciicanvas_drawtextbox():
     ........
     ''')
 
-    c = ASCIICanvas()
+    c = Canvas()
     c.draw_textbox(1, 1, 'foo', hpadding=(1, 2))
     assert eqdia(str(c), '''
     ...........
@@ -157,7 +157,7 @@ def test_asciicanvas_drawtextbox():
     ...........
     ''')
 
-    c = ASCIICanvas()
+    c = Canvas()
     c.draw_textbox(2, 1, 'foo\n\n  bar')
     assert eqdia(str(c), '''
     ...........
@@ -170,7 +170,7 @@ def test_asciicanvas_drawtextbox():
     ...........
     ''')
 
-    c = ASCIICanvas()
+    c = Canvas()
     c.draw_textbox(3, 1, 'foo\n\n  bar', hpadding=1)
     assert eqdia(str(c), '''
     ..............
@@ -183,7 +183,7 @@ def test_asciicanvas_drawtextbox():
     ..............
     ''')
 
-    c = ASCIICanvas()
+    c = Canvas()
     c.draw_textbox(3, 1, 'foo\n\n  bar', hpadding=1, vpadding=1)
     assert eqdia(str(c), '''
     ..............
@@ -199,8 +199,8 @@ def test_asciicanvas_drawtextbox():
     ''')
 
 
-def test_asciicanvas_drawarrow():
-    c = ASCIICanvas()
+def test_canvas_drawarrow():
+    c = Canvas()
     c.draw_rightarrow(4, 2, 12)
     c.draw_leftarrow(4, 6, 12)
     c.draw_toparrow(2, 2, 5)
@@ -218,8 +218,8 @@ def test_asciicanvas_drawarrow():
     ''')
 
 
-def test_asciicanvas_drawarrowtext():
-    c = ASCIICanvas()
+def test_canvas_drawarrowtext():
+    c = Canvas()
     c.draw_rightarrow(4, 2, 12, texttop='foo', text='bar', textbottom='thud')
     c.draw_leftarrow(5, 6, 10, texttop='foo', text='bar', textbottom='thud')
     c.draw_toparrow(2, 2, 5)

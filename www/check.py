@@ -11,38 +11,38 @@ def runtests(module):
 
 
 def run():
+    from tests import test_api
+    from tests import test_canvas
+    from tests import test_diagram_dump
+    from tests import test_diagram_header
     from tests import test_lazyattr
+    from tests import test_mutablestring
+    from tests import test_renderer
+    from tests import test_sequence_callstack
+    from tests import test_sequence_condition
+    from tests import test_sequence_header
+    from tests import test_sequence_interpreter
+    from tests import test_sequence_loop
+    from tests import test_sequence_note
     from tests import test_token
     from tests import test_tokenizer
-    from tests import test_mutablestring
-    from tests import test_sequence
-    from tests import test_asciicanvas
-    from tests import test_asciirenderer
-    from tests import test_asciidiagram
-    from tests import test_diagram
-    from tests import test_ascii_sequence_header
-    from tests import test_ascii_sequence_callstack
-    from tests import test_ascii_sequence_condition
-    from tests import test_ascii_sequence_loop
-    from tests import test_ascii_sequence_note
-    from tests import test_api
 
     for module in [
+        test_api,
+        test_canvas,
+        test_diagram_dump,
+        test_diagram_header,
         test_lazyattr,
+        test_mutablestring,
+        test_renderer,
+        test_sequence_callstack,
+        test_sequence_condition,
+        test_sequence_header,
+        test_sequence_interpreter,
+        test_sequence_loop,
+        test_sequence_note,
         test_token,
         test_tokenizer,
-        test_mutablestring,
-        test_sequence,
-        test_diagram,
-        test_asciicanvas,
-        test_asciirenderer,
-        test_asciidiagram,
-        test_ascii_sequence_header,
-        test_ascii_sequence_callstack,
-        test_ascii_sequence_condition,
-        test_ascii_sequence_loop,
-        test_ascii_sequence_note,
-        test_api,
     ]:
         for test in runtests(module):
             yield test

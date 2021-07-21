@@ -1,11 +1,10 @@
-from dial.ascii import ASCIIRenderer
-from dial.diagram import Diagram
+from dial import Diagram
 
 from .helpers import eqdia
 
 
-def test_asciisequence_callstack():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_callstack():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -18,8 +17,8 @@ def test_asciisequence_callstack():
         foo -> qux
         foo -> quux
           quux -> qux
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ...............................................
     . DIAGRAM: Foo                                .
     . version: 1.0                                .
@@ -58,8 +57,8 @@ def test_asciisequence_callstack():
     ''')
 
 
-def test_asciisequence_call_notext():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_call_notext():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -68,8 +67,8 @@ def test_asciisequence_call_notext():
         foo -> bar
         foo -> b
         f -> bar
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ...............................
     . DIAGRAM: Foo                .
     . version: 1.0                .
@@ -102,8 +101,8 @@ def test_asciisequence_call_notext():
     ''')
 
 
-def test_asciisequence_calltext_minimum():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_calltext_minimum():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -112,8 +111,8 @@ def test_asciisequence_calltext_minimum():
         foo -> bar: 2
         foo -> b: 3
         f -> bar: 4
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ..................................
     . DIAGRAM: Foo                   .
     . version: 1.0                   .
@@ -146,9 +145,9 @@ def test_asciisequence_calltext_minimum():
     ''')
 
 
-def test_asciisequence_calltext():
+def test_sequence_calltext():
 
-    r = ASCIIRenderer(Diagram('''
+    d = Diagram('''
         diagram: diaL demo
         version: 1.0
         author: pylover
@@ -160,8 +159,8 @@ def test_asciisequence_calltext():
           bar -> baz: hey() -> Hey
 
         @foo: End
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ......................................
     . DIAGRAM: diaL demo                 .
     . author: pylover                    .
@@ -192,7 +191,7 @@ def test_asciisequence_calltext():
     ......................................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -201,8 +200,8 @@ def test_asciisequence_calltext():
         foo -> bar: init()
         foo -> b: init()
         f -> bar: 010101010101010101010101010101010101
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     .......................................................
     . DIAGRAM: Foo                                        .
     . version: 1.0                                        .
@@ -235,8 +234,8 @@ def test_asciisequence_calltext():
     ''')
 
 
-def test_asciisequence_callreturntext():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_callreturntext():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -245,8 +244,8 @@ def test_asciisequence_callreturntext():
         foo -> bar: init() -> Object
         foo -> b: init()
         f -> bar: 0101 -> 010101010101010101010101010101010101
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     .......................................................
     . DIAGRAM: Foo                                        .
     . version: 1.0                                        .
@@ -279,16 +278,16 @@ def test_asciisequence_callreturntext():
     ''')
 
 
-def test_asciisequence_selfcall():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_selfcall():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
 
         foo -> foo: init()
         bar -> bar:
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ...............................
     . DIAGRAM: Foo                .
     . version: 1.0                .
@@ -313,16 +312,16 @@ def test_asciisequence_selfcall():
     ''')
 
 
-def test_asciisequence_selfcall_returntext():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_selfcall_returntext():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
 
         foo -> foo: init() -> error/zero
         bar -> bar: -> Exception
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ............................................
     . DIAGRAM: Foo                             .
     . version: 1.0                             .

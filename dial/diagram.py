@@ -4,6 +4,7 @@ from .container import Container
 from .interpreter import Interpreter, Ignore, Switch, Goto, Consume, New
 from .sequence import SequenceDiagram
 from .token import *
+from .renderer import Renderer
 
 
 class Diagram(Interpreter, Container):
@@ -60,6 +61,12 @@ class Diagram(Interpreter, Container):
     def parse(self, string):
         with StringIO(string) as f:
             self.parsefile(f)
+
+    def render(self, filelike):
+        Renderer(self).dump(filelike)
+
+    def renders(self):
+        return Renderer(self).dumps()
 
     def _set_title(self, attr, value):
         self.title = value.strip()

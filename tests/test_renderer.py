@@ -1,14 +1,14 @@
 from dial.sequence import Module
-from dial.ascii.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, \
+from dial.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, \
     RIGHT
 
 
-def test_asciirenderer_moduleplan():
+def test_renderer_moduleplan():
     p = ModulePlan(Module('foo'))
     assert repr(p) == 'ModulePlan: foo'
 
 
-def test_asciirenderer_itemplans():
+def test_renderer_itemplans():
     class Item:
         def __repr__(self):
             return 'foo -> bar'

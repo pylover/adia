@@ -5,6 +5,10 @@
 Another language for diagrams.
 
 
+```dial
+
+```
+
 ## Setup development environment
 
 Use your favorite virtual environment tool such as 

@@ -1,16 +1,15 @@
-from dial.ascii import ASCIIRenderer
-from dial.diagram import Diagram
+from dial import Diagram
 
 from .helpers import eqdia
 
 
-def test_asciisequence_header():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_header():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence: Bar
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     .................
     . DIAGRAM: Foo  .
     . version: 1.0  .
@@ -20,12 +19,12 @@ def test_asciisequence_header():
     .................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .

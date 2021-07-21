@@ -1,11 +1,10 @@
-from dial.ascii import ASCIIRenderer
-from dial.diagram import Diagram
+from dial import Diagram
 
 from .helpers import eqdia
 
 
-def test_asciisequence_multilinenote():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_multilinenote():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -17,8 +16,8 @@ def test_asciisequence_multilinenote():
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
             sollicitudin sem eget ligula imperdiet, sit amet gravida mi tempor.
 
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ...........................................................................
     . DIAGRAM: Foo                                                            .
     . version: 1.0                                                            .
@@ -44,8 +43,8 @@ def test_asciisequence_multilinenote():
     ''')
 
 
-def test_asciisequence_note():
-    r = ASCIIRenderer(Diagram('''
+def test_sequence_note():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
         sequence:
@@ -56,8 +55,8 @@ def test_asciisequence_note():
         @foo: THUD
         @bar ~ baz: Bar Baz Quux
         @foo ~ baz: FooBaz
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     .......................................
     . DIAGRAM: Foo                        .
     . version: 1.0                        .

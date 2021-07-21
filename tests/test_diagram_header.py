@@ -1,15 +1,14 @@
-from dial.ascii import ASCIIRenderer
-from dial.diagram import Diagram
+from dial import Diagram
 
 from .helpers import eqdia
 
 
-def test_asciidiagram_header():
-    r = ASCIIRenderer(Diagram('''
+def test_diagram_header():
+    d = Diagram('''
         diagram: Foo
         version: 1.0
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
@@ -17,29 +16,29 @@ def test_asciidiagram_header():
     ................
     ''')
 
-    r = ASCIIRenderer(Diagram())
-    assert eqdia(r.dumps(), '''
+    d = Diagram()
+    assert eqdia(d.renders(), '''
     .............................
     . DIAGRAM: Untitled Diagram .
     .                           .
     .............................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    d = Diagram('''
         diagram: Foo
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     ................
     . DIAGRAM: Foo .
     .              .
     ................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    d = Diagram('''
         diagram: Foo
         author: alice
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     .................
     . DIAGRAM: Foo  .
     . author: alice .
@@ -47,12 +46,12 @@ def test_asciidiagram_header():
     .................
     ''')
 
-    r = ASCIIRenderer(Diagram('''
+    d = Diagram('''
         diagram: Foo
         author: alice
         version: 1.0
-    '''))
-    assert eqdia(r.dumps(), '''
+    ''')
+    assert eqdia(d.renders(), '''
     .................
     . DIAGRAM: Foo  .
     . author: alice .

@@ -1,6 +1,6 @@
 from dial.exceptions import BadSyntax, BadAttribute
 from dial.sequence import SequenceDiagram
-from dial.diagram import Diagram
+from dial import Diagram
 
 from .helpers import raises, eqbigstr
 

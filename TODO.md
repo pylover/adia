@@ -2,7 +2,9 @@
 
 ### Current release
 
-- A complete example
+- Document public functions
+- diagram.render function inside readme
+- A complete example inside readme
 - Quickstart in readme.
 - Profile
 

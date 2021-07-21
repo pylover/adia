@@ -37,7 +37,6 @@ foo -> bar: hello() -> HI
 from browser import window, document, bind
 
 from dial import Diagram, InterpreterError
-from dial.ascii import ASCIIRenderer
 
 source = document['source']
 target = document['target']
@@ -59,8 +58,7 @@ def update(e):
     error.value = ''
     v = source.value
     d = Diagram(v)
-    r = ASCIIRenderer(d)
-    target.value = r.dumps()
+    target.value = d.renders()
   except InterpreterError as ex:
     error.value = str(ex)
     print('error')

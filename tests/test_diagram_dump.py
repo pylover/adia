@@ -1,6 +1,6 @@
 from io import StringIO
 
-from dial.diagram import Diagram
+from dial import Diagram
 from dial.exceptions import BadSyntax
 
 from .helpers import raises, eqbigstr

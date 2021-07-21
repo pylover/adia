@@ -1,11 +1,11 @@
 from io import StringIO
 
-from dial import Diagram, ASCIIRenderer
+from dial import Diagram
 
 from .helpers import eqdia
 
 
-def test_lowlevel_api():
+def test_render_string():
     d = Diagram('''
     diagram: My dia
     sequence:
@@ -13,8 +13,7 @@ def test_lowlevel_api():
     foo -> bar
     ''')
 
-    r = ASCIIRenderer(d)
-    assert eqdia(r.dumps(), '''
+    assert eqdia(d.renders(), '''
     ...................
     . DIAGRAM: My dia .
     .                 .
@@ -34,7 +33,7 @@ def test_lowlevel_api():
     ''')
 
 
-def test_lowlevel_api_file():
+def test_render_file():
     d = Diagram('''
     diagram: My dia
     sequence:
@@ -42,9 +41,8 @@ def test_lowlevel_api_file():
     foo -> bar
     ''')
 
-    r = ASCIIRenderer(d)
     f = StringIO()
-    r.dump(f)
+    d.render(f)
     assert eqdia(f.getvalue(), '''
     ...................
     . DIAGRAM: My dia .
