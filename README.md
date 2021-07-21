@@ -6,7 +6,26 @@ Another language for diagrams.
 
 
 ```dial
+diagram: Foo
+sequence:
 
+foo -> bar
+```
+
+```
+ DIAGRAM: Foo                             
+
+ +-----+             +-----+
+ | foo |             | bar |
+ +-----+             +-----+
+    |                   |
+    |~~~Hello World!~~~>|
+    |                   |
+    |<------------------|
+    |                   |
+ +-----+             +-----+
+ | foo |             | bar |
+ +-----+             +-----+
 ```
 
 ## Setup development environment

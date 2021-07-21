@@ -17,6 +17,7 @@ def run():
     from tests import test_diagram_header
     from tests import test_lazyattr
     from tests import test_mutablestring
+    from tests import test_readme
     from tests import test_renderer
     from tests import test_sequence_callstack
     from tests import test_sequence_condition
@@ -34,6 +35,7 @@ def run():
         test_diagram_header,
         test_lazyattr,
         test_mutablestring,
+        test_readme,
         test_renderer,
         test_sequence_callstack,
         test_sequence_condition,
