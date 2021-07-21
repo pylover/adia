@@ -2,7 +2,17 @@
 [![Coverage Status](https://coveralls.io/repos/github/dobisel/dial/badge.svg?branch=master)](https://coveralls.io/github/dobisel/dial?branch=master)
 
 # dial
-ASCII diagram language.
+[Dial](https://github.com/pylover/dial) is a language specially designed to 
+render ASCII diagrams.
+
+Currently, only sequence diagrams are supported, but the roadmap is to support 
+two more types of diagrams: `fork` and `class`,  check out the `TODO.md` to 
+figure out what I talking about.
+
+The Dial can also run flawlessly inside the browsers using the awesome 
+project: [Brython](https://github.com/brython-dev/brython). check out 
+the [Web Interface](https://github.com/pylover/dial#web-interface) 
+section below for more info.
 
 ```dial
 diagram: Foo
