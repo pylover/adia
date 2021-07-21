@@ -29,6 +29,21 @@ Output:
  +-----+             +-----+
 ```
 
+## Quickstart
+
+```python
+from dial import Diagram
+
+source = '''
+  diagram: Foo
+  
+  sequence:
+  foo -> bar: Hello World!
+  '''
+
+print(Diagram(source).renders())
+```
+
 ## Setup development environment
 
 Use your favorite virtual environment tool such as 
