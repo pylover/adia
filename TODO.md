@@ -2,13 +2,15 @@
 
 ### Current release
 
+- PyPI
+- Send PrismJS PR
+- pylover/dial-demo
 - Document public functions
-- diagram.render function inside readme
 - A complete example inside readme
-- Quickstart in readme.
-- Profile
 
 ### Next release
+
+- Profile
 
 #### Syntaxt highlight
 
