@@ -428,6 +428,15 @@ class SequenceRenderer(Renderer):
 
     def _availspacefor_note(self, from_, to):
         result = 0
+        single = False
+
+        if to is None:
+            single = True
+            try:
+                to = self._moduleplans[self._moduleplans.index(from_) + 1]
+            except IndexError:
+                to = None
+
         if to is None:
             result += from_.boxlen
         else:
@@ -438,7 +447,8 @@ class SequenceRenderer(Renderer):
 
                 result += max(m.rpad, nm.lpad)
 
-            # result -= to.boxlen
+        if single and to is not None:
+            result -= to.boxlen
 
         result -= 4
 

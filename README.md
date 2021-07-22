@@ -151,7 +151,7 @@ alice -> bob: logout(token)
     bob -> db: delete(token)
 ```
 
-Diagram:
+Generated diagram:
 
 ```
  DIAGRAM: Authentication                                                           
