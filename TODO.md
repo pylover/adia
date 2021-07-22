@@ -3,10 +3,8 @@
 ### Current release
 
 - PyPI
-- Send PrismJS PR
 - pylover/dial-demo
 - Document public functions
-- A complete example inside readme
 
 ### Next release
 
