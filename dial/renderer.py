@@ -256,6 +256,10 @@ class ConditionStartPlan(ItemPlan):
         self.startmodule = startmodule
         self.endmodule = endmodule
 
+    @property
+    def singlemodule(self):
+        return self.startmodule is self.endmodule
+
     @LazyAttribute
     def text(self):
         result = f'{self.item.kind}'
@@ -264,6 +268,25 @@ class ConditionStartPlan(ItemPlan):
 
         return result
 
+    def _calc_singlemodule(self):
+        self.start = self.startmodule.col
+
+        l = 0
+        if self.item.text:
+            l = len(self.item.text)
+
+        self.length = l + 7
+        self.end = self.start + self.length
+        return 3
+
+    def _calc_multimodule(self):
+        self.start = self.startmodule.col
+        self.end = self.endmodule.col + self.endmodule.boxlen
+
+        self.length = self.end - self.start
+
+        return 3
+
     def calc(self):
         if self.startmodule is None:
             self.start = 1
@@ -271,12 +294,10 @@ class ConditionStartPlan(ItemPlan):
             self.end = self.length + 1
             return 3
 
-        self.start = self.startmodule.col
-        self.end = self.endmodule.col + self.endmodule.boxlen
-
-        self.length = self.end - self.start
-
-        return 3
+        if self.singlemodule:
+            return self._calc_singlemodule()
+        else:
+            return self._calc_multimodule()
 
     def draw(self, canvas, row):
         canvas.draw_hline(self.start, row, self.length, char=self.char)
@@ -514,14 +535,20 @@ class SequenceRenderer(Renderer):
                 if p.kind in ('if', 'for', 'while'):
                     break
 
-        avail = self._availspacefor_condition(start, end)
-        if condstart_plan.textwidth > avail:
-            amount = condstart_plan.textwidth - avail
-            if start:
-                start.rpad += amount
+        if start is not None and condstart_plan.singlemodule:
+            start.rpad = max(
+                start.rpad,
+                (condstart_plan.textwidth - start.boxlen) + 5
+            )
+        else:
+            avail = self._availspacefor_condition(start, end)
+            if condstart_plan.textwidth > avail:
+                amount = condstart_plan.textwidth - avail
+                if start:
+                    start.rpad += amount
 
-            if end:
-                end.lpad += amount
+                if end:
+                    end.lpad += amount
 
         condend_plan = ConditionEndPlan(item, start, end, level)
         self._itemplans.append(condend_plan)
@@ -550,11 +577,11 @@ class SequenceRenderer(Renderer):
 
     def _calculate_paddings(self, itemplan, callee, caller, dir_):
         if itemplan.selfcall:
-            if itemplan.selfcall:
-                callee.rpad = max(callee.rpad, itemplan.textwidth + 3)
+            callee.rpad = max(callee.rpad, itemplan.textwidth + 3)
         else:
-            avail = self._availspacefor_call(caller, callee,
-                                             reverse=dir_ == LEFT)
+            avail = self._availspacefor_call(
+                caller, callee, reverse=dir_ == LEFT
+            )
             if itemplan.textwidth > avail:
                 amount = itemplan.textwidth - avail
                 if dir_ == LEFT:

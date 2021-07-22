@@ -25,6 +25,7 @@ def run():
     from tests import test_sequence_interpreter
     from tests import test_sequence_loop
     from tests import test_sequence_note
+    from tests import test_sequence_selfcall
     from tests import test_token
     from tests import test_tokenizer
 
@@ -43,6 +44,7 @@ def run():
         test_sequence_interpreter,
         test_sequence_loop,
         test_sequence_note,
+        test_sequence_selfcall,
         test_token,
         test_tokenizer,
     ]:
