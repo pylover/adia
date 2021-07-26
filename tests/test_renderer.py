@@ -2,12 +2,12 @@ from dial.sequence import Module
 from dial.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, RIGHT
 
 
-def test_renderer_moduleplan():
+def test_moduleplan():
     p = ModulePlan(Module('foo'))
     assert repr(p) == 'ModulePlan: foo'
 
 
-def test_renderer_itemplans():
+def test_itemplans():
     class Item:
         def __repr__(self):
             return 'foo -> bar'

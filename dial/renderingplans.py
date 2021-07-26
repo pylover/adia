@@ -38,18 +38,18 @@ class ModulePlan(RenderingPlan):
     def middlecol(self):
         return self.col + self.boxlen // 2
 
-    def drawbox(self, canvas, col=None, row=None):
+    def drawbox(self, renderer, col=None, row=None):
         if col:
             self.col = col
 
         if row:
             self.row = row
 
-        canvas.draw_textbox(self.col, self.row, self.title,
-                            hpadding=(self.box_hpadding))
+        renderer.canvas.draw_textbox(
+            self.col, self.row, self.title, hpadding=(self.box_hpadding))
 
-    def drawpipe(self, canvas, row):
-        canvas.set_char(self.middlecol, row, '|')
+    def drawpipe(self, renderer, row):
+        renderer.canvas.set_char(self.middlecol, row, '|')
 
 
 class ItemPlan(RenderingPlan, metaclass=abc.ABCMeta):
@@ -114,7 +114,7 @@ class ItemStartPlan(ItemPlan):
         self.length = l + 6
         self.start += 1
         self.end = self.start + self.length
-        return 1
+        return 0, 1, 0
 
     def _calc_otherscall(self):
         self.start = self.caller.middlecol
@@ -126,7 +126,7 @@ class ItemStartPlan(ItemPlan):
         self.start += 1
         self.length = self.end - self.start
 
-        return 1
+        return 0, 1, 0
 
     def calc(self):
         if self.selfcall:
@@ -134,7 +134,9 @@ class ItemStartPlan(ItemPlan):
         else:
             return self._calc_otherscall()
 
-    def draw(self, canvas, row):
+    def draw(self, renderer, row):
+        canvas = renderer.canvas
+
         canvas.draw_hline(self.start, row, self.length, char=self.char)
         if self.direction == LEFT:
             canvas.set_char(self.start, row, '<')
@@ -149,6 +151,9 @@ class ItemStartPlan(ItemPlan):
 
         canvas.set_char(self.end, row, '+')
         canvas.set_char(self.end - 1, row, self.char)
+        # canvas.set_char(self.end, row + 1, '|')
+        renderer.register_repeat(self.end, '|')
+
         if canvas.cols - self.end == 1:
             canvas.extendright(1)
 
@@ -162,10 +167,13 @@ class ItemEndPlan(ItemStartPlan):
     def text(self):
         return self.item.returntext
 
-    def draw(self, canvas, row):
-        super().draw(canvas, row)
-        if self.selfcall:
-            canvas.set_char(self.end, row - 1, '|')
+    def draw(self, renderer, row):
+        super().draw(renderer, row)
+
+        if not self.selfcall:
+            return
+
+        renderer.unregister_repeat(self.end, '|')
 
 
 class ConditionStartPlan(ItemPlan):
@@ -200,7 +208,7 @@ class ConditionStartPlan(ItemPlan):
 
         self.length = l + 7
         self.end = self.start + self.length
-        return 3
+        return 0, 3, 0
 
     def _calc_multimodule(self):
         self.start = self.startmodule.col
@@ -208,21 +216,23 @@ class ConditionStartPlan(ItemPlan):
 
         self.length = self.end - self.start
 
-        return 3
+        return 0, 3, 0
 
     def calc(self):
         if self.startmodule is None:
             self.start = 1
             self.length = max(10, self.textwidth + 4)
             self.end = self.length + 1
-            return 3
+            return 0, 3, 0
 
         if self.singlemodule:
             return self._calc_singlemodule()
         else:
             return self._calc_multimodule()
 
-    def draw(self, canvas, row):
+    def draw(self, renderer, row):
+        canvas = renderer.canvas
+
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
         row += 1
@@ -233,6 +243,9 @@ class ConditionStartPlan(ItemPlan):
 
         row += 1
         canvas.draw_hline(self.start, row, self.length, char=self.char)
+
+        if canvas.cols - self.end < 1:
+            canvas.extendright(1)
 
 
 class ConditionEndPlan(ConditionStartPlan):
@@ -275,9 +288,11 @@ class NotePlan(ItemPlan):
 
         self.length = max(self.length, self.textwidth + 4)
         self.end = self.start + self.length
-        return len(self.lines) + 2
+        return 0, len(self.lines) + 2, 0
 
-    def draw(self, canvas, row):
+    def draw(self, renderer, row):
+        canvas = renderer.canvas
+
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
         for l in self.lines:

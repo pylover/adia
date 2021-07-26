@@ -26,12 +26,23 @@ class Renderer:
     dirty = True
 
     def __init__(self, diagram, canvas=None):
+        self._repeats = set()
         self.diagram = diagram
 
         if canvas is None:
             self.canvas = Canvas()
         else:
             self.canvas = canvas
+
+    def register_repeat(self, col, char):
+        self._repeats.add((col, char))
+
+    def unregister_repeat(self, col, char):
+        self._repeats.remove((col, char))
+
+    def _render_emptyline(self):
+        for col, char in self._repeats:
+            self.canvas.set_char(col, self.row, char)
 
     def _extend(self, i):
         self.canvas.extendbottom(i)
@@ -136,7 +147,7 @@ class SequenceRenderer(Renderer):
         if to:
             result -= to.boxlen // 2 + 1
 
-        result -= 8
+        result -= 7
         return 0 if result < 0 else result
 
     def _availspacefor_condition(self, from_, to):
@@ -186,8 +197,7 @@ class SequenceRenderer(Renderer):
         return result
 
     def _find_condition_startend(self, children):
-        l = [
-            (
+        l = [(
                 self._moduleplans.index(i.caller),
                 self._moduleplans.index(i.callee)
             )
@@ -200,14 +210,14 @@ class SequenceRenderer(Renderer):
         return self._moduleplans[s], self._moduleplans[e], s, e
 
     def _plancondition(self, item, level):
-        start, end = None, None
+        last, start, end = None, None, None
         if self._itemplans:
             last = self._itemplans[-1]
-            if isinstance(last, ConditionEndPlan):
-                if item.kind not in ('if', 'for', 'while'):
-                    old = self._itemplans.pop()
-                    start = old.startmodule
-                    end = old.endmodule
+            if isinstance(last, ConditionEndPlan) and \
+                    item.kind not in ('if', 'for', 'while'):
+                old = self._itemplans.pop()
+                start = old.startmodule
+                end = old.endmodule
 
         condstart_plan = ConditionStartPlan(item, start, end, level)
         self._itemplans.append(condstart_plan)
@@ -244,6 +254,15 @@ class SequenceRenderer(Renderer):
 
                 if p.kind in ('if', 'for', 'while'):
                     break
+
+        elif isinstance(last, (ItemStartPlan, ItemEndPlan)):
+            if start is None:
+                start = last.caller
+                condstart_plan.startmodule = start
+
+            if end is None:
+                end = last.callee
+                condstart_plan.endmodule = end
 
         if start is not None and condstart_plan.singlemodule:
             start.rpad = max(
@@ -285,7 +304,7 @@ class SequenceRenderer(Renderer):
             if end:
                 end.lpad += amount
 
-    def _calculate_paddings(self, itemplan, callee, caller, dir_):
+    def _calculate_callpaddings(self, itemplan, callee, caller, dir_):
         if itemplan.selfcall:
             callee.rpad = max(callee.rpad, itemplan.textwidth + 3)
         else:
@@ -295,9 +314,9 @@ class SequenceRenderer(Renderer):
             if itemplan.textwidth > avail:
                 amount = itemplan.textwidth - avail
                 if dir_ == LEFT:
-                    callee.rpad += amount
+                    caller.lpad += amount
                 else:
-                    callee.lpad += amount
+                    caller.rpad += amount
 
     def _plancall(self, item, level):
         caller = self._moduleplans_dict[item.caller]
@@ -308,7 +327,7 @@ class SequenceRenderer(Renderer):
         dir_ = LEFT if diff < 0 else RIGHT
         itemplan = ItemStartPlan(item, caller, callee, dir_, level)
         self._itemplans.append(itemplan)
-        self._calculate_paddings(itemplan, callee, caller, dir_)
+        self._calculate_callpaddings(itemplan, callee, caller, dir_)
 
         if len(item):
             self._recurse(item, level + 1)
@@ -317,7 +336,7 @@ class SequenceRenderer(Renderer):
         self._itemplans.append(itemplan)
 
         if itemplan.text:
-            self._calculate_paddings(itemplan, callee, caller, dir_)
+            self._calculate_callpaddings(itemplan, callee, caller, dir_)
 
     def _recurse(self, parent, level):
         for item in parent:
@@ -344,17 +363,22 @@ class SequenceRenderer(Renderer):
         col = max(1, fm.lpad)
 
         for m, nm in twiniter(self._moduleplans):
-            m.drawbox(self.canvas, col, row)
+            m.drawbox(self, col, row)
             col += m.boxlen + max(m.rpad, nm.lpad if nm else 1)
 
         if col > self.canvas.cols:
             self.canvas.extendright(col - self.canvas.cols)
 
+    def _render_emptyline(self):
+        self._extend(1)
+        for m in self._moduleplans:
+            m.drawpipe(self, self.row)
+
+        super()._render_emptyline()
+
     def _render_emptylines(self, count=1):
         for _ in range(count):
-            self._extend(1)
-            for m in self._moduleplans:
-                m.drawpipe(self.canvas, self.row)
+            self._render_emptyline()
 
     def _render_items(self):
         lastdir = None
@@ -362,15 +386,16 @@ class SequenceRenderer(Renderer):
 
         for c in self._itemplans:
             # Place a blank line if direction was changed.
-            if c.direction != lastdir or not lasttype or \
-                    not isinstance(c, lasttype):
+            if lastdir is not None and (
+                    c.direction != lastdir or not lasttype or
+                    not isinstance(c, lasttype)):
                 self._render_emptylines()
 
             # Calculte the needed space for the item
-            lines = c.calc()
-            self._render_emptylines(lines)
-
-            c.draw(self.canvas, self.row - lines)
+            lines_before, lines, lines_after = c.calc()
+            self._render_emptylines(lines_before + lines)
+            c.draw(self, self.row - (lines - 1))
+            self._render_emptylines(lines_after)
 
             lastdir = c.direction
             lasttype = type(c)
@@ -389,7 +414,9 @@ class SequenceRenderer(Renderer):
             self._render_modules()
             self._render_emptylines()
 
-        self._render_items()
+        if self._itemplans:
+            self._render_items()
+            self._render_emptylines()
 
         if self._moduleplans:
             self._render_modules()

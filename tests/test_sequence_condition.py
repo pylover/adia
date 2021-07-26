@@ -201,6 +201,32 @@ def test_sequence_emptyif():
     ................
     ''')
 
+    d = Diagram('''
+        diagram: Foo
+        version: 1.0
+        sequence:
+
+        if: foo > bar
+        else
+    ''')
+    assert eqdia(d.renders(), '''
+    ....................
+    . DIAGRAM: Foo     .
+    . version: 1.0     .
+    .                  .
+    . **************** .
+    . * if foo > bar * .
+    . **************** .
+    . **********       .
+    . * else   *       .
+    . **********       .
+    . **********       .
+    . * end if *       .
+    . **********       .
+    .                  .
+    ....................
+    ''')
+
 
 def test_sequence_condition_on_reversecall():
     d = Diagram('''
