@@ -13,6 +13,7 @@ def runtests(module):
 def run():
     from tests import test_api
     from tests import test_canvas
+    from tests import test_diagram
     from tests import test_diagram_dump
     from tests import test_diagram_header
     from tests import test_lazyattr
@@ -32,6 +33,7 @@ def run():
     for module in [
         test_api,
         test_canvas,
+        test_diagram,
         test_diagram_dump,
         test_diagram_header,
         test_lazyattr,

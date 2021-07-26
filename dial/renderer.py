@@ -405,7 +405,7 @@ class SequenceRenderer(Renderer):
 
         # Sequence Header
         if self.diagram.title:
-            self._extend(1)
+            self._extend(2)
             self.canvas.write_textline(
                 1, self.row, f'SEQUENCE: {self.diagram.title} ')
             self._extend(1)

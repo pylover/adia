@@ -116,6 +116,7 @@ def test_sequence_note_issue_8():
     . author: pylover                                          .
     . version: 1.0                                             .
     .                                                          .
+    .                                                          .
     . SEQUENCE: Login                                          .
     .                                                          .
     . +-------+               +-----+       +-----------+      .

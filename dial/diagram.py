@@ -86,7 +86,7 @@ class Diagram(Interpreter, Container):
         'diagram': Goto(nextstate='title'),
         'author': Goto(nextstate='attr'),
         'version': Goto(nextstate='attr'),
-        'sequence': New(SequenceDiagram, callback=_new_seq, nextstate='start'),
+        'sequence': Goto(nextstate='sequence'),
     }
 
     statemap = {
@@ -107,4 +107,13 @@ class Diagram(Interpreter, Container):
                 EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
             },
         },
+        'sequence': {COLON: Ignore(nextstate='new-sequence')},
+        'new-sequence': {
+            EVERYTHING: {
+                NEWLINE: New(
+                    SequenceDiagram,
+                    callback=_new_seq,
+                )
+            }
+        }
     }

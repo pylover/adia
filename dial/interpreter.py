@@ -105,13 +105,13 @@ class New(Consume):
         return self
 
     def eat_token(self, token):
-        more = self.target.eat_token(token)
+        more, nextstate = self.target.eat_token(token)
         if more:
             return None
 
         self._call_callback(self.parent, token, self.target)
 
-        return self.nextstate
+        return self.nextstate or nextstate
 
 
 class Interpreter(metaclass=abc.ABCMeta):
@@ -141,7 +141,7 @@ class Interpreter(metaclass=abc.ABCMeta):
     def eat_token(self, token):
         if isinstance(self.state, New):
             self._redirect(self.state, token)
-            return self.more
+            return self.more, None
 
         try:
             newstate = self.state[token.type]
@@ -157,5 +157,8 @@ class Interpreter(metaclass=abc.ABCMeta):
         if callable(newstate):
             newstate = newstate(self, token)
 
+        if not self.more:
+            return self.more, newstate
+
         self._set_state(newstate)
-        return self.more
+        return True, None

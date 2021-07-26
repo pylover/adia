@@ -210,7 +210,7 @@ class SequenceDiagram(Interpreter, Container):
     tags = None
 
     def __init__(self, *args, **kwargs):
-        super().__init__('start', *args, **kwargs)
+        super().__init__('title', *args, **kwargs)
         self.modules = {}
         self.modules_order = []
         self._callstack = []
@@ -302,7 +302,7 @@ class SequenceDiagram(Interpreter, Container):
         else:
             raise AttributeError(attr)
 
-    def _set_title(self, attr, value):
+    def _set_title(self, value):
         self.title = value.strip()
 
     def _module_attr(self, module, attr, value):
@@ -313,7 +313,7 @@ class SequenceDiagram(Interpreter, Container):
         setattr(self.modules[module], attr, value.strip())
 
     _keywords = {
-        'sequence': Goto(nextstate='title'),
+        'sequence': Final(nextstate='sequence'),
         'state': Final(nextstate='start'),
         'class': Final(nextstate='start'),
         'for': New(Loop, callback=_new_loop, nextstate='start'),
@@ -326,6 +326,11 @@ class SequenceDiagram(Interpreter, Container):
     }
 
     statemap = {
+        'title': {
+            EVERYTHING: {
+                NEWLINE: Consume(_set_title, nextstate='start')
+            }
+        },
         'start': {
             HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
             NEWLINE: Ignore(nextstate='start'),
@@ -348,11 +353,6 @@ class SequenceDiagram(Interpreter, Container):
         },
         '  name': {
             RARROW: New(Call, callback=_new_call, nextstate='start')
-        },
-        'title': {
-            COLON: {EVERYTHING: {
-                NEWLINE: Consume(_set_title, nextstate='start')
-            }}
         },
         'attr:': {
             EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}

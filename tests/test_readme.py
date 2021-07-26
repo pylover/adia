@@ -77,6 +77,7 @@ def test_readme_complte_examaple():
     . author: pylover                                                             .
     . version: 1.0                                                                .
     .                                                                             .
+    .                                                                             .
     . SEQUENCE: Login/Logout                                                      .
     .                                                                             .
     . +-------+                             +-----+                 +-----------+ .
