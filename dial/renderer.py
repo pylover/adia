@@ -1,14 +1,10 @@
-import abc
 import itertools
 
-from .lazyattr import LazyAttribute
 from .sequence import SequenceDiagram, Call, Condition, Loop, Note
-
 from .canvas import Canvas
-
-
-LEFT = 0
-RIGHT = 1
+from .constants import LEFT, RIGHT
+from .renderingplans import ModulePlan, ItemStartPlan, ItemEndPlan, \
+    ConditionStartPlan, ConditionEndPlan, NotePlan
 
 
 def twiniter(l):
@@ -80,292 +76,6 @@ class Renderer:
         if self.dirty:
             self.render()
         return str(self.canvas)
-
-
-class Plan:
-    pass
-
-
-class ModulePlan(Plan):
-    col = 0
-    row = 0
-    lpad = 1
-    rpad = 1
-
-    def __init__(self, module):
-        self.module = module
-
-    def __repr__(self):
-        return f'ModulePlan: {self.title}'
-
-    @LazyAttribute
-    def box_hpadding(self):
-        return 1, int(not(len(self.title) % 2)) + 1
-
-    @LazyAttribute
-    def boxlen(self):
-        lp, rp = self.box_hpadding
-        return len(self.title) + lp + rp + 2
-
-    @LazyAttribute
-    def title(self):
-        return self.module.title
-
-    @property
-    def middlecol(self):
-        return self.col + self.boxlen // 2
-
-    def drawbox(self, canvas, col=None, row=None):
-        if col:
-            self.col = col
-
-        if row:
-            self.row = row
-
-        canvas.draw_textbox(self.col, self.row, self.title,
-                            hpadding=(self.box_hpadding))
-
-    def drawpipe(self, canvas, row):
-        canvas.set_char(self.middlecol, row, '|')
-
-
-class ItemPlan(Plan, metaclass=abc.ABCMeta):
-    char = '!'
-    repr_symbol = '!!!!'
-    direction = RIGHT
-    length = 0
-    start = 0
-    end = 0
-
-    def __init__(self, item, direction, level):
-        self.item = item
-        self.level = level
-        self.direction = direction
-
-    def __repr__(self):
-        return f'{self.repr_symbol} {repr(self.item)}'
-
-    @LazyAttribute
-    def textwidth(self):
-        if self.text:
-            return len(self.text)
-
-        return 0
-
-    @property
-    def kind(self):
-        return self.item.kind
-
-    @property
-    def text(self):
-        return self.item.text
-
-    @abc.abstractmethod
-    def calc(self):
-        raise NotImplementedError()
-
-
-class ItemStartPlan(ItemPlan):
-    char = '~'
-    repr_symbol = '~~~>'
-    reverse = False
-    selfcall = False
-
-    def __init__(self, item, caller, callee, direction, level):
-        super().__init__(item, direction, level)
-        self.caller = caller
-        self.callee = callee
-        if caller is callee:
-            self.selfcall = True
-
-    def _calc_selfcall(self):
-        self.start = self.caller.middlecol
-
-        l = 0
-        if self.item.text:
-            l = len(self.item.text)
-
-        if self.item.returntext:
-            l = max(len(self.item.returntext), l)
-
-        self.length = l + 6
-        self.start += 1
-        self.end = self.start + self.length
-        return 1
-
-    def _calc_otherscall(self):
-        self.start = self.caller.middlecol
-        self.end = self.callee.middlecol
-
-        if self.start > self.end:
-            self.start, self.end = self.end, self.start
-
-        self.start += 1
-        self.length = self.end - self.start
-
-        return 1
-
-    def calc(self):
-        if self.selfcall:
-            return self._calc_selfcall()
-        else:
-            return self._calc_otherscall()
-
-    def draw(self, canvas, row):
-        canvas.draw_hline(self.start, row, self.length, char=self.char)
-        if self.direction == LEFT:
-            canvas.set_char(self.start, row, '<')
-        else:
-            canvas.set_char(self.end - 1, row, '>')
-
-        if self.text:
-            canvas.write_textline(self.start + 3, row, self.text)
-
-        if not self.selfcall:
-            return
-
-        canvas.set_char(self.end, row, '+')
-        canvas.set_char(self.end - 1, row, self.char)
-        if canvas.cols - self.end == 1:
-            canvas.extendright(1)
-
-
-class ItemEndPlan(ItemStartPlan):
-    char = '-'
-    repr_symbol = '<---'
-    reverse = True
-
-    @property
-    def text(self):
-        return self.item.returntext
-
-    def draw(self, canvas, row):
-        super().draw(canvas, row)
-        if self.selfcall:
-            canvas.set_char(self.end, row - 1, '|')
-
-
-class ConditionStartPlan(ItemPlan):
-    char = '*'
-    startmodule = None
-    endmodule = None
-    children = None
-
-    def __init__(self, item, startmodule, endmodule, level):
-        super().__init__(item, RIGHT, level)
-        self.startmodule = startmodule
-        self.endmodule = endmodule
-
-    @property
-    def singlemodule(self):
-        return self.startmodule is self.endmodule
-
-    @LazyAttribute
-    def text(self):
-        result = f'{self.item.kind}'
-        if self.item.text:
-            result += f' {self.item.text}'
-
-        return result
-
-    def _calc_singlemodule(self):
-        self.start = self.startmodule.col
-
-        l = 0
-        if self.item.text:
-            l = len(self.item.text)
-
-        self.length = l + 7
-        self.end = self.start + self.length
-        return 3
-
-    def _calc_multimodule(self):
-        self.start = self.startmodule.col
-        self.end = self.endmodule.col + self.endmodule.boxlen
-
-        self.length = self.end - self.start
-
-        return 3
-
-    def calc(self):
-        if self.startmodule is None:
-            self.start = 1
-            self.length = max(10, self.textwidth + 4)
-            self.end = self.length + 1
-            return 3
-
-        if self.singlemodule:
-            return self._calc_singlemodule()
-        else:
-            return self._calc_multimodule()
-
-    def draw(self, canvas, row):
-        canvas.draw_hline(self.start, row, self.length, char=self.char)
-
-        row += 1
-        canvas.write_textline(self.start, row, ' ' * self.length)
-        canvas.set_char(self.start, row, '*')
-        canvas.set_char(self.end - 1, row, '*')
-        canvas.write_textline(self.start + 2, row, self.text)
-
-        row += 1
-        canvas.draw_hline(self.start, row, self.length, char=self.char)
-
-
-class ConditionEndPlan(ConditionStartPlan):
-
-    @property
-    def text(self):
-        if self.kind in ('if', 'elif', 'else'):
-            return 'end if'
-
-        return f'end {self.kind}'
-
-
-class NotePlan(ItemPlan):
-    char = '-'
-    repr_symbol = '@'
-    startmodule = None
-    endmodule = None
-
-    def __init__(self, item, startmodule, endmodule, level):
-        super().__init__(item, RIGHT, level)
-        self.startmodule = startmodule
-        self.endmodule = endmodule
-
-    @LazyAttribute
-    def lines(self):
-        return self.text.splitlines()
-
-    @LazyAttribute
-    def textwidth(self):
-        return max(len(x) for x in self.lines)
-
-    def calc(self):
-        self.start = self.startmodule.col
-
-        if self.endmodule is None:
-            self.length = self.startmodule.boxlen
-        else:
-            self.length = (self.endmodule.col + self.endmodule.boxlen) - \
-                self.start
-
-        self.length = max(self.length, self.textwidth + 4)
-        self.end = self.start + self.length
-        return len(self.lines) + 2
-
-    def draw(self, canvas, row):
-        canvas.draw_hline(self.start, row, self.length, char=self.char)
-
-        for l in self.lines:
-            row += 1
-            canvas.write_textline(self.start, row, ' ' * self.length)
-            canvas.write_textline(self.start + 2, row, l)
-            canvas.set_char(self.start, row, '|')
-            canvas.set_char(self.end - 1, row, '|')
-
-        row += 1
-        canvas.draw_hline(self.start, row, self.length, char=self.char)
 
 
 class SequenceRenderer(Renderer):
@@ -628,9 +338,6 @@ class SequenceRenderer(Renderer):
 
     # Sequence
     def _render_modules(self):
-        if not self._moduleplans:
-            return
-
         self._extend(1)
         fm = self._moduleplans[0]
         row = self.row
@@ -643,33 +350,30 @@ class SequenceRenderer(Renderer):
         if col > self.canvas.cols:
             self.canvas.extendright(col - self.canvas.cols)
 
-        self._extend(1)
-
-    def _render_emptyline(self):
-        for m in self._moduleplans:
-            m.drawpipe(self.canvas, self.row)
+    def _render_emptylines(self, count=1):
+        for _ in range(count):
+            self._extend(1)
+            for m in self._moduleplans:
+                m.drawpipe(self.canvas, self.row)
 
     def _render_items(self):
         lastdir = None
         lasttype = None
 
         for c in self._itemplans:
-            self._render_emptyline()
-            extrarows = c.calc() - 1
-
+            # Place a blank line if direction was changed.
             if c.direction != lastdir or not lasttype or \
                     not isinstance(c, lasttype):
-                self._extend(1)
-                self._render_emptyline()
+                self._render_emptylines()
+
+            # Calculte the needed space for the item
+            lines = c.calc()
+            self._render_emptylines(lines)
+
+            c.draw(self.canvas, self.row - lines)
 
             lastdir = c.direction
             lasttype = type(c)
-            for i in range(extrarows):
-                self._extend(1)
-                self._render_emptyline()
-
-            c.draw(self.canvas, self.row - extrarows)
-            self._extend(1)
 
     def render(self):
         self.plan()
@@ -681,8 +385,12 @@ class SequenceRenderer(Renderer):
                 1, self.row, f'SEQUENCE: {self.diagram.title} ')
             self._extend(1)
 
-        self._render_modules()
-        self._render_emptyline()
+        if self._moduleplans:
+            self._render_modules()
+            self._render_emptylines()
+
         self._render_items()
-        self._render_emptyline()
-        self._render_modules()
+
+        if self._moduleplans:
+            self._render_modules()
+            self._extend(1)

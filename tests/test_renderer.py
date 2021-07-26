@@ -1,6 +1,5 @@
 from dial.sequence import Module
-from dial.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, \
-    RIGHT
+from dial.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, RIGHT
 
 
 def test_renderer_moduleplan():
