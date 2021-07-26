@@ -27,6 +27,19 @@ WWW = www
 WWWDIST = $(WWW)/build
 WWWDIST_ABS = $(shell readlink -f $(WWWDIST))
 DIAL = dial
+BRYTHON_REPO = https://raw.githubusercontent.com/brython-dev/brython
+BRYTHON_URL = $(BRYTHON_REPO)/master/www/src
+BRYTHON_FILES = \
+	$(WWWDIST)/brython.js \
+	$(WWWDIST)/brython_stdlib.js
+
+DIST_FILES = \
+	$(WWWDIST)/index.html \
+	$(WWWDIST)/check.html \
+	$(WWWDIST)/check.py \
+	$(WWWDIST)/kitchen.py \
+	$(WWWDIST)/kitchen.html \
+	$(WWWDIST)/favicon.ico
 
 $(WWWDIST)/dial.js:
 	brython pack \
@@ -42,67 +55,32 @@ $(WWWDIST)/stdlib.js: $(WWWDIST)/brython_stdlib.js
 		--stdlib-directory $(WWWDIST) \
 		--filename stdlib.js
 
-$(WWWDIST)/index.html:
-	- ln -s $(shell readlink -f $(WWW))/index.html $(WWWDIST_ABS)
-
-$(WWWDIST)/check.html:
-	- ln -s $(shell readlink -f $(WWW))/check.html $(WWWDIST_ABS)
-
-$(WWWDIST)/check.py:
-	- ln -s $(shell readlink -f $(WWW))/check.py $(WWWDIST_ABS)
-
-$(WWWDIST)/kitchen.html:
-	- ln -s $(shell readlink -f $(WWW))/kitchen.html $(WWWDIST_ABS)
-
-$(WWWDIST)/kitchen.py:
-	- ln -s $(shell readlink -f $(WWW))/kitchen.py $(WWWDIST_ABS)
-
-$(WWWDIST)/favicon.ico:
-	- ln -s $(shell readlink -f $(WWW))/favicon.ico $(WWWDIST_ABS)
-
 $(WWWDIST)/tests:
 	- ln -s $(shell readlink -f tests) $(WWWDIST_ABS)
 
+$(BRYTHON_FILES): $(WWWDIST)/%.js:
+	curl "$(BRYTHON_URL)/$(shell basename $@)" > $@
+
+$(DIST_FILES): $(WWWDIST)/%:
+	ln -s $(shell readlink -f $(WWW)/$(shell basename $@)) $(WWWDIST_ABS)
+
 .PHONY: www
-www: \
-	$(WWWDIST)/brython.js \
-	$(WWWDIST)/brython_stdlib.js \
-	$(WWWDIST)/stdlib.js \
-	$(WWWDIST)/dial.js \
-	$(WWWDIST)/index.html \
-	$(WWWDIST)/check.html \
-	$(WWWDIST)/check.py \
-	$(WWWDIST)/tests \
-	$(WWWDIST)/kitchen.py \
-	$(WWWDIST)/kitchen.html \
-	$(WWWDIST)/favicon.ico
+www: $(DIST_FILES) $(BRYTHON_FILES) $(WWWDIST)/dial.js $(WWWDIST)/tests \
+	$(WWWDIST)/stdlib.js
 
 .PHONY: serve
 serve: www
 	brython -C$(WWWDIST) serve --port 8000
 
-BRYTHON_REPO = https://raw.githubusercontent.com/brython-dev/brython
-BRYTHON_URL = $(BRYTHON_REPO)/master/www/src
-
-$(WWWDIST)/%.js:
-	curl "$(BRYTHON_URL)/$(shell basename $@)" > $@
 
 .PHONY: clean
 clean:
 	- rm -rf $(DIAL)/__pycache__
-	- rm \
-		$(WWWDIST)/stdlib.js \
-		$(WWWDIST)/dial.js \
-		$(WWWDIST)/tests \
-		$(WWWDIST)/check.py \
-		$(WWWDIST)/check.html \
-		$(WWWDIST)/kitchen.py \
-		$(WWWDIST)/kitchen.html \
-		$(WWWDIST)/favicon.ico \
-		$(WWWDIST)/index.html
+	- rm $(DIST_FILES)
+	- rm $(WWWDIST)/tests
+	- rm $(WWWDIST)/stdlib.js
+	- rm $(WWWDIST)/dial.js
 
 .PHONY: cleanall
 cleanall: clean
-	- rm \
-		$(WWWDIST)/brython_stdlib.js \
-		$(WWWDIST)/brython.js \
+	- rm $(BRYTHON_FILES)
