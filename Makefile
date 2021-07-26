@@ -23,9 +23,9 @@ env:
 
 
 # WWW
-
 WWW = www
-WWWDIST = $(shell readlink -f $(WWW)/build)
+WWWDIST = $(WWW)/build
+WWWDIST_ABS = $(shell readlink -f $(WWWDIST))
 DIAL = dial
 
 $(WWWDIST)/dial.js:
@@ -34,45 +34,40 @@ $(WWWDIST)/dial.js:
 		--output-directory $(WWWDIST) \
 		dial
 	
-$(WWWDIST)/stdlib.min.js:
+$(WWWDIST)/stdlib.js: $(WWWDIST)/brython_stdlib.js
 	- mkdir -p $(WWWDIST)
 	brython pack-dependencies \
 		--output-directory $(WWWDIST) \
 		--search-directory $(DIAL) \
-		--stdlib-directory $(WWW) \
-		--filename stdlib.min.js
-
-$(WWWDIST)/stdlib.full.js:
-	- ln -s $(shell readlink -f $(WWW))/stdlib.full.js $(WWWDIST)
-
-$(WWWDIST)/runtime.js:
-	- ln -s $(shell readlink -f $(WWW))/brython.js $(WWWDIST)/runtime.js
+		--stdlib-directory $(WWWDIST) \
+		--filename stdlib.js
 
 $(WWWDIST)/index.html:
-	- ln -s $(shell readlink -f $(WWW))/index.html $(WWWDIST)
+	- ln -s $(shell readlink -f $(WWW))/index.html $(WWWDIST_ABS)
 
 $(WWWDIST)/check.html:
-	- ln -s $(shell readlink -f $(WWW))/check.html $(WWWDIST)
+	- ln -s $(shell readlink -f $(WWW))/check.html $(WWWDIST_ABS)
 
 $(WWWDIST)/check.py:
-	- ln -s $(shell readlink -f $(WWW))/check.py $(WWWDIST)
+	- ln -s $(shell readlink -f $(WWW))/check.py $(WWWDIST_ABS)
 
 $(WWWDIST)/kitchen.html:
-	- ln -s $(shell readlink -f $(WWW))/kitchen.html $(WWWDIST)
+	- ln -s $(shell readlink -f $(WWW))/kitchen.html $(WWWDIST_ABS)
 
 $(WWWDIST)/kitchen.py:
-	- ln -s $(shell readlink -f $(WWW))/kitchen.py $(WWWDIST)
+	- ln -s $(shell readlink -f $(WWW))/kitchen.py $(WWWDIST_ABS)
 
 $(WWWDIST)/favicon.ico:
-	- ln -s $(shell readlink -f $(WWW))/favicon.ico $(WWWDIST)
+	- ln -s $(shell readlink -f $(WWW))/favicon.ico $(WWWDIST_ABS)
 
 $(WWWDIST)/tests:
-	- ln -s $(shell readlink -f tests) $(WWWDIST)
+	- ln -s $(shell readlink -f tests) $(WWWDIST_ABS)
 
 .PHONY: www
 www: \
-	$(WWWDIST)/stdlib.full.js \
-	$(WWWDIST)/stdlib.min.js \
+	$(WWWDIST)/brython.js \
+	$(WWWDIST)/brython_stdlib.js \
+	$(WWWDIST)/stdlib.js \
 	$(WWWDIST)/dial.js \
 	$(WWWDIST)/index.html \
 	$(WWWDIST)/check.html \
@@ -80,24 +75,23 @@ www: \
 	$(WWWDIST)/tests \
 	$(WWWDIST)/kitchen.py \
 	$(WWWDIST)/kitchen.html \
-	$(WWWDIST)/favicon.ico \
-	$(WWWDIST)/runtime.js
+	$(WWWDIST)/favicon.ico
 
 .PHONY: serve
 serve: www
 	brython -C$(WWWDIST) serve --port 8000
 
-.PHONY: update-brython.js
-update-brython.js: www
-	cp ../brython/www/src/brython.js $(WWW)
-	cp ../brython/www/src/brython_stdlib.js $(WWW)
+BRYTHON_REPO = https://raw.githubusercontent.com/brython-dev/brython
+BRYTHON_URL = $(BRYTHON_REPO)/master/www/src
 
-.PHONY: clear
-clean::
+$(WWWDIST)/%.js:
+	curl "$(BRYTHON_URL)/$(shell basename $@)" > $@
+
+.PHONY: clean
+clean:
 	- rm -rf $(DIAL)/__pycache__
 	- rm \
-		$(WWWDIST)/runtime.js \
-		$(WWWDIST)/stdlib.*.js \
+		$(WWWDIST)/stdlib.js \
 		$(WWWDIST)/dial.js \
 		$(WWWDIST)/tests \
 		$(WWWDIST)/check.py \
@@ -106,3 +100,9 @@ clean::
 		$(WWWDIST)/kitchen.html \
 		$(WWWDIST)/favicon.ico \
 		$(WWWDIST)/index.html
+
+.PHONY: cleanall
+cleanall: clean
+	- rm \
+		$(WWWDIST)/brython_stdlib.js \
+		$(WWWDIST)/brython.js \

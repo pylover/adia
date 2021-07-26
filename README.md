@@ -111,6 +111,16 @@ make clean serve
 
 Then open the browser and point http://localhost:8000/check.html to run tests.
 
+
+#### Update Brython runtime
+
+Run `make cleanall` to force download and update `brython*.js` files.
+
+```bash
+make cleanall
+make www
+```
+
 ## Complete example
 
 ```dial
