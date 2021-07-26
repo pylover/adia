@@ -74,7 +74,7 @@ def test_sequence_selfcall_returntext():
     ''')
 
 
-def test_sequence_selfcall_issue_6():
+def test_sequence_selfcall_issue6():
     d = Diagram('''
         diagram: foo
         sequence:
@@ -115,7 +115,7 @@ def test_sequence_selfcall_issue_6():
     ''')
 
 
-def test_sequence_condition_inside_selfcall_issue_5_test1():
+def test_sequence_condition_inside_selfcall_issue5_test1():
     d = Diagram('''
         diagram: foo
         sequence:
@@ -150,7 +150,7 @@ def test_sequence_condition_inside_selfcall_issue_5_test1():
     ''')
 
 
-def test_sequence_condition_inside_selfcall_issue_5_test2():
+def test_sequence_condition_inside_selfcall_issue5_test2():
     d = Diagram('''
         diagram: foo
         sequence:
@@ -191,7 +191,7 @@ def test_sequence_condition_inside_selfcall_issue_5_test2():
     ''')
 
 
-def test_sequence_condition_inside_selfcall_issue_5_test3():
+def test_sequence_condition_inside_selfcall_issue5_test3():
     d = Diagram('''
         diagram: foo
         sequence:
@@ -229,7 +229,7 @@ def test_sequence_condition_inside_selfcall_issue_5_test3():
     ''')
 
 
-def test_sequence_condition_inside_selfcall_issue_5_test4():
+def test_sequence_condition_inside_selfcall_issue5_test4():
     d = Diagram('''
         diagram: foo
         sequence:
