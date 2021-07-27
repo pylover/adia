@@ -12,54 +12,54 @@ def test_canvas_extend():
 
     c.draw_vline(0, 0, 3)
     assert eqdia(str(c), '''
-    ...
-    .|.
-    .|.
-    .|.
-    ...
+    .....
+    . | .
+    . | .
+    . | .
+    .....
     ''')
 
     c.extendright(2)
     assert c.size == (3, 3)
     assert eqdia(str(c), '''
-    .....
-    .|  .
-    .|  .
-    .|  .
-    .....
+    .......
+    . |   .
+    . |   .
+    . |   .
+    .......
     ''')
 
     c.extendleft(2)
     assert c.size == (5, 3)
     assert eqdia(str(c), '''
-    .......
-    .  |  .
-    .  |  .
-    .  |  .
-    .......
+    .........
+    .   |   .
+    .   |   .
+    .   |   .
+    .........
     ''')
 
     c.extendtop(1)
     assert c.size == (5, 4)
     assert eqdia(str(c), '''
-    .......
-    .     .
-    .  |  .
-    .  |  .
-    .  |  .
-    .......
+    .........
+    .       .
+    .   |   .
+    .   |   .
+    .   |   .
+    .........
     ''')
 
     c.extendbottom(1)
     assert c.size == (5, 5)
     assert eqdia(str(c), '''
-    .......
-    .     .
-    .  |  .
-    .  |  .
-    .  |  .
-    .     .
-    .......
+    .........
+    .       .
+    .   |   .
+    .   |   .
+    .   |   .
+    .       .
+    .........
     ''')
 
 
@@ -67,9 +67,9 @@ def test_canvas_write_hcenter():
     c = Canvas()
     c.write_hcenter(0, 0, 'Foo Bar Baz')
     assert eqdia(str(c), '''
-    .............
-    .Foo Bar Baz.
-    .............
+    ...............
+    . Foo Bar Baz .
+    ...............
     ''')
 
 
@@ -77,22 +77,22 @@ def test_canvas_drawline():
     c = Canvas()
     c.draw_vline(3, 1, 3)
     assert eqdia(str(c), '''
-    ......
-    .    .
-    .   |.
-    .   |.
-    .   |.
-    ......
+    ........
+    .      .
+    .    | .
+    .    | .
+    .    | .
+    ........
     ''')
 
     c.draw_hline(1, 2, 5)
     assert eqdia(str(c), '''
-    ........
-    .      .
-    .   |  .
-    . -----.
-    .   |  .
-    ........
+    ..........
+    .        .
+    .    |   .
+    .  ----- .
+    .    |   .
+    ..........
     ''')
 
 
@@ -100,13 +100,13 @@ def test_canvas_drawbox():
     c = Canvas()
     c.draw_box(3, 1, 5, 4)
     assert eqdia(str(c), '''
-    ..........
-    .        .
-    .   +---+.
-    .   |   |.
-    .   |   |.
-    .   +---+.
-    ..........
+    ............
+    .          .
+    .    +---+ .
+    .    |   | .
+    .    |   | .
+    .    +---+ .
+    ............
     ''')
 
 
@@ -114,10 +114,10 @@ def test_canvas_drawtextline():
     c = Canvas()
     c.write_textline(3, 1, 'foo')
     assert eqdia(str(c), '''
-    ........
-    .      .
-    .   foo.
-    ........
+    ..........
+    .        .
+    .    foo .
+    ..........
     ''')
 
 
@@ -125,12 +125,12 @@ def test_canvas_drawtextblock():
     c = Canvas()
     c.write_textblock(3, 1, 'foo\n\n  bar')
     assert eqdia(str(c), '''
-    ..........
-    .        .
-    .   foo  .
-    .        .
-    .     bar.
-    ..........
+    ............
+    .          .
+    .    foo   .
+    .          .
+    .      bar .
+    ............
     ''')
 
 
@@ -138,64 +138,64 @@ def test_canvas_drawtextbox():
     c = Canvas()
     c.draw_textbox(1, 1, 'foo')
     assert eqdia(str(c), '''
-    ........
-    .      .
-    . +---+.
-    . |foo|.
-    . +---+.
-    ........
+    ..........
+    .        .
+    .  +---+ .
+    .  |foo| .
+    .  +---+ .
+    ..........
     ''')
 
     c = Canvas()
     c.draw_textbox(1, 1, 'foo', hpadding=(1, 2))
     assert eqdia(str(c), '''
-    ...........
-    .         .
-    . +------+.
-    . | foo  |.
-    . +------+.
-    ...........
+    .............
+    .           .
+    .  +------+ .
+    .  | foo  | .
+    .  +------+ .
+    .............
     ''')
 
     c = Canvas()
     c.draw_textbox(2, 1, 'foo\n\n  bar')
     assert eqdia(str(c), '''
-    ...........
-    .         .
-    .  +-----+.
-    .  |foo  |.
-    .  |     |.
-    .  |  bar|.
-    .  +-----+.
-    ...........
+    .............
+    .           .
+    .   +-----+ .
+    .   |foo  | .
+    .   |     | .
+    .   |  bar| .
+    .   +-----+ .
+    .............
     ''')
 
     c = Canvas()
     c.draw_textbox(3, 1, 'foo\n\n  bar', hpadding=1)
     assert eqdia(str(c), '''
-    ..............
-    .            .
-    .   +-------+.
-    .   | foo   |.
-    .   |       |.
-    .   |   bar |.
-    .   +-------+.
-    ..............
+    ................
+    .              .
+    .    +-------+ .
+    .    | foo   | .
+    .    |       | .
+    .    |   bar | .
+    .    +-------+ .
+    ................
     ''')
 
     c = Canvas()
     c.draw_textbox(3, 1, 'foo\n\n  bar', hpadding=1, vpadding=1)
     assert eqdia(str(c), '''
-    ..............
-    .            .
-    .   +-------+.
-    .   |       |.
-    .   | foo   |.
-    .   |       |.
-    .   |   bar |.
-    .   |       |.
-    .   +-------+.
-    ..............
+    ................
+    .              .
+    .    +-------+ .
+    .    |       | .
+    .    | foo   | .
+    .    |       | .
+    .    |   bar | .
+    .    |       | .
+    .    +-------+ .
+    ................
     ''')
 
 
@@ -206,15 +206,15 @@ def test_canvas_drawarrow():
     c.draw_toparrow(2, 2, 5)
     c.draw_bottomarrow(17, 2, 5)
     assert eqdia(str(c), '''
-    ....................
-    .                  .
-    .                  .
-    .  ^ -----------> |.
-    .  |              |.
-    .  |              |.
-    .  |              |.
-    .  | <----------- v.
-    ....................
+    ......................
+    .                    .
+    .                    .
+    .   ^ -----------> | .
+    .   |              | .
+    .   |              | .
+    .   |              | .
+    .   | <----------- v .
+    ......................
     ''')
 
 
@@ -225,14 +225,14 @@ def test_canvas_drawarrowtext():
     c.draw_toparrow(2, 2, 5)
     c.draw_bottomarrow(17, 2, 5)
     assert eqdia(str(c), '''
-    ....................
-    .                  .
-    .        foo       .
-    .  ^ ----bar----> |.
-    .  |    thud      |.
-    .  |              |.
-    .  |      foo     |.
-    .  |  <---bar---  v.
-    .        thud      .
-    ....................
+    ......................
+    .                    .
+    .         foo        .
+    .   ^ ----bar----> | .
+    .   |    thud      | .
+    .   |              | .
+    .   |      foo     | .
+    .   |  <---bar---  v .
+    .         thud       .
+    ......................
     ''')

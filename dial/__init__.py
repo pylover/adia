@@ -7,3 +7,11 @@ from .renderer import Renderer
 
 
 __version__ = '0.1.0'
+
+
+def renders(source):
+    return Diagram(source).renders()
+
+
+def render(source, out):
+    Diagram(source).render(out)

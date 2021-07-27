@@ -23,7 +23,7 @@ def test_sequence_note_errors():
             @~:
         ''')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter SequenceDiagram, line 3, col 13
+        BadSyntax: File "String", Interpreter: SequenceDiagram, line 3, col 13
         Expected `NAME`, got: `~`.
     ''')
 
@@ -33,7 +33,7 @@ def test_sequence_note_errors():
             @foo bar
         ''')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 17
+        BadSyntax: File "String", Interpreter: Note, line 3, col 17
         Expected one of `~ :`, got: `bar`.
     ''')
 
@@ -43,7 +43,7 @@ def test_sequence_note_errors():
             @foo ~ bar ~
         ''')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter Note, line 3, col 23
+        BadSyntax: File "String", Interpreter: Note, line 3, col 23
         Expected `:`, got: `~`.
     ''')
 
@@ -163,9 +163,9 @@ def test_sequence_moduleattr_error():
     with raises(BadAttribute) as e:
         seq(s)
     assert eqbigstr(e.value, '''
-        File "String", Interpreter SequenceDiagram, line 3, col 24
+        BadAttribute: File "String", Interpreter: SequenceDiagram, line 3, col 24
         Invalid attribute: foo.invalid.
-    ''')
+    ''')  # noqa
 
 
 def test_sequence_moduleattr():
@@ -192,9 +192,9 @@ def test_sequence_title_error():
         seq(s)
 
     assert eqbigstr(e.value, '''
-        File "String", Interpreter SequenceDiagram, line 3, col 24
+        BadAttribute: File "String", Interpreter: SequenceDiagram, line 3, col 24
         Invalid attribute: invalid.
-    ''')
+    ''')  # noqa
 
 
 def test_sequence_title():
@@ -273,14 +273,14 @@ def test_interpreter_badsyntax():
     with raises(BadSyntax) as e:
         seq('sequence: foo\nfoo')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter SequenceDiagram, line 2, col 3
+        BadSyntax: File "String", Interpreter: SequenceDiagram, line 2, col 3
         Expected one of `-> : .`, got: `NEWLINE`.
     ''')
 
     with raises(BadSyntax) as e:
         seq('sequence: foo\n@')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter SequenceDiagram, line 2, col 1
+        BadSyntax: File "String", Interpreter: SequenceDiagram, line 2, col 1
         Expected `NAME`, got: `NEWLINE`.
     ''')
 
@@ -290,7 +290,7 @@ def test_interpreter_badsyntax():
               foo:')
         ''')
     assert eqbigstr(e.value, '''
-        File "String", Interpreter SequenceDiagram, line 3, col 17
+        BadSyntax: File "String", Interpreter: SequenceDiagram, line 3, col 17
         Expected `->`, got: `:`.
     ''')
 

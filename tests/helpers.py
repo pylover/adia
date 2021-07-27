@@ -1,7 +1,7 @@
 import contextlib
 
 
-def eqbigstr(a, b):
+def eqbigstr(a, b, offset=8):
     if hasattr(a, 'dumps'):
         a = a.dumps()
     elif not isinstance(a, str):
@@ -9,7 +9,7 @@ def eqbigstr(a, b):
 
     bb = []
     for l in b.splitlines():
-        bb.append(l[8:])
+        bb.append(l[offset:])
 
     b = '\n'.join(bb[1:-1])
 
@@ -27,12 +27,12 @@ def eqbigstr(a, b):
     return True
 
 
-def eqdia(a, b):
+def eqdia(a, b, offset=4):
 
     def annotate(s):
         i = 0
         for l in s.splitlines():
-            yield f'.{l}. {i:3d}\n'
+            yield f'{l} . {i:3d}\n'
             i += 1
 
     def maxwidth(*args):
@@ -62,7 +62,7 @@ def eqdia(a, b):
 
     bb = []
     for l in b.splitlines():
-        bb.append(l[5:-1])
+        bb.append(l[offset+2:-2])
 
     bb.pop(0)
     bb.pop()

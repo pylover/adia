@@ -88,6 +88,6 @@ def test_diagram_attr_error():
     with raises(BadSyntax) as e:
         Diagram(s)
     assert eqbigstr(e.value, '''
-        File "String", Interpreter Diagram, line 3, col 8
+        BadSyntax: File "String", Interpreter: Diagram, line 3, col 8
         Expected one of `diagram author version sequence`, got: `invalid`.
     ''')

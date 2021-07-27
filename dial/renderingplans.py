@@ -12,11 +12,11 @@ class RenderingPlan:
 class ModulePlan(RenderingPlan):
     col = 0
     row = 0
-    lpad = 1
-    rpad = 1
 
-    def __init__(self, module):
+    def __init__(self, module, lpad=0, rpad=0):
         self.module = module
+        self.lpad = lpad
+        self.rpad = rpad
 
     def __repr__(self):
         return f'ModulePlan: {self.title}'
@@ -151,11 +151,7 @@ class ItemStartPlan(ItemPlan):
 
         canvas.set_char(self.end, row, '+')
         canvas.set_char(self.end - 1, row, self.char)
-        # canvas.set_char(self.end, row + 1, '|')
         renderer.register_repeat(self.end, '|')
-
-        if canvas.cols - self.end == 1:
-            canvas.extendright(1)
 
 
 class ItemEndPlan(ItemStartPlan):
@@ -208,21 +204,21 @@ class ConditionStartPlan(ItemPlan):
 
         self.length = l + 7
         self.end = self.start + self.length
+        self.end -= 1
         return 0, 3, 0
 
     def _calc_multimodule(self):
         self.start = self.startmodule.col
         self.end = self.endmodule.col + self.endmodule.boxlen
-
         self.length = self.end - self.start
-
+        self.end -= 1
         return 0, 3, 0
 
     def calc(self):
         if self.startmodule is None:
-            self.start = 1
+            self.start = 0
             self.length = max(10, self.textwidth + 4)
-            self.end = self.length + 1
+            self.end = self.length - 1
             return 0, 3, 0
 
         if self.singlemodule:
@@ -238,14 +234,11 @@ class ConditionStartPlan(ItemPlan):
         row += 1
         canvas.write_textline(self.start, row, ' ' * self.length)
         canvas.set_char(self.start, row, '*')
-        canvas.set_char(self.end - 1, row, '*')
+        canvas.set_char(self.end, row, '*')
         canvas.write_textline(self.start + 2, row, self.text)
 
         row += 1
         canvas.draw_hline(self.start, row, self.length, char=self.char)
-
-        if canvas.cols - self.end < 1:
-            canvas.extendright(1)
 
 
 class ConditionEndPlan(ConditionStartPlan):

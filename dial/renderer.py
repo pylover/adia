@@ -63,15 +63,15 @@ class Renderer:
     def _render_header(self):
         dia = self.diagram
         self._extend(1)
-        self.canvas.write_textline(1, self.row, f'DIAGRAM: {dia.title} ')
+        self.canvas.write_textline(0, self.row, f'DIAGRAM: {dia.title}')
 
         if dia.author:
             self._extend(1)
-            self.canvas.write_textline(1, self.row, f'author: {dia.author} ')
+            self.canvas.write_textline(0, self.row, f'author: {dia.author}')
 
         if dia.version:
             self._extend(1)
-            self.canvas.write_textline(1, self.row, f'version: {dia.version} ')
+            self.canvas.write_textline(0, self.row, f'version: {dia.version}')
 
         self._extend(1)
 
@@ -97,17 +97,20 @@ class SequenceRenderer(Renderer):
     def _planmodules(self):
         self._moduleplans = []
         self._moduleplans_dict = {}
-
         for m in self.diagram.modules_order:
-            module = ModulePlan(self.diagram.modules[m])
+            module = ModulePlan(self.diagram.modules[m], lpad=1, rpad=1)
             self._moduleplans.append(module)
             self._moduleplans_dict[m] = module
 
         for k, v in self.diagram.modules.items():
             if k not in self._moduleplans_dict:
-                module = ModulePlan(self.diagram.modules[k])
+                module = ModulePlan(self.diagram.modules[k], lpad=1, rpad=1)
                 self._moduleplans.append(module)
                 self._moduleplans_dict[k] = module
+
+        if self._moduleplans:
+            self._moduleplans[0].lpad = 0
+            self._moduleplans[-1].rpad = 0
 
     def _fromto_modules(self, from_, to, reverse=False):
         capt = False
@@ -267,7 +270,7 @@ class SequenceRenderer(Renderer):
         if start is not None and condstart_plan.singlemodule:
             start.rpad = max(
                 start.rpad,
-                (condstart_plan.textwidth - start.boxlen) + 5
+                (condstart_plan.textwidth - start.boxlen) + 4
             )
         else:
             avail = self._availspacefor_condition(start, end)
@@ -360,11 +363,11 @@ class SequenceRenderer(Renderer):
         self._extend(1)
         fm = self._moduleplans[0]
         row = self.row
-        col = max(1, fm.lpad)
+        col = fm.lpad
 
         for m, nm in twiniter(self._moduleplans):
             m.drawbox(self, col, row)
-            col += m.boxlen + max(m.rpad, nm.lpad if nm else 1)
+            col += m.boxlen + max(m.rpad, nm.lpad if nm else 0)
 
         if col > self.canvas.cols:
             self.canvas.extendright(col - self.canvas.cols)
@@ -407,7 +410,7 @@ class SequenceRenderer(Renderer):
         if self.diagram.title:
             self._extend(2)
             self.canvas.write_textline(
-                1, self.row, f'SEQUENCE: {self.diagram.title} ')
+                0, self.row, f'SEQUENCE: {self.diagram.title}')
             self._extend(1)
 
         if self._moduleplans:

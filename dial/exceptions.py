@@ -7,8 +7,9 @@ class InterpreterError(Exception):
         filename = interpreter.tokenizer.filename or 'String'
 
         super().__init__(
+            f'{self.__class__.__name__}: '
             f'File "{filename}", '
-            f'Interpreter {interpreter.__class__.__name__}, '
+            f'Interpreter: {interpreter.__class__.__name__}, '
             f'line {token.start[0]}, col {token.start[1]}\n'
             f'{msg}'
         )

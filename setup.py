@@ -20,5 +20,10 @@ setup(
     version=package_version,
     packages=find_packages(exclude=['tests']),
     install_requires=dependencies,
-    license='MIT'
+    license='MIT',
+    entry_points={
+        'console_scripts': [
+            'dial = dialcli:Dial.quickstart',
+        ]
+    },
 )
