@@ -28,7 +28,7 @@ def test_error(app):
     with app(stdin=source):
         assert stdout == ''
         assert eqbigstr(stderr, '''
-            BadSyntax: File "String", Interpreter: Diagram, line 1, col 0
+            BadSyntax: File "<stdin>", Interpreter: Diagram, line 1, col 0
             Expected one of `diagram author version sequence`, got: `invalid`.
         ''', offset=12)
 
@@ -170,10 +170,10 @@ def test_multiple_inputfiles_error(app, tempstruct):
     })
 
     with app(f'{temproot}/foo.dial {temproot}/bad.dial {temproot}/baz.dial'):
-        assert eqbigstr(stderr, '''
-            BadSyntax: File "String", Interpreter: Diagram, line 1, col 0
+        assert eqbigstr(stderr, f'''
+            BadSyntax: File "{temproot}/bad.dial", Interpreter: Diagram, line 1, col 0
             Expected one of `diagram author version sequence`, got: `bad`.
-        ''', offset=12)
+        ''', offset=12)  # noqa
 
         assert eqdia(stdout, '''
         ...............................

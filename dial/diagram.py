@@ -43,6 +43,9 @@ class Diagram(Interpreter, Container):
         return f.getvalue()
 
     def parsefile(self, f):
+        if hasattr(f, 'name'):
+            self.tokenizer.filename = f.name
+
         while True:
             line = f.readline()
             self.parseline(line)

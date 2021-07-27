@@ -17,7 +17,7 @@ TOKENS_DICT = {t: n for t, n in EXACT_TOKENS}
 
 class Tokenizer:
     def __init__(self):
-        self.filename = "String"
+        self.filename = None
         self.lineno = 0
         self.coloffset = -1
         self.indentsize = 0
