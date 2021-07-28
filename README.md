@@ -1,20 +1,20 @@
-[![Build](https://github.com/pylover/dial/actions/workflows/build.yml/badge.svg)](https://github.com/pylover/dial/actions/workflows/build.yml)
-[![Coverage Status](https://coveralls.io/repos/github/pylover/dial/badge.svg?branch=master)](https://coveralls.io/github/pylover/dial?branch=master)
+[![Build](https://github.com/pylover/adia/actions/workflows/build.yml/badge.svg)](https://github.com/pylover/adia/actions/workflows/build.yml)
+[![Coverage Status](https://coveralls.io/repos/github/pylover/adia/badge.svg?branch=master)](https://coveralls.io/github/pylover/adia?branch=master)
 
-# dial
-[Dial](https://github.com/pylover/dial) is a language specially designed to 
+# adia
+[ADia](https://github.com/pylover/adia) is a language specially designed to 
 render ASCII diagrams.
 
 Currently, only sequence diagrams are supported, but the roadmap is to support 
 two more types of diagrams: `fork` and `class`,  check out the `TODO.md` to 
 figure out what I talking about.
 
-The Dial can also run flawlessly inside the browsers using the awesome 
+The ADia can also run flawlessly inside the browsers using the awesome 
 project: [Brython](https://github.com/brython-dev/brython). check out 
-the [Web Interface](https://github.com/pylover/dial#web-interface) 
+the [Web Interface](https://github.com/pylover/adia#web-interface) 
 section below for more info.
 
-```dial
+```adia
 diagram: Foo
 sequence:
 foo -> bar: Hello World!
@@ -41,19 +41,19 @@ Output:
 ## Install
 
 ```bash
-pip3 install dial
+pip3 install adia
 ```
 
 Or, install the latest version from source:
 
 ```bash
-pip3 install git+https://github.com/pylover/dial
+pip3 install git+https://github.com/pylover/adia
 ```
 
 ## Command line
 
 ```bash
-dial << EOF
+adia << EOF
 diagram: Foo
 sequence:
 foo -> bar: Hello
@@ -63,15 +63,15 @@ EOF
 Or feed one or more filename(s):
 
 ```bash
-dial file1 file2 fileN
+adia file1 file2 fileN
 ```
 
-Use `dial --help` for more info.
+Use `adia --help` for more info.
 
 ## Python API
 
 ```python
-from dial import Diagram
+from adia import Diagram
 
 diagram = Diagram('''
   diagram: Foo
@@ -84,7 +84,7 @@ print(diagram.renders())
 
 ## Web interface
 
-The `dial` package should be compatible with the `Brython` too. So, you can 
+The `adia` package should be compatible with the `Brython` too. So, you can 
 use it on every browser which supports ECMA6.
 
 To build and check the demo, run:
@@ -101,7 +101,7 @@ Or just one line to do all the above commands in order:
 make clean serve
 ```
 
-then open http://localhost:8000 in your favorite browser to use `dial` wihtout
+then open http://localhost:8000 in your favorite browser to use `adia` wihtout
 the `CPython`.
 
 Isn't that nice?
@@ -151,7 +151,7 @@ make www
 
 ## Complete example
 
-```dial
+```adia
 diagram: Authentication
 version: 1.0
 author: pylover

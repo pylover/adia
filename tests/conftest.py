@@ -7,7 +7,7 @@ import pytest
 from bddcli import Given, Application
 
 
-cliapp = Application('dial', 'dialcli:Dial.quickstart')
+cliapp = Application('adia', 'adiacli:ADia.quickstart')
 GivenApp = functools.partial(Given, cliapp)
 
 

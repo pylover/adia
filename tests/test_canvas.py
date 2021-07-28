@@ -1,4 +1,4 @@
-from dial.canvas import Canvas
+from adia.canvas import Canvas
 
 from .helpers import eqdia
 

@@ -8,7 +8,7 @@ EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 
 
-class Dial(Root):
+class ADia(Root):
     __help__ = 'ASCII diagram language interpreter'
     __arguments__ = [
         Argument('-V', '--version', action='store_true'),
@@ -21,22 +21,22 @@ class Dial(Root):
         Argument(
             'file',
             nargs='*',
-            help='File containing dial source code. if not given, the '
+            help='File containing adia source code. if not given, the '
                  'standard input will be used.'
         ),
     ]
 
     def __call__(self, args):
-        import dial
+        import adia
 
         if args.version:
-            print(dial.__version__)
+            print(adia.__version__)
             return
 
         outfile = sys.stdout
 
         def render(infile):
-            dial.render(infile, outfile)
+            adia.render(infile, outfile)
 
         if args.change_directory != '.':
             os.chdir(args.change_directory)
@@ -53,6 +53,6 @@ class Dial(Root):
                         render(f)
 
             return EXIT_SUCCESS
-        except dial.InterpreterError as ex:
+        except adia.InterpreterError as ex:
             print(ex, file=sys.stderr)
             return EXIT_FAILURE

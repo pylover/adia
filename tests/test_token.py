@@ -1,4 +1,4 @@
-from dial.token import Token, AT
+from adia.token import Token, AT
 
 
 def test_token():

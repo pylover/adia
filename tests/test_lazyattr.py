@@ -1,4 +1,4 @@
-from dial.lazyattr import LazyAttribute
+from adia.lazyattr import LazyAttribute
 
 
 def test_lazyattribute():

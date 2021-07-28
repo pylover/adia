@@ -1,4 +1,4 @@
-from dial import Diagram
+from adia import Diagram
 
 from .helpers import eqdia
 
@@ -148,7 +148,7 @@ def test_sequence_calltext_minimum():
 def test_sequence_calltext():
 
     d = Diagram('''
-        diagram: diaL demo
+        diagram: ADia demo
         version: 1.0
         author: pylover
 
@@ -162,7 +162,7 @@ def test_sequence_calltext():
     ''')
     assert eqdia(d.renders(), '''
     .......................................
-    . DIAGRAM: diaL demo                  .
+    . DIAGRAM: ADia demo                  .
     . author: pylover                     .
     . version: 1.0                        .
     .                                     .

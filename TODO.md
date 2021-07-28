@@ -1,9 +1,9 @@
-## Dial roadmap
+## ADia roadmap
 
 ### Current release
 
 - PyPI
-- pylover/dial-demo
+- pylover/adia-demo
 - Document public functions
 
 ### Next release

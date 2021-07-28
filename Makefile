@@ -1,6 +1,6 @@
 PIP = pip3
 TEST_DIR = tests
-PRJ = dial
+PRJ = adia
 PYTEST_FLAGS = -v
 
 
@@ -26,7 +26,7 @@ env:
 WWW = www
 WWWDIST = $(WWW)/build
 WWWDIST_ABS = $(shell readlink -f $(WWWDIST))
-DIAL = dial
+ADIA = adia
 BRYTHON_REPO = https://raw.githubusercontent.com/brython-dev/brython
 BRYTHON_URL = $(BRYTHON_REPO)/master/www/src
 BRYTHON_FILES = \
@@ -41,31 +41,35 @@ DIST_FILES = \
 	$(WWWDIST)/kitchen.html \
 	$(WWWDIST)/favicon.ico
 
-$(WWWDIST)/dial.js:
+$(WWWDIST)/adia.js:
+	- mkdir -p $(WWWDIST)
 	brython pack \
-		--package-directory $(DIAL) \
+		--package-directory $(ADIA) \
 		--output-directory $(WWWDIST) \
-		dial
+		adia
 	
 $(WWWDIST)/stdlib.js: $(WWWDIST)/brython_stdlib.js
 	- mkdir -p $(WWWDIST)
 	brython pack-dependencies \
 		--output-directory $(WWWDIST) \
-		--search-directory $(DIAL) \
+		--search-directory $(ADIA) \
 		--stdlib-directory $(WWWDIST) \
 		--filename stdlib.js
 
 $(WWWDIST)/tests:
+	- mkdir -p $(WWWDIST)
 	- ln -s $(shell readlink -f tests) $(WWWDIST_ABS)
 
 $(BRYTHON_FILES): $(WWWDIST)/%.js:
+	- mkdir -p $(WWWDIST)
 	curl "$(BRYTHON_URL)/$(shell basename $@)" > $@
 
 $(DIST_FILES): $(WWWDIST)/%:
+	- mkdir -p $(WWWDIST)
 	ln -s $(shell readlink -f $(WWW)/$(shell basename $@)) $(WWWDIST_ABS)
 
 .PHONY: www
-www: $(DIST_FILES) $(BRYTHON_FILES) $(WWWDIST)/dial.js $(WWWDIST)/tests \
+www: $(DIST_FILES) $(BRYTHON_FILES) $(WWWDIST)/adia.js $(WWWDIST)/tests \
 	$(WWWDIST)/stdlib.js
 
 .PHONY: serve
@@ -75,11 +79,11 @@ serve: www
 
 .PHONY: clean
 clean:
-	- rm -rf $(DIAL)/__pycache__
+	- rm -rf $(ADIA)/__pycache__
 	- rm $(DIST_FILES)
 	- rm $(WWWDIST)/tests
 	- rm $(WWWDIST)/stdlib.js
-	- rm $(WWWDIST)/dial.js
+	- rm $(WWWDIST)/adia.js
 
 .PHONY: cleanall
 cleanall: clean

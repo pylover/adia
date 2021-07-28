@@ -1,4 +1,4 @@
-from dial.mutablestring import MutableString
+from adia.mutablestring import MutableString
 
 from .helpers import raises
 

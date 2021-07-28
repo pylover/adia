@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <script type="text/javascript" src="brython.js"></script>
 <script type="text/javascript" src="stdlib.js"></script>
-<script type="text/javascript" src="dial.js"></script>
+<script type="text/javascript" src="adia.js"></script>
 <style>
   font-family: monospace;
 </style>
@@ -19,7 +19,7 @@
 <textarea cols="100%" rows="8" id="error"></textarea>
 <br />
 <textarea cols="55" rows="40" id="source">
-diagram: diaL demo
+diagram: ADia demo
 version: 1.0
 author: pylover
 
@@ -36,7 +36,7 @@ foo -> bar: hello() -> HI
 <script type="text/python">
 from browser import window, document, bind
 
-from dial import Diagram, InterpreterError
+from adia import Diagram, InterpreterError
 
 source = document['source']
 target = document['target']

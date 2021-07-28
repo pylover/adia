@@ -1,6 +1,6 @@
 from io import StringIO
 
-from dial import Diagram, renders, render
+from adia import Diagram, renders, render
 
 from .helpers import eqdia
 

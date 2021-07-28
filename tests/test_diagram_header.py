@@ -1,4 +1,4 @@
-from dial import Diagram
+from adia import Diagram
 
 from .helpers import eqdia
 

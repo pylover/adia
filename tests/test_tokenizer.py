@@ -1,7 +1,7 @@
 import io
 
-from dial.token import *
-from dial.tokenizer import Tokenizer
+from adia.token import *
+from adia.tokenizer import Tokenizer
 
 from .helpers import raises
 

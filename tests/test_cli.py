@@ -1,6 +1,6 @@
 from bddcli import when, stdout, status, stderr
 
-import dial
+import adia
 from .helpers import eqdia, eqbigstr
 
 
@@ -15,11 +15,11 @@ def test_version(app):
 
         when('-V')
         assert status == OK
-        assert stdout[:-1] == dial.__version__
+        assert stdout[:-1] == adia.__version__
 
         when('--version')
         assert status == OK
-        assert stdout[:-1] == dial.__version__
+        assert stdout[:-1] == adia.__version__
 
 
 def test_error(app):
@@ -69,10 +69,10 @@ def test_inputfile(app, tempstruct):
         foo -> bar: Hello World!
     '''
     temproot = tempstruct(**{
-        'foo.dial': source,
+        'foo.adia': source,
     })
 
-    with app(f'{temproot}/foo.dial'):
+    with app(f'{temproot}/foo.adia'):
         assert stderr == ''
         assert eqdia(stdout, '''
         ...............................
@@ -108,11 +108,11 @@ def test_multiple_inputfiles(app, tempstruct):
     '''
 
     temproot = tempstruct(**{
-        'foo.dial': source1,
-        'baz.dial': source2,
+        'foo.adia': source1,
+        'baz.adia': source2,
     })
 
-    with app(f'{temproot}/foo.dial {temproot}/baz.dial'):
+    with app(f'{temproot}/foo.adia {temproot}/baz.adia'):
         assert stderr == ''
         assert eqdia(stdout, '''
         ...............................
@@ -164,14 +164,14 @@ def test_multiple_inputfiles_error(app, tempstruct):
     '''
 
     temproot = tempstruct(**{
-        'foo.dial': source1,
-        'bad.dial': source2,
-        'baz.dial': source3,
+        'foo.adia': source1,
+        'bad.adia': source2,
+        'baz.adia': source3,
     })
 
-    with app(f'{temproot}/foo.dial {temproot}/bad.dial {temproot}/baz.dial'):
+    with app(f'{temproot}/foo.adia {temproot}/bad.adia {temproot}/baz.adia'):
         assert eqbigstr(stderr, f'''
-            BadSyntax: File "{temproot}/bad.dial", Interpreter: Diagram, line 1, col 0
+            BadSyntax: File "{temproot}/bad.adia", Interpreter: Diagram, line 1, col 0
             Expected one of `diagram author version sequence`, got: `bad`.
         ''', offset=12)  # noqa
 
@@ -204,10 +204,10 @@ def test_changedirectory(app, tempstruct):
         foo -> bar: Hello World!
     '''
     temproot = tempstruct(**{
-        'foo.dial': source,
+        'foo.adia': source,
     })
 
-    with app(f'-C {temproot} foo.dial'):
+    with app(f'-C {temproot} foo.adia'):
         assert stderr == ''
         assert eqdia(stdout, '''
         ...............................
@@ -234,12 +234,12 @@ def test_help(app):
     with app('--help'):
         assert stderr == ''
         assert eqbigstr(stdout, '''
-            usage: dial [-h] [-V] [-C CHANGE_DIRECTORY] [file [file ...]]
+            usage: adia [-h] [-V] [-C CHANGE_DIRECTORY] [file ...]
 
             ASCII diagram language interpreter
 
             positional arguments:
-              file                  File containing dial source code. if not given, the
+              file                  File containing adia source code. if not given, the
                                     standard input will be used.
 
             optional arguments:

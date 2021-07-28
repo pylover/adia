@@ -1,7 +1,7 @@
 from io import StringIO
 
-from dial import Diagram
-from dial.exceptions import BadSyntax
+from adia import Diagram
+from adia.exceptions import BadSyntax
 
 from .helpers import raises, eqbigstr
 

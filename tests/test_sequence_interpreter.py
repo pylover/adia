@@ -1,6 +1,6 @@
-from dial.exceptions import BadSyntax, BadAttribute
-from dial.sequence import SequenceDiagram
-from dial import Diagram
+from adia.exceptions import BadSyntax, BadAttribute
+from adia.sequence import SequenceDiagram
+from adia import Diagram
 
 from .helpers import raises, eqbigstr
 

@@ -1,5 +1,5 @@
-from dial.sequence import Module
-from dial.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, RIGHT
+from adia.sequence import Module
+from adia.renderer import ModulePlan, ItemStartPlan, ItemEndPlan, LEFT, RIGHT
 
 
 def test_moduleplan():
