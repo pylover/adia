@@ -22,6 +22,22 @@ env:
 	$(PIP) install -e .
 
 
+.PHONY: sdist
+sdist:
+	python3 setup.py sdist
+
+.PHONY: bdist
+bdist:
+	python3 setup.py bdist_egg
+
+
+.PHONY: dist
+dist: sdist bdist
+
+.PHONY: pypi
+pypi: dist
+	twine upload dist/*.gz dist/*.egg
+
 # WWW
 WWW = www
 WWWDIST = $(WWW)/build
@@ -84,6 +100,8 @@ clean:
 	- rm $(WWWDIST)/tests
 	- rm $(WWWDIST)/stdlib.js
 	- rm $(WWWDIST)/adia.js
+	- rm dist/*.egg
+	- rm dist/*.gz
 
 .PHONY: cleanall
 cleanall: clean
