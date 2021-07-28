@@ -6,7 +6,7 @@
 [![Documentation](https://img.shields.io/badge/Documentation-almost%20done-blue)](https://pylover.github.io/adia/)
 
 
-# adia
+# ADia
 [ADia](https://github.com/pylover/adia) is a language specially designed to 
 render ASCII diagrams.
 

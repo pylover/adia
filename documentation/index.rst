@@ -28,11 +28,16 @@ v\ |version| documentation!
 
 .. image:: https://img.shields.io/github/forks/pylover/adia?style=for-the-badge&logo=github&logoWidth=20
    :alt: GitHub forks
-   :target: https://github.com/pylover
+   :target: https://github.com/pylover/adia
 
 ADia is a language for ASCII diagrams. Currently, only ``sequence`` diagram is
 supported. But the roadmap is to implement two additional diagram types: 
 ``fork/join`` and ``class``.
+
+.. Uncomment after adding the javascript section.
+   ADia can also run flawlessly inside the browsers using the awesome project: 
+   `Brython <https://brython.info>`_. check out the Web Interface section below 
+   for more info.
 
 .. code-block:: adia
 
