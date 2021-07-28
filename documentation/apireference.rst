@@ -1,0 +1,5 @@
+API Reference
+=============
+
+.. module:: dial
+

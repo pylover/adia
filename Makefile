@@ -38,6 +38,14 @@ dist: sdist bdist
 pypi: dist
 	twine upload dist/*.gz dist/*.egg
 
+.PHONY: doc
+doc:
+	cd documentation; make html
+
+.PHONY: livedoc
+livedoc:
+	cd documentation; make livehtml
+
 # WWW
 WWW = www
 WWWDIST = $(WWW)/build
