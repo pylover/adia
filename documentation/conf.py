@@ -37,7 +37,7 @@ with open(
 
 
 release = package_version
-
+version = '.'.join(release.split('.')[:-1])
 
 # -- General configuration ---------------------------------------------------
 

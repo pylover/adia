@@ -1,4 +1,4 @@
-Tutorial: Sequence Diagram
-==========================
+Tutorial
+========
 
 

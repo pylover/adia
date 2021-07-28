@@ -40,11 +40,11 @@ pypi: dist
 
 .PHONY: doc
 doc:
-	cd documentation; make html
+	cd documentation; make clean html
 
 .PHONY: livedoc
 livedoc:
-	cd documentation; make livehtml
+	cd documentation; make clean livehtml
 
 # WWW
 WWW = www

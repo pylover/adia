@@ -1,11 +1,9 @@
 {% extends "!layout.html" %}
 {% block extrahead %}
     <link href="{{ pathto("_static/style.css", True) }}" rel="stylesheet" type="text/css">
+    <link href="{{ pathto("_static/favicon.svg", True) }}" rel="icon" type="image/svg+xml">
+    <link href="{{ pathto("_static/favicon.png", True) }}" rel="icon" type="image/png">
 {% endblock %}
 
 {% block footer %}
-    <span id="forkongithub">
-      <a class="desktop" href="https://github.com/pylover/adia">Fork me on GitHub</a>
-      <a class="mobile" href="https://github.com/pylover/adia">Source</a>
-    </span>
 {% endblock %}
