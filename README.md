@@ -1,5 +1,10 @@
+
+[![PyPI](http://img.shields.io/pypi/v/adia.svg)](https://pypi.python.org/pypi/adia)
 [![Build](https://github.com/pylover/adia/actions/workflows/build.yml/badge.svg)](https://github.com/pylover/adia/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/pylover/adia/badge.svg?branch=master)](https://coveralls.io/github/pylover/adia?branch=master)
+[![Python](https://img.shields.io/badge/Python-%3E%3D3.6-blue)](https://python.org)
+[![Documentation](https://img.shields.io/badge/Documentation-almost%20done-blue)](https://pylover.github.io/adia/)
+
 
 # adia
 [ADia](https://github.com/pylover/adia) is a language specially designed to 
