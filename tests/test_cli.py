@@ -228,24 +228,3 @@ def test_changedirectory(app, tempstruct):
         ..
         ...............................
         ''', offset=8)
-
-
-def test_help(app):
-    with app('--help'):
-        assert stderr == ''
-        assert eqbigstr(stdout, '''
-            usage: adia [-h] [-V] [-C CHANGE_DIRECTORY] [file ...]
-
-            ASCII diagram language interpreter
-
-            positional arguments:
-              file                  File containing adia source code. if not given, the
-                                    standard input will be used.
-
-            optional arguments:
-              -h, --help            show this help message and exit
-              -V, --version
-              -C CHANGE_DIRECTORY, --change-directory CHANGE_DIRECTORY
-                                    Change the current working directory before executing,
-                                    default: ".".
-        ''', offset=12)  # noqa
