@@ -2,7 +2,7 @@
 
 
 from .diagram import Diagram
-from .exceptions import InterpreterError
+from .exceptions import InterpreterError, BadAttribute, BadSyntax
 from .renderer import Renderer
 
 

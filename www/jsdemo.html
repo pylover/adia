@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="adia.bundle.js"></script>
+<style>
+  font-family: monospace;
+</style>
+</head>
+
+<body onload="brython({debug: 1})">
+
+<a href="/check.html">Jump to tests</a>
+<br />
+
+<textarea cols="100%" rows="8" id="error"></textarea>
+<br />
+<textarea cols="55" rows="40" id="source">
+diagram: ADia demo
+version: 1.0
+author: pylover
+
+sequence:
+
+@foo: Start
+foo -> bar: hello() -> HI
+  bar -> baz: hey() -> Hey
+
+@foo: End
+</textarea>
+<textarea cols="120" rows="40" id="target"></textarea>
+
+<script type="text/python">
+from browser import window
+from adia import renders, BadSyntax
+
+def adia_renders(source):
+  try:
+    return renders(source)
+  except BadSyntax as ex:
+    return f'Error: {ex}'
+
+window.adiaRenders = adia_renders
+</script>
+
+<script>
+let source = document.getElementById('source');
+let target = document.getElementById('target');
+let error = document.getElementById('error');
+
+function refresh(ev) {
+  if (window.adiaRenders == undefined) {
+    setTimeout(refresh, 200);
+    return;
+  }
+  
+  if ((ev != undefined) && (ev.charCode != undefined) && 
+      (ev.charCode != 13)) {
+    return;
+  }
+  var out = window.adiaRenders(source.value);
+  if (out.startsWith('Error: ')) {
+    error.value = out; 
+  }
+  else {
+    error.value = ''; 
+    target.value = out;
+  }
+}
+
+window.addEventListener('load', refresh);
+source.addEventListener('keypress', refresh);
+</script>
+
+</body>
+</html>

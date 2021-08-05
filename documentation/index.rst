@@ -67,11 +67,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   tutorial
+   tutorials/index
    lang
    api
    faq
-   howto
 
 Indices and tables
 ******************

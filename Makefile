@@ -59,6 +59,7 @@ BRYTHON_FILES = \
 
 DIST_FILES = \
 	$(WWWDIST)/index.html \
+	$(WWWDIST)/jsdemo.html \
 	$(WWWDIST)/check.html \
 	$(WWWDIST)/check.py \
 	$(WWWDIST)/kitchen.py \
@@ -72,13 +73,13 @@ $(WWWDIST)/adia.js:
 		--output-directory $(WWWDIST) \
 		adia
 	
-$(WWWDIST)/stdlib.js: $(WWWDIST)/brython_stdlib.js
+$(WWWDIST)/lib.js: $(WWWDIST)/brython_stdlib.js
 	- mkdir -p $(WWWDIST)
 	brython pack-dependencies \
 		--output-directory $(WWWDIST) \
 		--search-directory $(ADIA) \
 		--stdlib-directory $(WWWDIST) \
-		--filename stdlib.js
+		--filename lib.js
 
 $(WWWDIST)/tests:
 	- mkdir -p $(WWWDIST)
@@ -92,9 +93,16 @@ $(DIST_FILES): $(WWWDIST)/%:
 	- mkdir -p $(WWWDIST)
 	ln -s $(shell readlink -f $(WWW)/$(shell basename $@)) $(WWWDIST_ABS)
 
+$(WWWDIST)/adia.bundle.js: $(BRYTHON_FILES) $(WWWDIST)/adia.js \
+	$(WWWDIST)/lib.js
+	cat $(WWWDIST)/brython.js > $@
+	cat $(WWWDIST)/brython_stdlib.js >> $@
+	cat $(WWWDIST)/adia.js >> $@
+
 .PHONY: www
-www: $(DIST_FILES) $(BRYTHON_FILES) $(WWWDIST)/adia.js $(WWWDIST)/tests \
-	$(WWWDIST)/stdlib.js
+www: $(DIST_FILES) $(WWWDIST)/adia.bundle.js $(WWWDIST)/adia.js \
+	$(WWWDIST)/tests $(WWWDIST)/lib.js
+
 
 .PHONY: serve
 serve: www
@@ -106,8 +114,9 @@ clean:
 	- rm -rf $(ADIA)/__pycache__
 	- rm $(DIST_FILES)
 	- rm $(WWWDIST)/tests
-	- rm $(WWWDIST)/stdlib.js
+	- rm $(WWWDIST)/lib.js
 	- rm $(WWWDIST)/adia.js
+	- rm $(WWWDIST)/adia.bundle.js
 	- rm dist/*.egg
 	- rm dist/*.gz
 
