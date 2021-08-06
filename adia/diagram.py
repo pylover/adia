@@ -8,6 +8,12 @@ from .renderer import Renderer
 
 
 class Diagram(Interpreter, Container):
+    """The main entrypoint of the :mod:`adia` package.
+
+    You may use the :meth:`dumps` method to dump back the diagram instance to
+    ``ADia`` source code.
+
+    """
     title = 'Untitled Diagram'
     version = None
     author = None
@@ -26,6 +32,28 @@ class Diagram(Interpreter, Container):
         return f'Diagram: {self.title}'
 
     def dumps(self):
+        """Serialize back the diagram class into valid ``ADia`` source code.
+
+        .. testsetup:: diagram
+
+           from adia import Diagram
+
+        .. testcode:: diagram
+
+           diagram = Diagram('''
+               diagram: Foo
+               sequence:
+               foo -> bar: Hello World!
+           ''')
+
+           print(diagram.dumps())
+
+        .. testoutput:: diagram
+
+           5
+
+        """
+
         f = StringIO()
         f.write(f'diagram: {self.title}\n')
 

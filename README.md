@@ -43,17 +43,6 @@ Output:
  +-----+             +-----+
 ```
 
-## Install
-
-```bash
-pip3 install adia
-```
-
-Or, install the latest version from source:
-
-```bash
-pip3 install git+https://github.com/pylover/adia
-```
 
 ## Command line
 

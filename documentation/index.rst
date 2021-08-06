@@ -30,6 +30,10 @@ v\ |version| documentation!
    :alt: GitHub forks
    :target: https://github.com/pylover/adia
 
+
+About
+#####
+
 ADia is a language for ASCII diagrams. Currently, only ``sequence`` diagram is
 supported. But the roadmap is to implement two additional diagram types: 
 ``fork/join`` and ``class``.
@@ -61,16 +65,95 @@ supported. But the roadmap is to implement two additional diagram types:
    | foo |             | bar |
    +-----+             +-----+
 
+
+Quickstart
+##########
+
+Install
+*******
+
+It's higly recommended to use a virual-env utility for example:
+`virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`_
+before doing anything.
+
+.. code-block:: bash
+
+   $ pip install adia
+
+Or, install the latest version from the source:
+
+.. code-block:: bash
+
+   $ pip install git+https://github.com/pylover/adia
+
+
+Python API
+**********
+
+.. testcode:: quickstart
+
+   import adia
+   
+   print(adia.renders('''
+     diagram: Foo
+     sequence:
+     foo -> bar: Hello World!
+   '''))
+
+.. testoutput:: quickstart
+
+   DIAGRAM: Foo               
+                              
+   +-----+             +-----+
+   | foo |             | bar |
+   +-----+             +-----+
+      |                   |   
+      |~~~Hello World!~~~>|   
+      |                   |   
+      |<------------------|   
+      |                   |   
+   +-----+             +-----+
+   | foo |             | bar |
+   +-----+             +-----+
+                               
+
+
+.. seealso::
+
+   :func:`adia.renders`, :func:`adia.render` and :class:`adia.Diagram`.
+
+Command Line Interface
+**********************
+
+
+.. code-block:: bash
+
+   $ adia << EOF
+   diagram: Foo
+   sequence:
+   foo -> bar: Hello
+   EOF
+
+Or feed one or more filename(s):
+
+.. code-block:: bash
+
+   $ adia file1.adia file2.adia fileN.adia > foo.txt
+
+Issue ``adia --help`` for more info.
+
+
 Contents
-********
+########
 
 .. toctree::
    :maxdepth: 2
 
-   tutorials/index
+   javascript
    lang
    api
    faq
+   contributing
 
 Indices and tables
 ******************

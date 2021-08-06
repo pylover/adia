@@ -1,5 +1,8 @@
 API Reference
 =============
 
-.. module:: dial
+.. automodule:: adia
+   :members:
 
+
+.. autoclass:: Diagram

@@ -1,11 +1,12 @@
-Javascript
-==========
+Javascript API
+==============
 
 Introduction
 ************
 
 You may use the ``adia`` inside Javascript (browser) because we pass all tests 
-with both ``CPython`` and ``Brython`` environments before each commit.
+with both ``CPython`` and `Brython <https://brython.info/>`_ environments 
+before each commit.
 
 This page aims to demonstrate how to use the ``adia`` inside your javascript 
 project.
