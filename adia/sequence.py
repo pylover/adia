@@ -205,6 +205,12 @@ class Condition(ContainerItem):
 
 
 class SequenceDiagram(Interpreter, Container):
+    """Represents a sequence diagram.
+
+    The :class:`adia.diagram` class creates an instance of this class for each
+    sequence diagram section.
+
+    """
     title = 'Untitled Sequence Diagram'
     description = None
     tags = None

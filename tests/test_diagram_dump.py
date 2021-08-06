@@ -73,11 +73,11 @@ def test_diagram_repr():
 def test_diagram_emptyline():
     s = 'diagram: foo\n  \n'
     diagram = Diagram(StringIO(s))
-    assert diagram.dumps() == 'diagram: foo\n'
+    assert diagram.dumps() == 'diagram: foo'
 
     s = 'sequence: foo\n  \n'
     diagram = Diagram(StringIO(s))
-    assert diagram.dumps() == 'diagram: Untitled Diagram\n\nsequence: foo\n'
+    assert diagram.dumps() == 'diagram: Untitled Diagram\n\nsequence: foo'
 
 
 def test_diagram_attr_error():

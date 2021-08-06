@@ -46,6 +46,11 @@ doc:
 livedoc:
 	cd documentation; make clean livehtml
 
+.PHONY: doctest
+doctest:
+	cd documentation; make doctest
+
+
 # WWW
 WWW = www
 WWWDIST = $(WWW)/build

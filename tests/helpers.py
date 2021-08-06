@@ -68,10 +68,11 @@ def eqdia(a, b, offset=4):
 
     bb.pop(0)
     bb.pop()
-    bb[-1] += '\n'
     b = '\n'.join(bb)
     maxlen = maxwidth(a, b)
     maxanlen = maxlen + 4
+    if a.endswith('\n'):
+        b += '\n'
 
     if a != b:
         print('\nGiven:')

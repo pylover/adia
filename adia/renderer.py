@@ -87,7 +87,9 @@ class Renderer:
     def dumps(self, rstrip=True):
         out = io.StringIO()
         self.dump(out, rstrip)
-        return out.getvalue()
+
+        # Trailing new line is not interested in dump string
+        return out.getvalue()[:-1]
 
 
 class SequenceRenderer(Renderer):

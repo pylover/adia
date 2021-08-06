@@ -1,15 +1,11 @@
-"""ADia language parser and ASCII renderer.
+"""The :mod:`adia` module makes it easy to get ``ASCII`` diagrams using
+:func:`render` and :func:`renders`.
 
-:class:`Diagram` is a collection of actual diagrams such as
-:class:`SequenceDiagram`.
-
-:class:`Diagram` implements the :class:`Interpreter` abstract class and uses
-:class:`Tokenizer` and :class:`Renderer` internally to do it's job.
-
+In addition, :class:`Diagram` class may be used to access the low-level API.
 """
 
-
 from .diagram import Diagram
+from .sequence import SequenceDiagram
 from .exceptions import InterpreterError, BadAttribute, BadSyntax
 from .renderer import Renderer
 
@@ -40,6 +36,9 @@ def renders(source, rstrip=True):
 
     :param source: The ADia source code.
     :type source: str or file-like
+    :param rstrip: If ``True``, the trailing wihtespaces at the end of each
+                   line will be removed.
+    :type rstrip: bool, optional, default: True
     :return: ASCII diagram.
     :rtype: str
     """
@@ -71,5 +70,8 @@ def render(source, out, rstrip=True):
 
     :param source: The ADia source code.
     :type source: str or file-like
+    :param rstrip: If ``True``, the trailing wihtespaces at the end of each
+                   line will be removed.
+    :type rstrip: bool, optional, default: True
     """
     Diagram(source).render(out, rstrip)

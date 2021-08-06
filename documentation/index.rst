@@ -102,21 +102,20 @@ Python API
 
 .. testoutput:: quickstart
 
-   DIAGRAM: Foo               
-                              
-   +-----+             +-----+
-   | foo |             | bar |
-   +-----+             +-----+
-      |                   |   
-      |~~~Hello World!~~~>|   
-      |                   |   
-      |<------------------|   
-      |                   |   
-   +-----+             +-----+
-   | foo |             | bar |
-   +-----+             +-----+
-                               
+   DIAGRAM: Foo
 
+   +-----+             +-----+
+   | foo |             | bar |
+   +-----+             +-----+
+      |                   |
+      |~~~Hello World!~~~>|
+      |                   |
+      |<------------------|
+      |                   |
+   +-----+             +-----+
+   | foo |             | bar |
+   +-----+             +-----+
+   
 
 .. seealso::
 
@@ -149,10 +148,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   javascript
    lang
-   api
-   faq
+   pythonapi
+   javascriptapi
    contributing
 
 Indices and tables

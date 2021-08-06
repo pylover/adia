@@ -10,23 +10,32 @@ from .renderer import Renderer
 class Diagram(Interpreter, Container):
     """The main entrypoint of the :mod:`adia` package.
 
-    You may use the :meth:`dumps` method to dump back the diagram instance to
-    ``ADia`` source code.
+    :class:`Diagram` is a collection of actual diagrams such as
+    :class:`SequenceDiagram` which implements the :class:`Interpreter` abstract
+    class and uses :class:`Tokenizer` and :class:`Renderer` internally to do
+    it's job.
 
+    :param source: ADia source code to parse.
+    :type source: str or file-like
+
+    .. note::
+
+       You may use the :meth:`dumps` method to dump back the diagram instance
+       to ``ADia`` source code.
     """
     title = 'Untitled Diagram'
     version = None
     author = None
 
-    def __init__(self, initial=None, *args, **kwargs):
+    def __init__(self, source=None, *args, **kwargs):
         super().__init__('start', *args, **kwargs)
-        if initial is None:
+        if source is None:
             return
 
-        if isinstance(initial, str):
-            self.parse(initial)
+        if isinstance(source, str):
+            self.parse(source)
         else:
-            self.parsefile(initial)
+            self.parsefile(source)
 
     def __repr__(self):
         return f'Diagram: {self.title}'
@@ -50,7 +59,11 @@ class Diagram(Interpreter, Container):
 
         .. testoutput:: diagram
 
-           5
+           diagram: Foo
+
+           sequence:
+
+           foo -> bar: Hello World!
 
         """
 
@@ -68,19 +81,38 @@ class Diagram(Interpreter, Container):
             for c in self:
                 f.write(f'{c.dumps()}')
 
-        return f.getvalue()
+        return f.getvalue()[:-1]
 
-    def parsefile(self, f):
-        if hasattr(f, 'name'):
-            self.tokenizer.filename = f.name
+    def parse(self, source):
+        """Parses ``Adia`` source string.
+
+        :param source: The ADia source code.
+        :type source: str
+        """
+        with StringIO(source) as f:
+            self.parsefile(f)
+
+    def parsefile(self, sourcefile):
+        """Parses an ``ADia`` source file into the current instance.
+
+        :param sourcefile: The ADia source file.
+        :type sourcefile: file-like object
+        """
+        if hasattr(sourcefile, 'name'):
+            self.tokenizer.filename = sourcefile.name
 
         while True:
-            line = f.readline()
+            line = sourcefile.readline()
             self.parseline(line)
             if not line:
                 return
 
     def parseline(self, line):
+        """Parse an ``ADia`` source line into the current instance.
+
+        :param line:
+        :type line: str
+        """
         if len(line) and not line.endswith('\n'):
             line += '\n'
 
@@ -89,14 +121,26 @@ class Diagram(Interpreter, Container):
 
         return
 
-    def parse(self, string):
-        with StringIO(string) as f:
-            self.parsefile(f)
+    def render(self, outfile, rstrip=True):
+        """Writes the ASCII represetation of the current instance into the
+        outfile.
 
-    def render(self, filelike, rstrip=True):
-        Renderer(self).dump(filelike, rstrip)
+        :param outfile: An object with ``write(...)`` method.
+        :param rstrip: If ``True``, the trailing wihtespaces at the end of each
+                       line will be removed.
+        :type rstrip: bool, optional, default: True
+        """
+        Renderer(self).dump(outfile, rstrip)
 
     def renders(self, rstrip=True):
+        """Gets the ASCII represetation of the current instance.
+
+        :param rstrip: If ``True``, the trailing wihtespaces at the end of each
+                       line will be removed.
+        :type rstrip: bool, optional, default: True
+        :return: ASCII diagram.
+        :rtype: str
+        """
         return Renderer(self).dumps(rstrip)
 
     def _set_title(self, attr, value):
