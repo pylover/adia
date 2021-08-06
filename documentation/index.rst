@@ -43,53 +43,6 @@ supported. But the roadmap is to implement two additional diagram types:
    `Brython <https://brython.info>`_. check out the Web Interface section below 
    for more info.
 
-.. code-block:: adia
-
-   diagram: Foo
-   sequence:
-   foo -> bar: Hello World!
-
-.. code-block::
-
-   DIAGRAM: Foo                             
-
-   +-----+             +-----+
-   | foo |             | bar |
-   +-----+             +-----+
-      |                   |
-      |~~~Hello World!~~~>|
-      |                   |
-      |<------------------|
-      |                   |
-   +-----+             +-----+
-   | foo |             | bar |
-   +-----+             +-----+
-
-
-Quickstart
-##########
-
-Install
-*******
-
-It's higly recommended to use a virual-env utility for example:
-`virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`_
-before doing anything.
-
-.. code-block:: bash
-
-   $ pip install adia
-
-Or, install the latest version from the source:
-
-.. code-block:: bash
-
-   $ pip install git+https://github.com/pylover/adia
-
-
-Python API
-**********
-
 .. testcode:: quickstart
 
    import adia
@@ -121,8 +74,9 @@ Python API
 
    :func:`adia.renders`, :func:`adia.render` and :class:`adia.Diagram`.
 
+
 Command Line Interface
-**********************
+######################
 
 
 .. code-block:: bash
@@ -148,6 +102,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   install
    lang
    pythonapi
    javascriptapi
