@@ -51,15 +51,6 @@ class Renderer:
     def row(self):
         return self.canvas.rows - 1
 
-    def render(self):
-        self._render_header()
-
-        for unit in self.diagram:
-            if isinstance(unit, SequenceDiagram):
-                SequenceRenderer(unit, self.canvas).render()
-
-        self.dirty = False
-
     def _render_header(self):
         dia = self.diagram
         self._extend(1)
@@ -73,7 +64,15 @@ class Renderer:
             self._extend(1)
             self.canvas.write_textline(0, self.row, f'version: {dia.version}')
 
-        self._extend(1)
+    def render(self):
+        self._render_header()
+
+        for unit in self.diagram:
+            if isinstance(unit, SequenceDiagram):
+                SequenceRenderer(unit, self.canvas).render()
+
+        # TODO: Remove
+        self.dirty = False
 
     def dump(self, filelike):
         if self.dirty:
@@ -408,19 +407,18 @@ class SequenceRenderer(Renderer):
 
         # Sequence Header
         if self.diagram.title:
-            self._extend(2)
+            self._extend(3)
             self.canvas.write_textline(
                 0, self.row, f'SEQUENCE: {self.diagram.title}')
-            self._extend(1)
 
         if self._moduleplans:
+            self._extend(1)
             self._render_modules()
-            self._render_emptylines()
 
         if self._itemplans:
-            self._render_items()
             self._render_emptylines()
+            self._render_items()
 
         if self._moduleplans:
+            self._render_emptylines()
             self._render_modules()
-            self._extend(1)

@@ -12,7 +12,6 @@ def test_diagram_header():
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
-    .              .
     ................
     ''')
 
@@ -20,7 +19,6 @@ def test_diagram_header():
     assert eqdia(d.renders(), '''
     .............................
     . DIAGRAM: Untitled Diagram .
-    .                           .
     .............................
     ''')
 
@@ -30,7 +28,6 @@ def test_diagram_header():
     assert eqdia(d.renders(), '''
     ................
     . DIAGRAM: Foo .
-    .              .
     ................
     ''')
 
@@ -42,7 +39,6 @@ def test_diagram_header():
     .................
     . DIAGRAM: Foo  .
     . author: alice .
-    .               .
     .................
     ''')
 
@@ -56,6 +52,5 @@ def test_diagram_header():
     . DIAGRAM: Foo  .
     . author: alice .
     . version: 1.0  .
-    .               .
     .................
     ''')

@@ -16,7 +16,6 @@ def test_sequence_header():
     .               .
     .               .
     . SEQUENCE: Bar .
-    .               .
     .................
     ''')
 
@@ -29,6 +28,5 @@ def test_sequence_header():
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
-    .              .
     ................
     ''')

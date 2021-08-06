@@ -32,7 +32,7 @@ def eqdia(a, b, offset=4):
     def annotate(s):
         i = 0
         for l in s.splitlines():
-            yield f'{l} . {i:3d}\n'
+            yield f'. {l} . {i:3d}\n'
             i += 1
 
     def maxwidth(*args):
@@ -54,31 +54,32 @@ def eqdia(a, b, offset=4):
                 first += ' '
             second += f'{j}'
 
-        print(first)
-        print(second)
-
-    maxlen = maxwidth(a, b) + 2
-    b = b.strip()
+        print(f'  {first}')
+        print(f'  {second}')
 
     bb = []
-    for l in b.splitlines():
+    for l in b.strip().splitlines():
         bb.append(l[offset+2:-2])
 
     bb.pop(0)
     bb.pop()
-    bb[-1] += '\n'
+    # bb[-1] += '\n'
     b = '\n'.join(bb)
+    maxlen = maxwidth(a, b)
+    maxanlen = maxlen + 4
 
-    a += '\n'
+    # a += '\n'
     if a != b:
-        print('Given:')
+        print('\nGiven:')
         print_columns(maxlen)
-        print('.' * (maxlen - 3))
+        print('.' * (maxanlen))
         print(''.join(annotate(a)), end='')
-        print('.' * (maxlen - 3))
-        print('Expected:')
+        print('.' * (maxanlen))
+        print('\nExpected:')
         print_columns(maxlen)
-        print(''.join(annotate(b)))
+        print('.' * (maxanlen))
+        print(''.join(annotate(b)), end='')
+        print('.' * (maxanlen))
         return False
 
     return True
