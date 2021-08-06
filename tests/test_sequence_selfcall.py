@@ -13,7 +13,7 @@ def test_sequence_selfcall():
           foo -> foo: hey
         bar -> bar:
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................
     . DIAGRAM: Foo                .
     . version: 1.0                .
@@ -48,7 +48,7 @@ def test_sequence_selfcall_returntext():
         foo -> foo: init() -> error/zero
         bar -> bar: -> Exception
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ............................................
     . DIAGRAM: Foo                             .
     . version: 1.0                             .
@@ -81,7 +81,7 @@ def test_sequence_selfcall_issue6():
           if: not bar.is_connected
             bar -> bar: connect()
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................................
     . DIAGRAM: foo                                .
     .                                             .
@@ -120,7 +120,7 @@ def test_sequence_condition_inside_selfcall_issue5_test1():
         bar -> bar: connect()
           if: not bar.is_connected
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................
     . DIAGRAM: foo                .
     .                             .
@@ -155,7 +155,7 @@ def test_sequence_condition_inside_selfcall_issue5_test2():
           if: not bar.is_connected
             bar -> baz: Lorem ipsum dolor sit amet
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .............................................
     . DIAGRAM: foo                              .
     .                                           .
@@ -195,7 +195,7 @@ def test_sequence_condition_inside_selfcall_issue5_test3():
           bar -> bar: connect()
             if: not bar.is_connected
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................................
     . DIAGRAM: foo                                .
     .                                             .
@@ -233,7 +233,7 @@ def test_sequence_condition_inside_selfcall_issue5_test4():
             if: not bar.is_connected
                 bar -> baz
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................................
     . DIAGRAM: foo                                .
     .                                             .

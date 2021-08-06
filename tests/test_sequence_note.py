@@ -17,7 +17,7 @@ def test_sequence_multilinenote():
             sollicitudin sem eget ligula imperdiet, sit amet gravida mi tempor.
 
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...........................................................................
     . DIAGRAM: Foo                                                            .
     . version: 1.0                                                            .
@@ -55,7 +55,7 @@ def test_sequence_note():
         @bar ~ baz: Bar Baz Quux
         @foo ~ baz: FooBaz
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .....................................
     . DIAGRAM: Foo                      .
     . version: 1.0                      .
@@ -108,7 +108,7 @@ def test_sequence_note_issue_8():
 
         @alice: Alice tries to login
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ............................................................
     . DIAGRAM: Authentication                                  .
     . author: pylover                                          .

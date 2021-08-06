@@ -17,7 +17,7 @@ from .renderer import Renderer
 __version__ = '0.1.1'
 
 
-def renders(source):
+def renders(source, rstrip=True):
     """High level API to generate ASCII diagram.
 
     Equivalent to:
@@ -43,10 +43,10 @@ def renders(source):
     :return: ASCII diagram.
     :rtype: str
     """
-    return Diagram(source).renders()
+    return Diagram(source).renders(rstrip)
 
 
-def render(source, out):
+def render(source, out, rstrip=True):
     """High level API to write ASCII diagram into file.
 
     Equivalent to:
@@ -72,4 +72,4 @@ def render(source, out):
     :param source: The ADia source code.
     :type source: str or file-like
     """
-    Diagram(source).render(out)
+    Diagram(source).render(out, rstrip)

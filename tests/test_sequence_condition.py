@@ -21,7 +21,7 @@ def test_sequence_condition():
           b -> d
 
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .................................
     . DIAGRAM: Foo                  .
     . version: 1.0                  .
@@ -98,7 +98,7 @@ def test_sequence_conditiontext():
         else: foo bar baz qux
           c -> b: foo bar
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...................................
     . DIAGRAM: Foo                    .
     . version: 1.0                    .
@@ -158,7 +158,7 @@ def test_sequence_emptyif():
 
         if
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
@@ -180,7 +180,7 @@ def test_sequence_emptyif():
         if
         else
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
@@ -205,7 +205,7 @@ def test_sequence_emptyif():
         if: foo > bar
         else
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ....................
     . DIAGRAM: Foo     .
     . version: 1.0     .
@@ -234,7 +234,7 @@ def test_sequence_condition_on_reversecall():
         if
           b -> a
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .....................
     . DIAGRAM: Foo      .
     . version: 1.0      .

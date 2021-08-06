@@ -93,11 +93,11 @@ class Diagram(Interpreter, Container):
         with StringIO(string) as f:
             self.parsefile(f)
 
-    def render(self, filelike):
-        Renderer(self).dump(filelike)
+    def render(self, filelike, rstrip=True):
+        Renderer(self).dump(filelike, rstrip)
 
-    def renders(self):
-        return Renderer(self).dumps()
+    def renders(self, rstrip=True):
+        return Renderer(self).dumps(rstrip)
 
     def _set_title(self, attr, value):
         self.title = value.strip()

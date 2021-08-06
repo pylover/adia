@@ -9,7 +9,7 @@ def test_sequence_header():
         version: 1.0
         sequence: Bar
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .................
     . DIAGRAM: Foo  .
     . version: 1.0  .
@@ -24,7 +24,7 @@ def test_sequence_header():
         version: 1.0
         sequence:
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .

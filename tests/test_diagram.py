@@ -14,7 +14,7 @@ def test_diagram_break_issue9():
         sequence: Foo#2
         foo -> bar
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...................
     . DIAGRAM: Foo    .
     . version: 1.0    .

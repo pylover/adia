@@ -13,7 +13,7 @@ def test_render_string():
     foo -> bar
     ''')
 
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...................
     . DIAGRAM: My dia .
     .                 .
@@ -41,7 +41,7 @@ def test_render_file():
     ''')
 
     f = StringIO()
-    d.render(f)
+    d.render(f, rstrip=False)
     assert eqdia(f.getvalue(), '''
     ...................
     . DIAGRAM: My dia .
@@ -57,7 +57,6 @@ def test_render_file():
     . +-----+ +-----+ .
     . | foo | | bar | .
     . +-----+ +-----+ .
-    ..
     ...................
     ''')
 
@@ -68,7 +67,7 @@ def test_renders_function():
     sequence:
 
     foo -> bar
-    ''')
+    ''', rstrip=False)
 
     assert eqdia(out, '''
     ...................
@@ -88,6 +87,31 @@ def test_renders_function():
     ...................
     ''')
 
+    out = renders('''
+    diagram: My dia
+    sequence:
+
+    foo -> bar
+    ''', rstrip=True)
+
+    assert eqdia(out, '''
+    ...................
+    . DIAGRAM: My dia .
+    .  .
+    . +-----+ +-----+ .
+    . | foo | | bar | .
+    . +-----+ +-----+ .
+    .    |       | .
+    .    |~~~~~~>| .
+    .    |       | .
+    .    |<------| .
+    .    |       | .
+    . +-----+ +-----+ .
+    . | foo | | bar | .
+    . +-----+ +-----+ .
+    ...................
+    ''')
+
 
 def test_render_function():
     out = StringIO()
@@ -96,7 +120,7 @@ def test_render_function():
     sequence:
 
     foo -> bar
-    ''', out)
+    ''', out, rstrip=False)
 
     assert eqdia(out.getvalue(), '''
     ...................
@@ -113,6 +137,31 @@ def test_render_function():
     . +-----+ +-----+ .
     . | foo | | bar | .
     . +-----+ +-----+ .
-    ..
+    ...................
+    ''')
+
+    out = StringIO()
+    render('''
+    diagram: My dia
+    sequence:
+
+    foo -> bar
+    ''', out, rstrip=True)
+
+    assert eqdia(out.getvalue(), '''
+    ...................
+    . DIAGRAM: My dia .
+    .  .
+    . +-----+ +-----+ .
+    . | foo | | bar | .
+    . +-----+ +-----+ .
+    .    |       | .
+    .    |~~~~~~>| .
+    .    |       | .
+    .    |<------| .
+    .    |       | .
+    . +-----+ +-----+ .
+    . | foo | | bar | .
+    . +-----+ +-----+ .
     ...................
     ''')

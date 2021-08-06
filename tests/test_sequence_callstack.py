@@ -18,7 +18,7 @@ def test_sequence_callstack():
         foo -> quux
           quux -> qux
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................................
     . DIAGRAM: Foo                                .
     . version: 1.0                                .
@@ -67,7 +67,7 @@ def test_sequence_call_notext():
         foo -> b
         f -> bar
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................
     . DIAGRAM: Foo                .
     . version: 1.0                .
@@ -110,7 +110,7 @@ def test_sequence_calltext_minimum():
         foo -> b: 3
         f -> bar: 4
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ..................................
     . DIAGRAM: Foo                   .
     . version: 1.0                   .
@@ -157,7 +157,7 @@ def test_sequence_calltext():
 
         @foo: End
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .......................................
     . DIAGRAM: ADia demo                  .
     . author: pylover                     .
@@ -197,7 +197,7 @@ def test_sequence_calltext():
         foo -> b: init()
         f -> bar: 010101010101010101010101010101010101
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ......................................................
     . DIAGRAM: Foo                                       .
     . version: 1.0                                       .
@@ -240,7 +240,7 @@ def test_sequence_callreturntext():
         foo -> b: init()
         f -> bar: 0101 -> 010101010101010101010101010101010101
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ......................................................
     . DIAGRAM: Foo                                       .
     . version: 1.0                                       .

@@ -1,5 +1,7 @@
 import contextlib
 
+from adia.diagram import Diagram
+
 
 def eqbigstr(a, b, offset=8):
     if hasattr(a, 'dumps'):
@@ -57,18 +59,20 @@ def eqdia(a, b, offset=4):
         print(f'  {first}')
         print(f'  {second}')
 
+    if isinstance(a, Diagram):
+        a = a.renders(rstrip=False)
+
     bb = []
     for l in b.strip().splitlines():
         bb.append(l[offset+2:-2])
 
     bb.pop(0)
     bb.pop()
-    # bb[-1] += '\n'
+    bb[-1] += '\n'
     b = '\n'.join(bb)
     maxlen = maxwidth(a, b)
     maxanlen = maxlen + 4
 
-    # a += '\n'
     if a != b:
         print('\nGiven:')
         print_columns(maxlen)

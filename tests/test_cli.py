@@ -40,7 +40,7 @@ def test_standardinput(app):
         foo -> bar: Hello World!
     '''
 
-    with app(stdin=source):
+    with app('--no-rstrip', stdin=source):
         assert eqdia(stdout, '''
         ...............................
         . DIAGRAM: Foo                .
@@ -56,7 +56,6 @@ def test_standardinput(app):
         . +-----+             +-----+ .
         . | foo |             | bar | .
         . +-----+             +-----+ .
-        ..
         ...............................
         ''', offset=8)
 
@@ -88,7 +87,6 @@ def test_inputfile(app, tempstruct):
         . +-----+             +-----+ .
         . | foo |             | bar | .
         . +-----+             +-----+ .
-        ..
         ...............................
         ''', offset=8)
 
@@ -141,7 +139,6 @@ def test_multiple_inputfiles(app, tempstruct):
         . +-----+             +-----+ .
         . | baz |             | bar | .
         . +-----+             +-----+ .
-        ..
         ...............................
         ''', offset=8)
 
@@ -187,7 +184,6 @@ def test_multiple_inputfiles_error(app, tempstruct):
         . | foo |             | bar | .
         . +-----+             +-----+ .
         ..
-        ..
         ...............................
         ''', offset=8)
 
@@ -219,6 +215,5 @@ def test_changedirectory(app, tempstruct):
         . +-----+             +-----+ .
         . | foo |             | bar | .
         . +-----+             +-----+ .
-        ..
         ...............................
         ''', offset=8)

@@ -46,7 +46,7 @@ class Canvas:
         self.rows += addrows
 
     def __str__(self):
-        return '\n'.join(str(l) for l in self._backend)
+        return '\n'.join(str(l) for l in self._backend) + '\n'
 
     def set_char(self, col, row, char):
         if col >= self.cols:

@@ -12,6 +12,7 @@ class ADia(Root):
     __help__ = 'ASCII diagram language interpreter'
     __arguments__ = [
         Argument('-V', '--version', action='store_true'),
+        Argument('--no-rstrip', action='store_true'),
         Argument(
             '-C', '--change-directory',
             default='.',
@@ -36,7 +37,11 @@ class ADia(Root):
         outfile = sys.stdout
 
         def render(infile):
-            adia.render(infile, outfile)
+            adia.render(
+                infile,
+                outfile,
+                rstrip=False if args.no_rstrip is True else False
+            )
 
         if args.change_directory != '.':
             os.chdir(args.change_directory)

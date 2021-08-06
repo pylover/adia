@@ -15,7 +15,7 @@ def test_sequence_loop():
             while: True
               a -> c
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ........................
     . DIAGRAM: Foo         .
     . version: 1.0         .
@@ -71,7 +71,7 @@ def test_sequence_loop_isolation():
          a -> b: hello()
 
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ..........................................
     . DIAGRAM: Foo                           .
     . version: 1.0                           .

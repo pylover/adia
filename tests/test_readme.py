@@ -12,7 +12,7 @@ def test_readme_quickstart():
         foo -> bar: Hello World!
 
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................
     . DIAGRAM: Foo                .
     .                             .
@@ -70,7 +70,7 @@ def test_readme_complte_examaple():
             bob -> db: delete(token)
     ''')
 
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ...............................................................................
     . DIAGRAM: Authentication                                                     .
     . author: pylover                                                             .

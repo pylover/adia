@@ -1,3 +1,4 @@
+import io
 import itertools
 
 from .sequence import SequenceDiagram, Call, Condition, Loop, Note
@@ -23,8 +24,6 @@ def twiniter(l):
 
 
 class Renderer:
-    dirty = True
-
     def __init__(self, diagram, canvas=None):
         self._repeats = set()
         self.diagram = diagram
@@ -71,21 +70,24 @@ class Renderer:
             if isinstance(unit, SequenceDiagram):
                 SequenceRenderer(unit, self.canvas).render()
 
-        # TODO: Remove
-        self.dirty = False
-
-    def dump(self, filelike):
-        if self.dirty:
-            self.render()
-
+    def _dumplines(self, rstrip):
         for l in self.canvas:
-            filelike.write(str(l))
-            filelike.write('\n')
+            line = str(l)
+            if rstrip:
+                line = line.rstrip()
 
-    def dumps(self):
-        if self.dirty:
-            self.render()
-        return str(self.canvas)
+            yield f'{line}\n'
+
+    def dump(self, filelike, rstrip=True):
+        self.render()
+
+        for line in self._dumplines(rstrip):
+            filelike.write(line)
+
+    def dumps(self, rstrip=True):
+        out = io.StringIO()
+        self.dump(out, rstrip)
+        return out.getvalue()
 
 
 class SequenceRenderer(Renderer):

@@ -8,7 +8,7 @@ def test_diagram_header():
         diagram: Foo
         version: 1.0
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ................
     . DIAGRAM: Foo .
     . version: 1.0 .
@@ -16,7 +16,7 @@ def test_diagram_header():
     ''')
 
     d = Diagram()
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .............................
     . DIAGRAM: Untitled Diagram .
     .............................
@@ -25,7 +25,7 @@ def test_diagram_header():
     d = Diagram('''
         diagram: Foo
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     ................
     . DIAGRAM: Foo .
     ................
@@ -35,7 +35,7 @@ def test_diagram_header():
         diagram: Foo
         author: alice
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .................
     . DIAGRAM: Foo  .
     . author: alice .
@@ -47,7 +47,7 @@ def test_diagram_header():
         author: alice
         version: 1.0
     ''')
-    assert eqdia(d.renders(), '''
+    assert eqdia(d, '''
     .................
     . DIAGRAM: Foo  .
     . author: alice .
