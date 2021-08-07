@@ -104,14 +104,14 @@ class ItemStartPlan(ItemPlan):
     def _calc_selfcall(self):
         self.start = self.caller.middlecol
 
-        l = 0
+        linelen = 0
         if self.item.text:
-            l = len(self.item.text)
+            linelen = len(self.item.text)
 
         if self.item.returntext:
-            l = max(len(self.item.returntext), l)
+            linelen = max(len(self.item.returntext), linelen)
 
-        self.length = l + 6
+        self.length = linelen + 6
         self.start += 1
         self.end = self.start + self.length
         return 0, 1, 0
@@ -198,11 +198,11 @@ class ConditionStartPlan(ItemPlan):
     def _calc_singlemodule(self):
         self.start = self.startmodule.col
 
-        l = 0
+        linelen = 0
         if self.item.text:
-            l = len(self.item.text)
+            linelen = len(self.item.text)
 
-        self.length = l + 7
+        self.length = linelen + 7
         self.end = self.start + self.length
         self.end -= 1
         return 0, 3, 0
@@ -288,10 +288,10 @@ class NotePlan(ItemPlan):
 
         canvas.draw_hline(self.start, row, self.length, char=self.char)
 
-        for l in self.lines:
+        for linelen in self.lines:
             row += 1
             canvas.write_textline(self.start, row, ' ' * self.length)
-            canvas.write_textline(self.start + 2, row, l)
+            canvas.write_textline(self.start + 2, row, linelen)
             canvas.set_char(self.start, row, '|')
             canvas.set_char(self.end - 1, row, '|')
 

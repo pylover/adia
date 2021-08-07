@@ -1,7 +1,7 @@
 import re
 
-from .token import *
-from .token import EXACT_TOKENS, Token
+from .token import Token, EXACT_TOKENS, NEWLINE, PIPE, NAME, MULTILINE, \
+    EVERYTHING, DEDENT, INDENT, EOF
 
 
 # Regex patterns

@@ -1,8 +1,9 @@
-"""The :mod:`adia` module makes it easy to get ``ASCII`` diagrams using
-:func:`render` and :func:`renders`.
+"""``ASCII`` diagrams language parser and renderer.
+py:func:`render` and py:func:`renders`.
 
-In addition, :class:`Diagram` class may be used to access the low-level API.
+In addition, py:class:`Diagram` class may be used to access the low-level API.
 """
+import sys
 
 from .diagram import Diagram
 from .sequence import SequenceDiagram
@@ -11,28 +12,26 @@ from .renderer import Renderer
 
 
 __version__ = '0.1.2'
+__all__ = [
+    'Diagram',
+    'SequenceDiagram',
+    'InterpreterError',
+    'BadAttribute',
+    'BadSyntax',
+    'Renderer',
+    'print',
+    'renders'
+]
 
 
 def renders(source, rstrip=True):
     """High level API to generate ASCII diagram.
 
-    Equivalent to:
+    This function is equivalent to:
 
     .. code-block:: python
 
        Diagram(source).renders()
-
-    Example:
-
-    .. code-block:: python
-
-       import adia
-
-       print(adia.renders('''
-           diagram: Foo
-           sequence:
-           foo -> bar: Hello World!
-       '''))
 
     :param source: The ADia source code.
     :type source: str or file-like
@@ -41,20 +40,21 @@ def renders(source, rstrip=True):
     :type rstrip: bool, optional, default: True
     :return: ASCII diagram.
     :rtype: str
+
     """
     return Diagram(source).renders(rstrip)
 
 
-def render(source, out, rstrip=True):
+def print(source, file=sys.stdout, rstrip=True):
     """High level API to write ASCII diagram into file.
 
     Equivalent to:
 
     .. code-block:: python
 
-       Diagram(source).render(out)
+       Diagram(source).render(file)
 
-    Example:
+    Example
 
     .. code-block:: python
 
@@ -66,12 +66,15 @@ def render(source, out, rstrip=True):
           foo -> bar: Hello World!
       ''''
        with open('foo.txt', 'w') as outfile:
-           adia.render(source, otfile)
+           adia.print(source, file=outfile)
 
     :param source: The ADia source code.
     :type source: str or file-like
+    :param file: An object with the ``write`` attribute. default:
+                 py:attr:`sys.stdout`.
     :param rstrip: If ``True``, the trailing wihtespaces at the end of each
                    line will be removed.
     :type rstrip: bool, optional, default: True
+
     """
-    Diagram(source).render(out, rstrip)
+    Diagram(source).render(file, rstrip)

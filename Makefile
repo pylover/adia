@@ -14,7 +14,7 @@ cover:
 
 .PHONY: lint
 lint:
-	pylama
+	flake8
 
 .PHONY: env
 env:

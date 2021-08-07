@@ -29,8 +29,10 @@ jobs:
         python -m pip install -e .
     - name: Lint with PyLama
       run: make lint
-    - name: Test with pytest
+    - name: Test  & Code Coverage
       run: make cover 
+    - name: Doctest
+      run: make doctest
     - name: Coveralls
       run: coveralls
       env:

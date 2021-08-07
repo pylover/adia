@@ -1,6 +1,6 @@
 from io import StringIO
 
-from adia import Diagram, renders, render
+from adia import Diagram, renders, print as adiaprint
 
 from .helpers import eqdia
 
@@ -113,9 +113,9 @@ def test_renders_function():
     ''')
 
 
-def test_render_function():
+def test_print_function():
     out = StringIO()
-    render('''
+    adiaprint('''
     diagram: My dia
     sequence:
 
@@ -141,7 +141,7 @@ def test_render_function():
     ''')
 
     out = StringIO()
-    render('''
+    adiaprint('''
     diagram: My dia
     sequence:
 

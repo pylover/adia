@@ -10,8 +10,8 @@ class Canvas:
         self.extendbottom(size[1])
 
     def __iter__(self):
-        for l in self._backend:
-            yield l
+        for line in self._backend:
+            yield line
 
     @property
     def size(self):
@@ -46,7 +46,7 @@ class Canvas:
         self.rows += addrows
 
     def __str__(self):
-        return '\n'.join(str(l) for l in self._backend) + '\n'
+        return '\n'.join(str(line) for line in self._backend) + '\n'
 
     def set_char(self, col, row, char):
         if col >= self.cols:
@@ -115,7 +115,7 @@ class Canvas:
                      **kw):
         lines = text.splitlines()
         textheight = len(lines)
-        width = max(mincols, max(len(l) for l in lines))
+        width = max(mincols, max(len(line) for line in lines))
 
         if not isinstance(hpadding, int):
             lpad, rpad = hpadding

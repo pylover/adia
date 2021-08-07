@@ -2,8 +2,9 @@ Python API
 ==========
 
 .. automodule:: adia
-   :members:
-
+   
+   .. autofunction:: renders
+   .. autofunction:: print
 
 .. autoclass:: Diagram
    :members:

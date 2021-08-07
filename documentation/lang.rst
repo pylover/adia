@@ -14,11 +14,17 @@ an optional ``text`` as follow:
 
 Example:
 
-.. code-block:: adia
+.. testsetup::
 
-   foo -> bar
-   foo -> bar: Hello
+   from adia import renders
 
+.. doctest::
+
+   >>> print(renders('''
+   ... diagram: foo
+   ... sequence:
+   ... foo -> bar
+   ... '''))
 
 Diagram Header
 **************
@@ -66,3 +72,26 @@ one of ``sequence``, ``class`` and ``fork``.
 
 Sequence Diagram
 ****************
+
+A sequence diagram is always starts with the ``sequence: [TITLE]`` keyword and
+basically it is a collection of ``modules`` and ``items`` which described
+below.
+
+Module
+^^^^^^
+
+You may use shorter name for modules for simplicity and define comprehensive 
+titile with ``MODULE.title: TITLE`` statement.
+
+
+.. ::
+
+   comments
+   moduleattr
+   call
+   callstask
+   selfcall
+   condition
+   loop
+   note
+   

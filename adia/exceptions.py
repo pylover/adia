@@ -1,5 +1,5 @@
-from .token import TOKEN_NAMES
-from .token import *
+from .token import TOKEN_NAMES, NEWLINE, EOF, INDENT, DEDENT, MULTILINE, \
+    EVERYTHING
 
 
 class InterpreterError(Exception):

@@ -1,7 +1,7 @@
 import abc
 
-from .token import *
-from .token import TOKEN_NAMES, EXACT_TOKENS_DICT
+from .token import TOKEN_NAMES, EXACT_TOKENS_DICT, MULTILINE, EVERYTHING, \
+    NAME
 from .tokenizer import Tokenizer
 from .exceptions import BadSyntax, BadAttribute
 

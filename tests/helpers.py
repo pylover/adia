@@ -10,8 +10,8 @@ def eqbigstr(a, b, offset=8):
         a = str(a)
 
     bb = []
-    for l in b.splitlines():
-        bb.append(l[offset:])
+    for line in b.splitlines():
+        bb.append(line[offset:])
 
     b = '\n'.join(bb[1:-1])
 
@@ -33,16 +33,16 @@ def eqdia(a, b, offset=4):
 
     def annotate(s):
         i = 0
-        for l in s.splitlines():
-            yield f'. {l} . {i:3d}\n'
+        for line in s.splitlines():
+            yield f'. {line} . {i:3d}\n'
             i += 1
 
     def maxwidth(*args):
         m = 0
         for s in args:
-            ll = [len(l) for l in s.splitlines()]
-            if ll:
-                m = max(m, max(ll))
+            linelen = [len(line) for line in s.splitlines()]
+            if linelen:
+                m = max(m, max(linelen))
 
         return m
 
@@ -63,8 +63,8 @@ def eqdia(a, b, offset=4):
         a = a.renders(rstrip=False)
 
     bb = []
-    for l in b.strip().splitlines():
-        bb.append(l[offset+2:-2])
+    for line in b.strip().splitlines():
+        bb.append(line[offset + 2:-2])
 
     bb.pop(0)
     bb.pop()

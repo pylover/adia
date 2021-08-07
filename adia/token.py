@@ -31,14 +31,14 @@ __all__.extend(TOKEN_NAMES.values())
 
 
 EXACT_TOKENS = [
-    ('->',  RARROW),
-    ('@',   AT),
-    (':',   COLON),
-    ('\\',  BACKSLASH),
-    ('|',   PIPE),
-    ('~',   TILDA),
-    ('#',   HASH),
-    ('.',   DOT),
+    ('->', RARROW),
+    ('@', AT),
+    (':', COLON),
+    ('\\', BACKSLASH),
+    ('|', PIPE),
+    ('~', TILDA),
+    ('#', HASH),
+    ('.', DOT),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 

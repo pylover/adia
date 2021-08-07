@@ -4,7 +4,8 @@ from .lazyattr import LazyAttribute
 from .container import Container
 from .interpreter import Interpreter, Consume, Final, FinalConsume, New, \
     Ignore, Goto, Switch
-from .token import *
+from .token import NAME, NEWLINE, EVERYTHING, RARROW, COLON, AT, HASH, EOF, \
+    DOT, DEDENT, INDENT, MULTILINE, TILDA
 
 
 class Module:
@@ -68,8 +69,8 @@ class Item(Interpreter):
             f.write(': ')
             if self.multiline:
                 f.write('|\n')
-                for l in self.right.splitlines():
-                    f.write(f'  {l}\n')
+                for line in self.right.splitlines():
+                    f.write(f'  {line}\n')
             else:
                 f.write(f'{self.right}')
 
@@ -207,8 +208,8 @@ class Condition(ContainerItem):
 class SequenceDiagram(Interpreter, Container):
     """Represents a sequence diagram.
 
-    The :class:`adia.diagram` class creates an instance of this class for each
-    sequence diagram section.
+    The py:class:`adia.diagram` class creates an instance of this class for
+    each sequence diagram section.
 
     """
     title = 'Untitled Sequence Diagram'

@@ -8,15 +8,15 @@ from .renderingplans import ModulePlan, ItemStartPlan, ItemEndPlan, \
     ConditionStartPlan, ConditionEndPlan, NotePlan
 
 
-def twiniter(l):
-    if not hasattr(l, '__next__'):
-        l = iter(l)
+def twiniter(items):
+    if not hasattr(items, '__next__'):
+        items = iter(items)
 
     f = None
     try:
-        f = next(l)
+        f = next(items)
         while True:
-            n = next(l)
+            n = next(items)
             yield f, n
             f = n
     except StopIteration:
@@ -71,8 +71,8 @@ class Renderer:
                 SequenceRenderer(unit, self.canvas).render()
 
     def _dumplines(self, rstrip):
-        for l in self.canvas:
-            line = str(l)
+        for line in self.canvas:
+            line = str(line)
             if rstrip:
                 line = line.rstrip()
 
@@ -203,17 +203,14 @@ class SequenceRenderer(Renderer):
         return result
 
     def _find_condition_startend(self, children):
-        l = [(
-                self._moduleplans.index(i.caller),
-                self._moduleplans.index(i.callee)
-            )
-            for i in children
-            if isinstance(i, ItemStartPlan)
-        ]
+        items = [(
+            self._moduleplans.index(i.caller),
+            self._moduleplans.index(i.callee))
+            for i in children if isinstance(i, ItemStartPlan)]
 
-        l = sorted(list(set(itertools.chain(*l))))
-        s, e = l[0], l[-1]
-        return self._moduleplans[s], self._moduleplans[e], s, e
+        items = sorted(list(set(itertools.chain(*items))))
+        start, end = items[0], items[-1]
+        return self._moduleplans[start], self._moduleplans[end], start, end
 
     def _plancondition(self, item, level):
         last, start, end = None, None, None
@@ -393,8 +390,9 @@ class SequenceRenderer(Renderer):
         for c in self._itemplans:
             # Place a blank line if direction was changed.
             if lastdir is not None and (
-                    c.direction != lastdir or not lasttype or
-                    not isinstance(c, lasttype)):
+                    c.direction != lastdir
+                    or not lasttype
+                    or not isinstance(c, lasttype)):
                 self._render_emptylines()
 
             # Calculte the needed space for the item

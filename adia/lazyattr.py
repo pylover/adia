@@ -1,3 +1,6 @@
+"""Lazy attributes module."""
+
+
 class LazyAttribute:
     """A decorator to freeze the property value.
 
@@ -20,15 +23,15 @@ class LazyAttribute:
     1
     """
 
-    __slots__ = ('f', )
+    __slots__ = ('_factory', )
 
-    def __init__(self, f):
-        self.f = f
+    def __init__(self, factory):
+        self._factory = factory
 
-    def __get__(self, obj, t=None):
-        f = self.f
+    def __get__(self, obj, owner=None):
+        factory = self._factory
         if obj is None:
-            return f
-        val = f(obj)
-        setattr(obj, f.__name__, val)
+            return factory
+        val = factory(obj)
+        setattr(obj, factory.__name__, val)
         return val

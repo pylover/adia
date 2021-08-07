@@ -1,3 +1,4 @@
+# flake8: noqa: E241
 import io
 
 from adia.token import *

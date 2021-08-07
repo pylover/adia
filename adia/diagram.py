@@ -3,24 +3,24 @@ from io import StringIO
 from .container import Container
 from .interpreter import Interpreter, Ignore, Switch, Goto, Consume, New
 from .sequence import SequenceDiagram
-from .token import *
+from .token import NEWLINE, NAME, EVERYTHING, INDENT, EOF, HASH, COLON
 from .renderer import Renderer
 
 
 class Diagram(Interpreter, Container):
-    """The main entrypoint of the :mod:`adia` package.
+    """The main entrypoint of the py:mod:`adia` package.
 
-    :class:`Diagram` is a collection of actual diagrams such as
-    :class:`SequenceDiagram` which implements the :class:`Interpreter` abstract
-    class and uses :class:`Tokenizer` and :class:`Renderer` internally to do
-    it's job.
+    py:class:`Diagram` is a collection of actual diagrams such as
+    py:class:`SequenceDiagram` which implements the py:class:`Interpreter`
+    abstract class and uses py:class:`Tokenizer` and py:class:`Renderer`
+    internally to do it's job.
 
     :param source: ADia source code to parse.
     :type source: str or file-like
 
     .. note::
 
-       You may use the :meth:`dumps` method to dump back the diagram instance
+       You may use the py:meth:`dumps` method to dump back the diagram instance
        to ``ADia`` source code.
     """
     title = 'Untitled Diagram'

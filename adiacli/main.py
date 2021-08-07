@@ -37,7 +37,7 @@ class ADia(Root):
         outfile = sys.stdout
 
         def render(infile):
-            adia.render(
+            adia.print(
                 infile,
                 outfile,
                 rstrip=False if args.no_rstrip is True else False
