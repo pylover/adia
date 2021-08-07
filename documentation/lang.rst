@@ -464,7 +464,7 @@ Consider these ``Python`` modules: ``foo.py`` and ``bar.py``.
 
 
 Condition
----------
+^^^^^^^^^
 
 .. testcode::
 
