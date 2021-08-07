@@ -1,2 +1,2 @@
 [flake8]
-ignore = RST303,W503
+ignore = RST303,RST304,W503

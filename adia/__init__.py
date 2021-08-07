@@ -1,7 +1,7 @@
 """``ASCII`` diagrams language parser and renderer.
-py:func:`print` and py:func:`diagram`.
+:func:`print` and :func:`diagram`.
 
-In addition, py:class:`Diagram` class may be used to access the low-level API.
+In addition, :class:`Diagram` class may be used to access the low-level API.
 """
 import sys
 
@@ -71,7 +71,7 @@ def print(source, file=None, rstrip=True):
     :param source: The ADia source code.
     :type source: str or file-like
     :param file: An object with the ``write`` attribute. If ``None`` the
-                 py:attr:`sys.stdout` will be used instead.
+                 :attr:`sys.stdout` will be used instead.
     :param rstrip: If ``True``, the trailing wihtespaces at the end of each
                    line will be removed.
     :type rstrip: bool, optional, default: True

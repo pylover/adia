@@ -3,7 +3,7 @@ Python API
 
 .. automodule:: adia
    
-   .. autofunction:: renders
+   .. autofunction:: diagram
    .. autofunction:: print
 
 .. autoclass:: Diagram

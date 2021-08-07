@@ -45,13 +45,11 @@ supported. But the roadmap is to implement two additional diagram types:
 
 .. testcode:: quickstart
 
-   import adia
-   
-   print(adia.diagram('''
+   adia.print('''
      diagram: Foo
      sequence:
      foo -> bar: Hello World!
-   '''))
+   ''')
 
 .. testoutput:: quickstart
 

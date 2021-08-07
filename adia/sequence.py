@@ -208,7 +208,7 @@ class Condition(ContainerItem):
 class SequenceDiagram(Interpreter, Container):
     """Represents a sequence diagram.
 
-    The py:class:`adia.diagram` class creates an instance of this class for
+    The :class:`adia.diagram` class creates an instance of this class for
     each sequence diagram section.
 
     """
