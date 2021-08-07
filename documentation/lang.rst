@@ -530,7 +530,6 @@ Loop
 
 For Loop
 """"""""
-
 .. testcode::
 
    adia.print('''
@@ -539,9 +538,6 @@ For Loop
        foo -> bar: init(forks)
          for: i in range(forks)
            bar -> baz: fork(i)
-       
-       while: True
-         foo -> bar: accept() -> socket
    ''')
 
 .. testoutput::
@@ -568,18 +564,42 @@ For Loop
       |                  |                 |
       |<-----------------|                 |
       |                  |                 |
-   **************************              |
-   * while True             *              |
-   **************************              |
-      |                  |                 |
-      |~~~accept()~~~~~~>|                 |
-      |                  |                 |
-      |<--socket---------|                 |
-      |                  |                 |
-   **************************              |
-   * end while              *              |
-   **************************              |
-      |                  |                 |
    +-----+            +-----+           +-----+
    | foo |            | bar |           | baz |
    +-----+            +-----+           +-----+
+
+While Loop
+""""""""""
+
+.. testcode::
+
+   adia.print('''
+       diagram: foo
+       sequence:
+       while: True
+         foo -> bar: accept() -> socket
+   ''')
+
+.. testoutput::
+
+   DIAGRAM: foo
+
+   +-----+         +-----+
+   | foo |         | bar |
+   +-----+         +-----+
+      |               |
+   ***********************
+   * while True          *
+   ***********************
+      |               |
+      |~~~accept()~~~>|
+      |               |
+      |<--socket------|
+      |               |
+   ***********************
+   * end while           *
+   ***********************
+      |               |
+   +-----+         +-----+
+   | foo |         | bar |
+   +-----+         +-----+
