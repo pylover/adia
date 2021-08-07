@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Python API &#8212; ADia 0.1.2 documentation</title>
+    <title>Python API &#8212; ADia 0.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -33,56 +33,15 @@
             
   <section id="module-adia">
 <span id="python-api"></span><h1>Python API<a class="headerlink" href="#module-adia" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="#module-adia" title="adia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">adia</span></code></a> module makes it easy to get <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> diagrams using
-<a class="reference internal" href="#adia.render" title="adia.render"><code class="xref py py-func docutils literal notranslate"><span class="pre">render()</span></code></a> and <a class="reference internal" href="#adia.renders" title="adia.renders"><code class="xref py py-func docutils literal notranslate"><span class="pre">renders()</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ASCII</span></code> diagrams language parser and renderer.
+<a class="reference internal" href="#adia.print" title="adia.print"><code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code></a> and <a class="reference internal" href="#adia.diagram" title="adia.diagram"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagram()</span></code></a>.</p>
 <p>In addition, <a class="reference internal" href="#adia.Diagram" title="adia.Diagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Diagram</span></code></a> class may be used to access the low-level API.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="adia.render">
-<span class="sig-prename descclassname"><span class="pre">adia.</span></span><span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rstrip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adia.render" title="Permalink to this definition">¶</a></dt>
-<dd><p>High level API to write ASCII diagram into file.</p>
-<p>Equivalent to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Diagram</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">adia</span>
-
- <span class="n">source</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">    diagram: Foo</span>
-<span class="s1">    sequence:</span>
-<span class="s1">    foo -&gt; bar: Hello World!</span>
-<span class="s1">&#39;&#39;&#39;&#39;</span>
- <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;foo.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
-     <span class="n">adia</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">otfile</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em> or </em><em>file-like</em>) – The ADia source code.</p></li>
-<li><p><strong>rstrip</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default: True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the trailing wihtespaces at the end of each
-line will be removed.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="adia.renders">
-<span class="sig-prename descclassname"><span class="pre">adia.</span></span><span class="sig-name descname"><span class="pre">renders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rstrip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adia.renders" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="adia.diagram">
+<span class="sig-prename descclassname"><span class="pre">adia.</span></span><span class="sig-name descname"><span class="pre">diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rstrip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adia.diagram" title="Permalink to this definition">¶</a></dt>
 <dd><p>High level API to generate ASCII diagram.</p>
-<p>Equivalent to:</p>
+<p>This function is equivalent to:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Diagram</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">renders</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adia</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">adia</span><span class="o">.</span><span class="n">renders</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">    diagram: Foo</span>
-<span class="s1">    sequence:</span>
-<span class="s1">    foo -&gt; bar: Hello World!</span>
-<span class="s1">&#39;&#39;&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -102,14 +61,47 @@ line will be removed.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="adia.print">
+<span class="sig-prename descclassname"><span class="pre">adia.</span></span><span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rstrip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adia.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>High level API to write ASCII diagram into file.</p>
+<p>Equivalent to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Diagram</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">adia</span>
+
+ <span class="n">source</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: Foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo -&gt; bar: Hello World!</span>
+<span class="s1">&#39;&#39;&#39;&#39;</span>
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;foo.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+     <span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em> or </em><em>file-like</em>) – The ADia source code.</p></li>
+<li><p><strong>file</strong> – An object with the <code class="docutils literal notranslate"><span class="pre">write</span></code> attribute. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">sys.stdout</span></code> will be used instead.</p></li>
+<li><p><strong>rstrip</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default: True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the trailing wihtespaces at the end of each
+line will be removed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="adia.Diagram">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">adia.</span></span><span class="sig-name descname"><span class="pre">Diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adia.Diagram" title="Permalink to this definition">¶</a></dt>
 <dd><p>The main entrypoint of the <a class="reference internal" href="#module-adia" title="adia"><code class="xref py py-mod docutils literal notranslate"><span class="pre">adia</span></code></a> package.</p>
 <p><a class="reference internal" href="#adia.Diagram" title="adia.Diagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Diagram</span></code></a> is a collection of actual diagrams such as
-<a class="reference internal" href="#adia.SequenceDiagram" title="adia.SequenceDiagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceDiagram</span></code></a> which implements the <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpreter</span></code> abstract
-class and uses <code class="xref py py-class docutils literal notranslate"><span class="pre">Tokenizer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Renderer</span></code> internally to do
-it’s job.</p>
+<a class="reference internal" href="#adia.SequenceDiagram" title="adia.SequenceDiagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceDiagram</span></code></a> which implements the <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpreter</span></code>
+abstract class and uses <code class="xref py py-class docutils literal notranslate"><span class="pre">Tokenizer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Renderer</span></code>
+internally to do it’s job.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em> or </em><em>file-like</em>) – ADia source code to parse.</p>
@@ -215,8 +207,8 @@ line will be removed.</p>
 <dt class="sig sig-object py" id="adia.SequenceDiagram">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">adia.</span></span><span class="sig-name descname"><span class="pre">SequenceDiagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adia.SequenceDiagram" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a sequence diagram.</p>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">adia.diagram</span></code> class creates an instance of this class for each
-sequence diagram section.</p>
+<p>The <a class="reference internal" href="#adia.diagram" title="adia.diagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">adia.diagram</span></code></a> class creates an instance of this class for
+each sequence diagram section.</p>
 </dd></dl>
 
 </section>

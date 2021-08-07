@@ -45,13 +45,11 @@ supported. But the roadmap is to implement two additional diagram types:
 
 .. testcode:: quickstart
 
-   import adia
-   
-   print(adia.renders('''
+   adia.print('''
      diagram: Foo
      sequence:
      foo -> bar: Hello World!
-   '''))
+   ''')
 
 .. testoutput:: quickstart
 
@@ -72,7 +70,7 @@ supported. But the roadmap is to implement two additional diagram types:
 
 .. seealso::
 
-   :func:`adia.renders`, :func:`adia.render` and :class:`adia.Diagram`.
+   :func:`adia.diagram`, :func:`adia.print` and :class:`adia.Diagram`.
 
 
 Command Line Interface
