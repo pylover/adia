@@ -14,17 +14,30 @@ an optional ``text`` as follow:
 
 Example:
 
-.. testsetup::
+.. testcode:: langref
 
-   from adia import renders
+   adia.print('''
+       diagram: foo
+       sequence:
+       foo -> bar
+   ''')
 
-.. doctest::
+.. testoutput:: langref
 
-   >>> print(renders('''
-   ... diagram: foo
-   ... sequence:
-   ... foo -> bar
-   ... '''))
+   DIAGRAM: foo
+   
+   +-----+ +-----+
+   | foo | | bar |
+   +-----+ +-----+
+      |       |
+      |~~~~~~>|
+      |       |
+      |<------|
+      |       |
+   +-----+ +-----+
+   | foo | | bar |
+   +-----+ +-----+
+
 
 Diagram Header
 **************

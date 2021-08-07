@@ -1,5 +1,5 @@
 """``ASCII`` diagrams language parser and renderer.
-py:func:`render` and py:func:`renders`.
+py:func:`print` and py:func:`diagram`.
 
 In addition, py:class:`Diagram` class may be used to access the low-level API.
 """
@@ -20,11 +20,11 @@ __all__ = [
     'BadSyntax',
     'Renderer',
     'print',
-    'renders'
+    'diagram'
 ]
 
 
-def renders(source, rstrip=True):
+def diagram(source, rstrip=True):
     """High level API to generate ASCII diagram.
 
     This function is equivalent to:
@@ -45,7 +45,7 @@ def renders(source, rstrip=True):
     return Diagram(source).renders(rstrip)
 
 
-def print(source, file=sys.stdout, rstrip=True):
+def print(source, file=None, rstrip=True):
     """High level API to write ASCII diagram into file.
 
     Equivalent to:
@@ -70,11 +70,11 @@ def print(source, file=sys.stdout, rstrip=True):
 
     :param source: The ADia source code.
     :type source: str or file-like
-    :param file: An object with the ``write`` attribute. default:
-                 py:attr:`sys.stdout`.
+    :param file: An object with the ``write`` attribute. If ``None`` the
+                 py:attr:`sys.stdout` will be used instead.
     :param rstrip: If ``True``, the trailing wihtespaces at the end of each
                    line will be removed.
     :type rstrip: bool, optional, default: True
 
     """
-    Diagram(source).render(file, rstrip)
+    Diagram(source).render(file or sys.stdout, rstrip)

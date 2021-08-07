@@ -49,7 +49,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
 ]
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -80,3 +79,8 @@ autodoc_default_flags = [
     # 'members',
     # 'show-inheritance',
 ]
+
+# Doctest
+doctest_global_setup = '''
+import adia
+'''

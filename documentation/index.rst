@@ -47,7 +47,7 @@ supported. But the roadmap is to implement two additional diagram types:
 
    import adia
    
-   print(adia.renders('''
+   print(adia.diagram('''
      diagram: Foo
      sequence:
      foo -> bar: Hello World!
@@ -72,7 +72,7 @@ supported. But the roadmap is to implement two additional diagram types:
 
 .. seealso::
 
-   :func:`adia.renders`, :func:`adia.render` and :class:`adia.Diagram`.
+   :func:`adia.diagram`, :func:`adia.print` and :class:`adia.Diagram`.
 
 
 Command Line Interface
