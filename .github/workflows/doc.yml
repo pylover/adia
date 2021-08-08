@@ -23,19 +23,13 @@ jobs:
         python -m pip install -r requirements-ci.txt
         python -m pip install -e .
     - name: Sphinx Build
-      working-directory: documentation
-      run: |
-        make html
-        modir -p docs/${{ env.ADIA_VERSION }}
-        ln -sf ${{ env.ADIA_VERSION }} docs/latest
-    - name: Find version and set env
-      run: echo "ADIA_VERSION=$(adia --version | cut -d'.' -f1-2)" >> $GITHUB_ENV
+      run: make doc
     - name: Deploy to gh-pages
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
         token: ${{ secrets.PAT }}
         branch: gh-pages
-        folder: documentation/_build/html
-        target-folder: docs/${{ env.ADIA_VERSION }}
+        folder: documentation/_build
+        target-folder: docs
         clean: false
 
