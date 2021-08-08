@@ -16,10 +16,10 @@ For the first you have to generate ``adia.bundle.js`` using:
 .. code-block:: bash
 
    cd path/to/adia
-   make www
+   make webclinic
 
 
-``www/build/adia.bundle.js`` is what you need now.
+``webclinic/build/adia.bundle.js`` is what you need now.
 
 Copy and paste the generated file inside your Javascript project's static
 directory, where you can fetch it by a URL. then load it using:
@@ -58,7 +58,8 @@ anywhere.
 Javascript demo page
 ********************
 
-Let's make and visit the provided javascript demo page: ``www/jsdemo.html``.
+Let's make and visit the provided javascript demo page: 
+``webclinic/jsdemo.html``.
 
 .. code-block:: bash
 
