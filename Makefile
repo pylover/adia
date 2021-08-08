@@ -2,7 +2,8 @@ PIP = pip3
 TEST_DIR = tests
 PRJ = adia
 PYTEST_FLAGS = -v
-
+ADIA_VER = $(shell adia --version | cut -d'.' -f1-2)
+SPHINX_BUILDDIR = documentation/_build
 
 .PHONY: test
 test:
@@ -41,6 +42,7 @@ pypi: dist
 .PHONY: doc
 doc:
 	cd documentation; make clean html
+	ln -sf $(ADIA_VER) "$(SPHINX_BUILDDIR)/latest"
 
 .PHONY: livedoc
 livedoc:
