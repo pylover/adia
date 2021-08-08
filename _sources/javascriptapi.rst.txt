@@ -34,15 +34,15 @@ directory, where you can fetch it by a URL. then load it using:
    <body onload="brython()">
    <script type="text/python">
    from browser import window
-   from adia import renders, BadSyntax
+   import adia
    
-   def adia_renders(source):
+   def adia_diagram(source):
      try:
-       return renders(source)
-     except BadSyntax as ex:
+       return adia.diagram(source)
+     except adia.BadSyntax as ex:
        return f'Error: {ex}'
    
-   window.adiaRenders = adia_renders
+   window.adiaDiagram = adia_diagram
    </script>
 
    ...
@@ -51,7 +51,7 @@ directory, where you can fetch it by a URL. then load it using:
    </html>
 
 
-After the setup above you can use the function ``window.adiaRenders(...)`` 
+After the setup above you can use the function ``window.adiaDiagram(...)`` 
 anywhere.
 
 

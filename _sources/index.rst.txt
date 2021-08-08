@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-v\ |version| documentation!
-===========================
+ADia v\ |version| documentation!
+================================
 
 .. image:: http://img.shields.io/pypi/v/easycli.svg?style=for-the-badge&logo=python&logoColor=white&logoWidth=20
    :alt: PyPI
