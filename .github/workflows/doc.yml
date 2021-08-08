@@ -26,7 +26,8 @@ jobs:
       working-directory: documentation
       run: |
         make html
-        touch _build/html/.nojekyll 
+        modir -p docs/${{ env.ADIA_VERSION }}
+        ln -sf ${{ env.ADIA_VERSION }} docs/latest
     - name: Find version and set env
       run: echo "ADIA_VERSION=$(adia --version | cut -d'.' -f1-2)" >> $GITHUB_ENV
     - name: Deploy to gh-pages
