@@ -19,6 +19,7 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)/$(ADIA_VER)" \
 		$(SPHINXOPTS) $(O)
+	ln -sf $(ADIA_VER) "$(BUILDDIR)/latest"
 
 livehtml:
 	sphinx-autobuild . -b html $(ALLSPHINXOPTS) \
