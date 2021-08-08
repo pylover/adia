@@ -101,8 +101,11 @@ $(DIST_FILES): $(WWWDIST)/%:
 $(WWWDIST)/adia.bundle.js: $(BRYTHON_FILES) $(WWWDIST)/adia.js \
 	$(WWWDIST)/lib.js
 	cat $(WWWDIST)/brython.js > $@
-	cat $(WWWDIST)/brython_stdlib.js >> $@
+	echo >> $@
+	cat $(WWWDIST)/lib.js >> $@
+	echo >> $@
 	cat $(WWWDIST)/adia.js >> $@
+	echo >> $@
 
 .PHONY: www
 www: $(DIST_FILES) $(WWWDIST)/adia.bundle.js $(WWWDIST)/adia.js \

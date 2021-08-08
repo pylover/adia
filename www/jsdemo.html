@@ -33,15 +33,17 @@ foo -> bar: hello() -> HI
 
 <script type="text/python">
 from browser import window
-from adia import renders, BadSyntax
+from adia import diagram, BadSyntax
 
-def adia_renders(source):
+def adia_diagram(src):
   try:
-    return renders(source)
+    print(src)
+    print(diagram)
+    return diagram(src)
   except BadSyntax as ex:
     return f'Error: {ex}'
 
-window.adiaRenders = adia_renders
+window.adiaDiagram = adia_diagram
 </script>
 
 <script>
@@ -49,8 +51,9 @@ let source = document.getElementById('source');
 let target = document.getElementById('target');
 let error = document.getElementById('error');
 
+console.log(source);
 function refresh(ev) {
-  if (window.adiaRenders == undefined) {
+  if (window.adiaDiagram == undefined) {
     setTimeout(refresh, 200);
     return;
   }
@@ -59,7 +62,7 @@ function refresh(ev) {
       (ev.charCode != 13)) {
     return;
   }
-  var out = window.adiaRenders(source.value);
+  var out = window.adiaDiagram(source.value);
   if (out.startsWith('Error: ')) {
     error.value = out; 
   }
