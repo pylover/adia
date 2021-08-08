@@ -116,6 +116,8 @@ jsdist: $(WEBCLINIC_BUILD)/adia.bundle.js $(WEBCLINIC_BUILD)/adia.js
 	mkdir -p $(JSDIST)
 	cp $(WEBCLINIC_BUILD)/adia.bundle.js $(JSDIST)/adia.bundle-$(ADIA_VER).js
 	cp $(WEBCLINIC_BUILD)/adia.js $(JSDIST)/adia-$(ADIA_VER).js
+	ln -sf adia.bundle-$(ADIA_VER).js $(JSDIST)/adia.bundle.js
+	ln -sf adia-$(ADIA_VER).js $(JSDIST)/adia.js
 	
 .PHONY: webclinic
 webclinic: $(DIST_FILES) $(WEBCLINIC_BUILD)/adia.bundle.js \
