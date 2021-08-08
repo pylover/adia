@@ -6,3 +6,4 @@ flake8-rst-docstrings
 bddcli >= 2.8
 sphinx
 sphinx-autobuild
+brythoncli
