@@ -106,12 +106,12 @@ Then browse http://0.0.0.0:8000/check.html and wait to pass/fail tests.
 Update Brython runtime
 **********************
 
-Run ``make cleanall`` to force the ``www`` makefile rule to download and 
+Run ``make cleanall`` to force the ``webclinic`` makefile rule to download and 
 update ``brython*.js`` files.
 
 .. code-block:: bash
 
-   make cleanall www
+   make cleanall webclinic
 
 .. seealso::
 

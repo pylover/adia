@@ -37,8 +37,6 @@ from adia import diagram, BadSyntax
 
 def adia_diagram(src):
   try:
-    print(src)
-    print(diagram)
     return diagram(src)
   except BadSyntax as ex:
     return f'Error: {ex}'
@@ -51,7 +49,6 @@ let source = document.getElementById('source');
 let target = document.getElementById('target');
 let error = document.getElementById('error');
 
-console.log(source);
 function refresh(ev) {
   if (window.adiaDiagram == undefined) {
     setTimeout(refresh, 200);

@@ -51,80 +51,82 @@ doctest:
 	cd documentation; make doctest
 
 
-# WWW
-WWW = www
-WWWDIST = $(WWW)/build
-WWWDIST_ABS = $(shell readlink -f $(WWWDIST))
+# WEBCLINIC
+WEBCLINIC = webclinic
+WEBCLINIC_BUILD = $(WEBCLINIC)/build
+WEBCLINIC_BUILD_ABS = $(shell readlink -f $(WEBCLINIC_BUILD))
 ADIA = adia
 BRYTHON_REPO = https://raw.githubusercontent.com/brython-dev/brython
 BRYTHON_URL = $(BRYTHON_REPO)/master/www/src
 BRYTHON_FILES = \
-	$(WWWDIST)/brython.js \
-	$(WWWDIST)/brython_stdlib.js
+	$(WEBCLINIC_BUILD)/brython.js \
+	$(WEBCLINIC_BUILD)/brython_stdlib.js
 
 DIST_FILES = \
-	$(WWWDIST)/index.html \
-	$(WWWDIST)/jsdemo.html \
-	$(WWWDIST)/check.html \
-	$(WWWDIST)/check.py \
-	$(WWWDIST)/kitchen.py \
-	$(WWWDIST)/kitchen.html \
-	$(WWWDIST)/favicon.ico
+	$(WEBCLINIC_BUILD)/index.html \
+	$(WEBCLINIC_BUILD)/jsdemo.html \
+	$(WEBCLINIC_BUILD)/check.html \
+	$(WEBCLINIC_BUILD)/check.py \
+	$(WEBCLINIC_BUILD)/kitchen.py \
+	$(WEBCLINIC_BUILD)/kitchen.html \
+	$(WEBCLINIC_BUILD)/favicon.ico
 
-$(WWWDIST)/adia.js:
-	- mkdir -p $(WWWDIST)
+$(WEBCLINIC_BUILD)/adia.js:
+	- mkdir -p $(WEBCLINIC_BUILD)
 	brython pack \
 		--package-directory $(ADIA) \
-		--output-directory $(WWWDIST) \
+		--output-directory $(WEBCLINIC_BUILD) \
 		adia
 	
-$(WWWDIST)/lib.js: $(WWWDIST)/brython_stdlib.js
-	- mkdir -p $(WWWDIST)
+$(WEBCLINIC_BUILD)/lib.js: $(WEBCLINIC_BUILD)/brython_stdlib.js
+	- mkdir -p $(WEBCLINIC_BUILD)
 	brython pack-dependencies \
-		--output-directory $(WWWDIST) \
+		--output-directory $(WEBCLINIC_BUILD) \
 		--search-directory $(ADIA) \
-		--stdlib-directory $(WWWDIST) \
+		--stdlib-directory $(WEBCLINIC_BUILD) \
 		--filename lib.js
 
-$(WWWDIST)/tests:
-	- mkdir -p $(WWWDIST)
-	- ln -s $(shell readlink -f tests) $(WWWDIST_ABS)
+$(WEBCLINIC_BUILD)/tests:
+	- mkdir -p $(WEBCLINIC_BUILD)
+	- ln -s $(shell readlink -f tests) $(WEBCLINIC_BUILD_ABS)
 
-$(BRYTHON_FILES): $(WWWDIST)/%.js:
-	- mkdir -p $(WWWDIST)
+$(BRYTHON_FILES): $(WEBCLINIC_BUILD)/%.js:
+	- mkdir -p $(WEBCLINIC_BUILD)
 	curl "$(BRYTHON_URL)/$(shell basename $@)" > $@
 
-$(DIST_FILES): $(WWWDIST)/%:
-	- mkdir -p $(WWWDIST)
-	ln -s $(shell readlink -f $(WWW)/$(shell basename $@)) $(WWWDIST_ABS)
+$(DIST_FILES): $(WEBCLINIC_BUILD)/%:
+	- mkdir -p $(WEBCLINIC_BUILD)
+	ln -s $(shell readlink -f $(WEBCLINIC)/$(shell basename $@)) \
+		$(WEBCLINIC_BUILD_ABS)
 
-$(WWWDIST)/adia.bundle.js: $(BRYTHON_FILES) $(WWWDIST)/adia.js \
-	$(WWWDIST)/lib.js
-	cat $(WWWDIST)/brython.js > $@
+$(WEBCLINIC_BUILD)/adia.bundle.js: $(BRYTHON_FILES) \
+		$(WEBCLINIC_BUILD)/adia.js $(WEBCLINIC_BUILD)/lib.js
+	cat $(WEBCLINIC_BUILD)/brython.js > $@
 	echo >> $@
-	cat $(WWWDIST)/lib.js >> $@
+	cat $(WEBCLINIC_BUILD)/lib.js >> $@
 	echo >> $@
-	cat $(WWWDIST)/adia.js >> $@
+	cat $(WEBCLINIC_BUILD)/adia.js >> $@
 	echo >> $@
 
-.PHONY: www
-www: $(DIST_FILES) $(WWWDIST)/adia.bundle.js $(WWWDIST)/adia.js \
-	$(WWWDIST)/tests $(WWWDIST)/lib.js
+.PHONY: webclinic
+webclinic: $(DIST_FILES) $(WEBCLINIC_BUILD)/adia.bundle.js \
+		$(WEBCLINIC_BUILD)/adia.js $(WEBCLINIC_BUILD)/tests \
+		$(WEBCLINIC_BUILD)/lib.js
 
 
 .PHONY: serve
-serve: www
-	brython -C$(WWWDIST) serve --port 8000
+webclinic_serve: webclinic
+	brython -C$(WEBCLINIC_BUILD) serve --port 8000
 
 
 .PHONY: clean
 clean:
 	- rm -rf $(ADIA)/__pycache__
 	- rm $(DIST_FILES)
-	- rm $(WWWDIST)/tests
-	- rm $(WWWDIST)/lib.js
-	- rm $(WWWDIST)/adia.js
-	- rm $(WWWDIST)/adia.bundle.js
+	- rm $(WEBCLINIC_BUILD)/tests
+	- rm $(WEBCLINIC_BUILD)/lib.js
+	- rm $(WEBCLINIC_BUILD)/adia.js
+	- rm $(WEBCLINIC_BUILD)/adia.bundle.js
 	- rm dist/*.egg
 	- rm dist/*.gz
 
