@@ -6,7 +6,7 @@
 ADia v\ |version| documentation!
 ================================
 
-.. image:: http://img.shields.io/pypi/v/easycli.svg?style=for-the-badge&logo=python&logoColor=white&logoWidth=20
+.. image:: http://img.shields.io/pypi/v/adia.svg?style=for-the-badge&logo=python&logoColor=white&logoWidth=20
    :alt: PyPI
    :target: https://pypi.python.org/pypi/adia
 
@@ -72,6 +72,23 @@ supported. But the roadmap is to implement two additional diagram types:
 
    :func:`adia.diagram`, :func:`adia.print` and :class:`adia.Diagram`.
 
+Install
+#######
+
+It's higly recommended to use a virual-env utility for example:
+`virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`_
+before doing anything.
+
+.. code-block:: bash
+
+   $ pip install adia
+
+Or, install the latest version from the source:
+
+.. code-block:: bash
+
+   $ pip install git+https://github.com/pylover/adia
+
 
 Command Line Interface
 ######################
@@ -100,7 +117,6 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   install
    lang
    pythonapi
    javascriptapi
