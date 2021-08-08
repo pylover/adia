@@ -1,0 +1,657 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Language Reference &#8212; ADia 0.2.5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="pythonapi.html" />
+    <link rel="prev" title="ADia v0.2 documentation!" href="index.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+    <link href="_static/favicon.svg" rel="icon" type="image/svg+xml">
+    <link href="_static/favicon.png" rel="icon" type="image/png">
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="language-reference">
+<h1>Language Reference<a class="headerlink" href="#language-reference" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ADia</span></code> is an indent based language such as <code class="docutils literal notranslate"><span class="pre">Python</span></code> and uses indentation
+to specify the <code class="docutils literal notranslate"><span class="pre">parent/children</span></code> relationship between entities. Leading
+whitespaces at the beginning of a line is used to compute the indentation
+level of the line, which in turn is used to determine the grouping of
+statements.</p>
+<p>Every statement of the <code class="docutils literal notranslate"><span class="pre">ADia</span></code> language is consist of one <code class="docutils literal notranslate"><span class="pre">operation</span></code> and
+an optional <code class="docutils literal notranslate"><span class="pre">text</span></code> as follow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>operation <span class="o">[</span>: text<span class="o">]</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo -&gt; bar</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+ +-----+
+| foo | | bar |
++-----+ +-----+
+   |       |
+   |~~~~~~&gt;|
+   |       |
+   |&lt;------|
+   |       |
++-----+ +-----+
+| foo | | bar |
++-----+ +-----+
+</pre></div>
+</div>
+<section id="comments">
+<h2>Comments<a class="headerlink" href="#comments" title="Permalink to this headline">¶</a></h2>
+<p>Every line started with <cite>#</cite> is comment and will be ignored by the lexer.</p>
+</section>
+<section id="diagram-header">
+<h2>Diagram Header<a class="headerlink" href="#diagram-header" title="Permalink to this headline">¶</a></h2>
+<p>Every <code class="docutils literal notranslate"><span class="pre">ADia</span></code> document should starts with the <code class="docutils literal notranslate"><span class="pre">diagram:</span> <span class="pre">[TITLE]</span></code> attribute.
+There is also two optional attributes: <code class="docutils literal notranslate"><span class="pre">version</span></code> and <code class="docutils literal notranslate"><span class="pre">author</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: Foo</span>
+<span class="s1">    version: 1.0</span>
+<span class="s1">    author: Alice</span>
+
+<span class="s1">    sequence: Foo &amp; Bar</span>
+<span class="s1">    foo -&gt; bar</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: Foo
+author: Alice
+version: 1.0
+
+
+SEQUENCE: Foo &amp; Bar
+
++-----+ +-----+
+| foo | | bar |
++-----+ +-----+
+   |       |
+   |~~~~~~&gt;|
+   |       |
+   |&lt;------|
+   |       |
++-----+ +-----+
+| foo | | bar |
++-----+ +-----+
+</pre></div>
+</div>
+</section>
+<section id="diagram-section">
+<h2>Diagram Section<a class="headerlink" href="#diagram-section" title="Permalink to this headline">¶</a></h2>
+<p>Every <code class="docutils literal notranslate"><span class="pre">ADia</span></code> document may consists of zero or more sections which could be
+one of <code class="docutils literal notranslate"><span class="pre">sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">class</span></code> and <code class="docutils literal notranslate"><span class="pre">fork</span></code>.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: Foo</span>
+
+<span class="s1">    sequence:  Foo &amp; Bar</span>
+<span class="s1">    foo -&gt; bar</span>
+
+<span class="s1">    sequence: Bar &amp; Baz</span>
+<span class="s1">    bar -&gt; baz</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: Foo
+
+
+SEQUENCE: Foo &amp; Bar
+
++-----+ +-----+
+| foo | | bar |
++-----+ +-----+
+   |       |
+   |~~~~~~&gt;|
+   |       |
+   |&lt;------|
+   |       |
++-----+ +-----+
+| foo | | bar |
++-----+ +-----+
+
+
+SEQUENCE: Bar &amp; Baz
+
++-----+ +-----+
+| bar | | baz |
++-----+ +-----+
+   |       |
+   |~~~~~~&gt;|
+   |       |
+   |&lt;------|
+   |       |
++-----+ +-----+
+| bar | | baz |
++-----+ +-----+
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, only the <code class="docutils literal notranslate"><span class="pre">sequence</span></code> diagram is implemented. It means every
+<code class="docutils literal notranslate"><span class="pre">ADia</span></code> document may consists of zero or more sequence diagrams.</p>
+</div>
+</section>
+<section id="sequence-diagram">
+<h2>Sequence Diagram<a class="headerlink" href="#sequence-diagram" title="Permalink to this headline">¶</a></h2>
+<p>A sequence diagram always starts with the <code class="docutils literal notranslate"><span class="pre">sequence:</span> <span class="pre">[TITLE]</span></code> keyword and
+basically it is a collection of <code class="docutils literal notranslate"><span class="pre">modules</span></code> and <code class="docutils literal notranslate"><span class="pre">items</span></code> which described
+below.</p>
+<section id="module">
+<h3>Module<a class="headerlink" href="#module" title="Permalink to this headline">¶</a></h3>
+<p>You may use shorter name for modules for simplicity and define comprehensive
+title with <code class="docutils literal notranslate"><span class="pre">MODULE.title:</span> <span class="pre">TITLE</span></code> statement.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo.title: Mr Foo</span>
+<span class="s1">    foo -&gt; bar: hello!</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++---------+     +-----+
+| Mr Foo  |     | bar |
++---------+     +-----+
+     |             |
+     |~~~hello!~~~&gt;|
+     |             |
+     |&lt;------------|
+     |             |
++---------+     +-----+
+| Mr Foo  |     | bar |
++---------+     +-----+
+</pre></div>
+</div>
+</section>
+<section id="note">
+<h3>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h3>
+<p>You can put note anywhere and at every indentation level. see below to learn
+about the <code class="docutils literal notranslate"><span class="pre">Single-Module</span></code> and <code class="docutils literal notranslate"><span class="pre">Multi-Module</span></code> notes.</p>
+<section id="single-module-note">
+<h4>Single-Module Note<a class="headerlink" href="#single-module-note" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    @foo: Over the foo-&gt;bar</span>
+<span class="s1">    foo -&gt; bar</span>
+<span class="s1">      bar -&gt; baz</span>
+<span class="s1">        @baz: Inside the bar-&gt;baz</span>
+<span class="s1">      @bar: Under the bar-&gt;baz</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+              +-----+               +-----+
+| foo |              | bar |               | baz |
++-----+              +-----+               +-----+
+   |                    |                     |
+---------------------   |                     |
+| Over the foo-&gt;bar |   |                     |
+---------------------   |                     |
+   |                    |                     |
+   |~~~~~~~~~~~~~~~~~~~&gt;|                     |
+   |                    |~~~~~~~~~~~~~~~~~~~~&gt;|
+   |                    |                     |
+   |                    |                  -----------------------
+   |                    |                  | Inside the bar-&gt;baz |
+   |                    |                  -----------------------
+   |                    |                     |
+   |                    |&lt;--------------------|
+   |                    |                     |
+   |                 ----------------------   |
+   |                 | Under the bar-&gt;baz |   |
+   |                 ----------------------   |
+   |                    |                     |
+   |&lt;-------------------|                     |
+   |                    |                     |
++-----+              +-----+               +-----+
+| foo |              | bar |               | baz |
++-----+              +-----+               +-----+
+</pre></div>
+</div>
+</section>
+<section id="multi-module-note">
+<h4>Multi-Module Note<a class="headerlink" href="#multi-module-note" title="Permalink to this headline">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">Multi-Module</span> <span class="pre">Note</span></code> may cover two or more modules.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    @foo ~ bar: Lorem Ipsum</span>
+<span class="s1">    foo -&gt; bar</span>
+<span class="s1">      bar -&gt; baz</span>
+<span class="s1">        @foo ~ baz: Lorem Ipsum</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+ +-----+ +-----+
+| foo | | bar | | baz |
++-----+ +-----+ +-----+
+   |       |       |
+---------------    |
+| Lorem Ipsum |    |
+---------------    |
+   |       |       |
+   |~~~~~~&gt;|       |
+   |       |~~~~~~&gt;|
+   |       |       |
+-----------------------
+| Lorem Ipsum         |
+-----------------------
+   |       |       |
+   |       |&lt;------|
+   |&lt;------|       |
+   |       |       |
++-----+ +-----+ +-----+
+| foo | | bar | | baz |
++-----+ +-----+ +-----+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="call">
+<h3>Call<a class="headerlink" href="#call" title="Permalink to this headline">¶</a></h3>
+<p>A call is consists of <code class="docutils literal notranslate"><span class="pre">CALLER</span> <span class="pre">-&gt;</span> <span class="pre">CALLEE[:</span> <span class="pre">[FUNCTION]</span> <span class="pre">[-&gt;</span> <span class="pre">RETURN]]</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CALLER</span></code> and <code class="docutils literal notranslate"><span class="pre">CALLEE</span></code> are modules which described above.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FUNCTION</span></code> and <code class="docutils literal notranslate"><span class="pre">RETURN</span></code> can be any <code class="docutils literal notranslate"><span class="pre">ASCII</span></code> character.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+
+<span class="s1">    @foo ~ bar: Without function name</span>
+<span class="s1">    foo -&gt; bar</span>
+
+<span class="s1">    @foo ~ bar: With function name</span>
+<span class="s1">    foo -&gt; bar: init(options)</span>
+
+<span class="s1">    @foo ~ bar: With function name &amp; return value</span>
+<span class="s1">    foo -&gt; bar: init(options) -&gt; err</span>
+
+<span class="s1">    @foo ~ bar: Only return value</span>
+<span class="s1">    foo -&gt; bar: -&gt; err</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+                       +-----+
+| foo |                       | bar |
++-----+                       +-----+
+   |                             |
+-------------------------------------
+| Without function name             |
+-------------------------------------
+   |                             |
+   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~&gt;|
+   |                             |
+   |&lt;----------------------------|
+   |                             |
+-------------------------------------
+| With function name                |
+-------------------------------------
+   |                             |
+   |~~~init(options)~~~~~~~~~~~~&gt;|
+   |                             |
+   |&lt;----------------------------|
+   |                             |
+-------------------------------------
+| With function name &amp; return value |
+-------------------------------------
+   |                             |
+   |~~~init(options)~~~~~~~~~~~~&gt;|
+   |                             |
+   |&lt;--err-----------------------|
+   |                             |
+-------------------------------------
+| Only return value                 |
+-------------------------------------
+   |                             |
+   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~&gt;|
+   |                             |
+   |&lt;--err-----------------------|
+   |                             |
++-----+                       +-----+
+| foo |                       | bar |
++-----+                       +-----+
+</pre></div>
+</div>
+<section id="self-call">
+<h4>Self Call<a class="headerlink" href="#self-call" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo -&gt; foo</span>
+<span class="s1">    foo -&gt; foo: self_test() -&gt; Result</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+
+| foo |
++-----+
+   |
+   |~~~~~~+
+   |      |
+   |&lt;-----+
+   |
+   |~~~self_test()~~~+
+   |                 |
+   |&lt;--Result--------+
+   |
++-----+
+| foo |
++-----+
+</pre></div>
+</div>
+</section>
+<section id="callstack">
+<h4>Callstack<a class="headerlink" href="#callstack" title="Permalink to this headline">¶</a></h4>
+<p>Use one indentation level to put one or more item inside another.</p>
+<p>Consider these <code class="docutils literal notranslate"><span class="pre">Python</span></code> modules: <code class="docutils literal notranslate"><span class="pre">foo.py</span></code> and <code class="docutils literal notranslate"><span class="pre">bar.py</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">foo.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bar</span>
+
+
+<span class="n">bat</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">bar.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">baz</span>
+<span class="kn">import</span> <span class="nn">qux</span>
+
+<span class="k">def</span> <span class="nf">prepare</span><span class="p">():</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
+  <span class="n">prepare</span><span class="p">()</span>
+  <span class="n">baz</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+  <span class="n">qux</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ADia</span></code> representation of the codes above would be something like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo -&gt; bar: init()</span>
+<span class="s1">      bar -&gt; bar: prepare()</span>
+<span class="s1">      bar -&gt; baz: init()</span>
+<span class="s1">      bar -&gt; qux: init()</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+       +-----+            +-----+ +-----+
+| foo |       | bar |            | baz | | qux |
++-----+       +-----+            +-----+ +-----+
+   |             |                  |       |
+   |~~~init()~~~&gt;|                  |       |
+   |             |~~~prepare()~~~+  |       |
+   |             |               |  |       |
+   |             |&lt;--------------+  |       |
+   |             |                  |       |
+   |             |~~~init()~~~~~~~~&gt;|       |
+   |             |                  |       |
+   |             |&lt;-----------------|       |
+   |             |                  |       |
+   |             |~~~init()~~~~~~~~~~~~~~~~&gt;|
+   |             |                  |       |
+   |             |&lt;-------------------------|
+   |&lt;------------|                  |       |
+   |             |                  |       |
++-----+       +-----+            +-----+ +-----+
+| foo |       | bar |            | baz | | qux |
++-----+       +-----+            +-----+ +-----+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="condition">
+<h3>Condition<a class="headerlink" href="#condition" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo -&gt; bar: init(force, full)</span>
+<span class="s1">      if: force</span>
+<span class="s1">        bar -&gt; baz: force_init()</span>
+<span class="s1">      elif: full</span>
+<span class="s1">        bar -&gt; baz: full_init()</span>
+<span class="s1">      else:</span>
+<span class="s1">        bar -&gt; baz: init()</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+                  +-----+             +-----+
+| foo |                  | bar |             | baz |
++-----+                  +-----+             +-----+
+   |                        |                   |
+   |~~~init(force, full)~~~&gt;|                   |
+   |                        |                   |
+   |                     ***************************
+   |                     * if force                *
+   |                     ***************************
+   |                        |                   |
+   |                        |~~~force_init()~~~&gt;|
+   |                        |                   |
+   |                        |&lt;------------------|
+   |                        |                   |
+   |                     ***************************
+   |                     * elif full               *
+   |                     ***************************
+   |                        |                   |
+   |                        |~~~full_init()~~~~&gt;|
+   |                        |                   |
+   |                        |&lt;------------------|
+   |                        |                   |
+   |                     ***************************
+   |                     * else                    *
+   |                     ***************************
+   |                        |                   |
+   |                        |~~~init()~~~~~~~~~&gt;|
+   |                        |                   |
+   |                        |&lt;------------------|
+   |                        |                   |
+   |                     ***************************
+   |                     * end if                  *
+   |                     ***************************
+   |                        |                   |
+   |&lt;-----------------------|                   |
+   |                        |                   |
++-----+                  +-----+             +-----+
+| foo |                  | bar |             | baz |
++-----+                  +-----+             +-----+
+</pre></div>
+</div>
+</section>
+<section id="loop">
+<h3>Loop<a class="headerlink" href="#loop" title="Permalink to this headline">¶</a></h3>
+<section id="for-loop">
+<h4>For Loop<a class="headerlink" href="#for-loop" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    foo -&gt; bar: init(forks)</span>
+<span class="s1">      for: i in range(forks)</span>
+<span class="s1">        bar -&gt; baz: fork(i)</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+            +-----+           +-----+
+| foo |            | bar |           | baz |
++-----+            +-----+           +-----+
+   |                  |                 |
+   |~~~init(forks)~~~&gt;|                 |
+   |                  |                 |
+   |               *************************
+   |               * for i in range(forks) *
+   |               *************************
+   |                  |                 |
+   |                  |~~~fork(i)~~~~~~&gt;|
+   |                  |                 |
+   |                  |&lt;----------------|
+   |                  |                 |
+   |               *************************
+   |               * end for               *
+   |               *************************
+   |                  |                 |
+   |&lt;-----------------|                 |
+   |                  |                 |
++-----+            +-----+           +-----+
+| foo |            | bar |           | baz |
++-----+            +-----+           +-----+
+</pre></div>
+</div>
+</section>
+<section id="while-loop">
+<h4>While Loop<a class="headerlink" href="#while-loop" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    diagram: foo</span>
+<span class="s1">    sequence:</span>
+<span class="s1">    while: True</span>
+<span class="s1">      foo -&gt; bar: accept() -&gt; socket</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: foo
+
++-----+         +-----+
+| foo |         | bar |
++-----+         +-----+
+   |               |
+***********************
+* while True          *
+***********************
+   |               |
+   |~~~accept()~~~&gt;|
+   |               |
+   |&lt;--socket------|
+   |               |
+***********************
+* end while           *
+***********************
+   |               |
++-----+         +-----+
+| foo |         | bar |
++-----+         +-----+
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ADia</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Language Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#comments">Comments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#diagram-header">Diagram Header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#diagram-section">Diagram Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence-diagram">Sequence Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascriptapi.html">Javascript API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">ADia v0.2 documentation!</a></li>
+      <li>Next: <a href="pythonapi.html" title="next chapter">Python API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Vahid Mardani.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/lang.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
