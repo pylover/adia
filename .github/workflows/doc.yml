@@ -28,7 +28,7 @@ jobs:
         make html
         touch _build/html/.nojekyll 
     - name: Find version and set env
-      run: echo "ADIA_VERSION=$(adia --version)" >> $GITHUB_ENV
+      run: echo "ADIA_VERSION=$(adia --version | cut -d'.' -f1-2)" >> $GITHUB_ENV
     - name: Deploy to gh-pages
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
