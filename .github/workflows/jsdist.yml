@@ -1,4 +1,4 @@
-name: Documentation
+name: Javascript Distribution
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
     types: [created]
 
 jobs:
-  documentation:
-    name: Documentation
+  jsdist:
+    name: Javascript Distribution
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,14 +22,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -r requirements-ci.txt
         python -m pip install -e .
-    - name: Sphinx Build
-      run: make doc
+    - name: Javascript Build
+      run: make jsdist
     - name: Deploy to gh-pages
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
         token: ${{ secrets.PAT }}
         branch: gh-pages
-        folder: documentation/_build
-        target-folder: docs
+        folder: build/jsdist
+        target-folder: jsdist
         clean: false
 
