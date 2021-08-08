@@ -1,9 +1,6 @@
 name: Documentation
 
 on:
-  push:
-    branches: [ ci/doc ]
- 
   release:
     types: [created]
 

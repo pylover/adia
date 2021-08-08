@@ -1,9 +1,6 @@
 name: Javascript Distribution
 
 on:
-  push:
-    branches: [ ci/doc ]
- 
   release:
     types: [created]
 
