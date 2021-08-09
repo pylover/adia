@@ -33,13 +33,15 @@ foo -> bar: hello() -> HI
 
 <script type="text/python">
 from browser import window
-from adia import diagram, BadSyntax
+import adia
 
 def adia_diagram(src):
   try:
-    return diagram(src)
-  except BadSyntax as ex:
-    return f'Error: {ex}'
+    return adia.diagram(src)
+  except adia.BadSyntax as ex:
+    return f'Syntax Error: {ex}'
+  except adia.BadAttribute as ex:
+    return f'Attribute Error: {ex}'
 
 window.adiaDiagram = adia_diagram
 </script>
