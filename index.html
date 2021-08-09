@@ -1,209 +1,36 @@
-
 <!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>ADia v0.2 documentation! &#8212; ADia 0.2.4 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Language Reference" href="lang.html" />
-    <link href="_static/style.css" rel="stylesheet" type="text/css">
-    <link href="_static/favicon.svg" rel="icon" type="image/svg+xml">
-    <link href="_static/favicon.png" rel="icon" type="image/png">
-
-  </head><body>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="favicon.png" rel="icon" type="image/png">
+	<link rel="stylesheet" href="reset.css" >
+	<link rel="stylesheet" href="build/bundle.css" >
+  <!-- Brython -->
+	<script defer src="brython.js"></script>
   
+  <!-- ADia -->
+	<script defer src="adia.lib.js"></script>
+	<script defer src="adia.js"></script>
+  
+  <!-- Svelte -->
+	<script defer src="build/bundle.js"></script>
+</head>
+<body onload="brython()">
+<script type="text/python">
+from browser import window
+import adia
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+def adia_diagram(source):
+  try:
+    return adia.diagram(source)
+  except adia.BadSyntax as ex:
+    return f'Syntax Error: {ex}'
+  except adia.BadAttribute as ex:
+    return f'Attribute Error: {ex}'
 
-          <div class="body" role="main">
-            
-  <section id="adia-vversion-documentation">
-<h1>ADia v0.2 documentation!<a class="headerlink" href="#adia-vversion-documentation" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://pypi.python.org/pypi/adia"><img alt="PyPI" src="http://img.shields.io/pypi/v/adia.svg?style=for-the-badge&amp;logo=python&amp;logoColor=white&amp;logoWidth=20" /></a>
-<a class="reference external image-reference" href="https://github.com/pylover/adia/actions"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/pylover/adia/Build?style=for-the-badge&amp;logo=github&amp;logoWidth=20" /></a>
-<a class="reference external image-reference" href="https://coveralls.io/github/pylover/adia?branch=master"><img alt="Coveralls" src="https://img.shields.io/coveralls/github/pylover/adia?style=for-the-badge&amp;logo=coveralls&amp;logoWidth=20" /></a>
-<a class="reference external image-reference" href="https://python.org"><img alt="CPython &gt;= 3.6" src="https://img.shields.io/badge/CPython-%3E%3D3.6-blue?style=for-the-badge&amp;logo=python&amp;logoColor=white&amp;logoWidth=20" /></a>
-<a class="reference external image-reference" href="https://brython.info"><img alt="Brython &gt;= 3.9.5" src="https://img.shields.io/badge/Brython-%3E%3D3.9.5-blue?style=for-the-badge&amp;logo=python&amp;logoColor=white&amp;logoWidth=20" /></a>
-<a class="reference external image-reference" href="https://github.com/pylover/adia"><img alt="GitHub forks" src="https://img.shields.io/github/forks/pylover/adia?style=for-the-badge&amp;logo=github&amp;logoWidth=20" /></a>
-<section id="about">
-<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
-<p>ADia is a language for ASCII diagrams. Currently, only <code class="docutils literal notranslate"><span class="pre">sequence</span></code> diagram is
-supported. But the roadmap is to implement two additional diagram types:
-<code class="docutils literal notranslate"><span class="pre">fork/join</span></code> and <code class="docutils literal notranslate"><span class="pre">class</span></code>.</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">adia</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">  diagram: Foo</span>
-<span class="s1">  sequence:</span>
-<span class="s1">  foo -&gt; bar: Hello World!</span>
-<span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DIAGRAM: Foo
-
-+-----+             +-----+
-| foo |             | bar |
-+-----+             +-----+
-   |                   |
-   |~~~Hello World!~~~&gt;|
-   |                   |
-   |&lt;------------------|
-   |                   |
-+-----+             +-----+
-| foo |             | bar |
-+-----+             +-----+
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="pythonapi.html#adia.diagram" title="adia.diagram"><code class="xref py py-func docutils literal notranslate"><span class="pre">adia.diagram()</span></code></a>, <a class="reference internal" href="pythonapi.html#adia.print" title="adia.print"><code class="xref py py-func docutils literal notranslate"><span class="pre">adia.print()</span></code></a> and <a class="reference internal" href="pythonapi.html#adia.Diagram" title="adia.Diagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">adia.Diagram</span></code></a>.</p>
-</div>
-</section>
-<section id="install">
-<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
-<p>It’s higly recommended to use a virual-env utility for example:
-<a class="reference external" href="https://virtualenvwrapper.readthedocs.io/en/latest/">virtualenvwrapper</a>
-before doing anything.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install adia
-</pre></div>
-</div>
-<p>Or, install the latest version from the source:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/pylover/adia
-</pre></div>
-</div>
-</section>
-<section id="command-line-interface">
-<h2>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ adia <span class="s">&lt;&lt; EOF</span>
-<span class="s">diagram: Foo</span>
-<span class="s">sequence:</span>
-<span class="s">foo -&gt; bar: Hello</span>
-<span class="s">EOF</span>
-</pre></div>
-</div>
-<p>Or feed one or more filename(s):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ adia file1.adia file2.adia fileN.adia &gt; foo.txt
-</pre></div>
-</div>
-<p>Issue <code class="docutils literal notranslate"><span class="pre">adia</span> <span class="pre">--help</span></code> for more info.</p>
-</section>
-<section id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="lang.html">Language Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="lang.html#comments">Comments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lang.html#diagram-header">Diagram Header</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lang.html#diagram-section">Diagram Section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lang.html#sequence-diagram">Sequence Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="javascriptapi.html">Javascript API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="javascriptapi.html#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascriptapi.html#javascript-demo-page">Javascript demo page</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#setup-development-environment">Setup Development Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#running-cpython-tests">Running CPython tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#lint">Lint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#documentation">Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#javascript-tests">Javascript Tests</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<section id="indices-and-tables">
-<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
-</section>
-</section>
-</section>
-
-
-          </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">ADia</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="lang.html">Language Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="javascriptapi.html">Javascript API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="lang.html" title="next chapter">Language Reference</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Vahid Mardani.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+window.adiaDiagram = adia_diagram
+</script>
+</body>
 </html>
