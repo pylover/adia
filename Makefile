@@ -115,8 +115,10 @@ $(WEBCLINIC_BUILD)/adia.bundle.js: $(BRYTHON_FILES) \
 jsdist: $(WEBCLINIC_BUILD)/adia.bundle.js $(WEBCLINIC_BUILD)/adia.js
 	mkdir -p $(JSDIST)
 	cp $(WEBCLINIC_BUILD)/adia.bundle.js $(JSDIST)/adia.bundle-$(ADIA_VER).js
+	cp $(WEBCLINIC_BUILD)/lib.js $(JSDIST)/adia.lib-$(ADIA_VER).js
 	cp $(WEBCLINIC_BUILD)/adia.js $(JSDIST)/adia-$(ADIA_VER).js
 	ln -sf adia.bundle-$(ADIA_VER).js $(JSDIST)/adia.bundle.js
+	ln -sf adia.lib-$(ADIA_VER).js $(JSDIST)/adia.lib.js
 	ln -sf adia-$(ADIA_VER).js $(JSDIST)/adia.js
 	
 .PHONY: webclinic

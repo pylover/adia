@@ -11,7 +11,8 @@ before each commit.
 This page aims to demonstrate how to use the ``adia`` inside your javascript 
 project.
 
-For the first you have to generate ``adia.bundle.js`` using:
+For the first you have to grab the ``adia.bundle.js`` from 
+https://pylover.github.io/adia/about or generate ``adia.bundle.js`` using:
 
 .. code-block:: bash
 
