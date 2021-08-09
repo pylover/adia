@@ -41,8 +41,10 @@ directory, where you can fetch it by a URL. then load it using:
      try:
        return adia.diagram(source)
      except adia.BadSyntax as ex:
-       return f'Error: {ex}'
-   
+       return f'Syntax Error: {ex}'
+     except adia.BadAttribute as ex:
+       return f'Attribute Error: {ex}'
+
    window.adiaDiagram = adia_diagram
    </script>
 
@@ -65,6 +67,6 @@ Let's make and visit the provided javascript demo page:
 .. code-block:: bash
 
    cd path/to/adia
-   make clean serve
+   make clean webclinic_serve
 
 Now browse the http://localhost:8000/jsdemo.html.

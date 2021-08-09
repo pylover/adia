@@ -97,7 +97,7 @@ Run:
 
 .. code-block:: bash
     
-   make clean serve
+   make clean webclinic_serve
 
 To build and serve the client side test files.
 
