@@ -43,7 +43,7 @@ jobs:
     - name: Eumerate documentation releases
       run: |
         echo '[' > docs/index.json
-        ls docs/ | grep -v latest | sort -r | sed -r 's|(.*)|"\1",|' >> docs/index.json
+        ls docs/ | egrep '^[0-9]\.' | sort -r | sed -r 's|(.*)|"\1",|' >> docs/index.json
         echo ']' >> docs/index.json
     - name: Commit changes
       uses: EndBug/add-and-commit@v7
