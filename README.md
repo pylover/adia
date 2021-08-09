@@ -41,4 +41,4 @@ figure out what I talking about.
 The ADia can also run flawlessly inside the browsers using the awesome 
 project: [Brython](https://github.com/brython-dev/brython). 
 
-See the [documentation](https://pylover.github.io/adia/) for more info.
+See the [documentation](https://pylover.github.io/adia/docs/latest/html/) for more info.
