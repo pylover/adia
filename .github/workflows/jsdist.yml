@@ -1,6 +1,8 @@
 name: Javascript Distribution
 
 on:
+  push:
+    branches: [ master ]
   release:
     types: [created]
 
@@ -40,8 +42,10 @@ jobs:
         ref: gh-pages
     - name: Eumerate Javascript distribution files
       run: |
-        echo '[' > jsdist/index.json
-        ls jsdist/adia-*.js | sort -r | sed -r 's|jsdist/adia-(.*)\.js|"\1",|' >> jsdist/index.json
+        echo '[' > /tmp/index.json
+        ls jsdist/adia-*.js | sort -r | sed -r 's|jsdist/adia-(.*)\.js|"\1",|' >> /tmp/index.json
+        head -n -1 /tmp/index.json > jsdist/index.json
+        tail -n 1 /tmp/index.json | sed 's|,||' >> jsdist/index.json
         echo ']' >> jsdist/index.json
     - name: Commit changes
       uses: EndBug/add-and-commit@v7
