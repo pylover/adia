@@ -1,6 +1,8 @@
 name: Javascript Distribution
 
 on:
+  push:
+    branches: [ master ]
   release:
     types: [created]
 
@@ -30,3 +32,25 @@ jobs:
         target-folder: jsdist
         clean: false
 
+  jsdist_index:
+    name: Create Javadcript distributions index
+    needs: jsdist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+    - name: Eumerate Javascript distribution files
+      run: |
+        echo '[' > jsdist/index.json
+        ls jsdist/adia-*.js | sort -r | sed -r 's|jsdist/adia-(.*)\.js|"\1",|' >> jsdist/index.json
+        echo ']' > jsdist/index.json
+        git add jsdist/index.json
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v7
+      with:
+        author_name: pylover
+        author_email: vahid.mardani@gmail.com
+        message: 'Update: Javascript distribution index'
+        branch: gh-pages
+        add: 'jsdist/index.json'
