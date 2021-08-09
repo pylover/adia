@@ -45,7 +45,6 @@ jobs:
         echo '[' > jsdist/index.json
         ls jsdist/adia-*.js | sort -r | sed -r 's|jsdist/adia-(.*)\.js|"\1",|' >> jsdist/index.json
         echo ']' >> jsdist/index.json
-        git add jsdist/index.json
     - name: Commit changes
       uses: EndBug/add-and-commit@v7
       with:
