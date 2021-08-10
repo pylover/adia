@@ -32,13 +32,12 @@ jobs:
         target-folder: jsdist
         clean: false
     - name: Install SSH key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.CDN_AT_DOBISEL }}
-        known_hosts: unnecessary
+      run: |
+        echo ${{ secrets.CDN_AT_DOBISEL }} > ~/.ssh/cdn_id_rsa
+        echo ${{ secrets.DOBISEL_KNOWN_HOSTS }} > ~/.ssh/known_hosts
 
     - name: Deploy to Javascript files to CDN
-      run: scp -vP ${{ secrets.DOBISEL_PORT }} build/jsdist/adia.lib.js cdn@dobisel.com:/var/www/cdn1/adia
+      run: scp -v -i ~/.ssh/cdn_id_rsa -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia.lib.js cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
 
   jsdist_index:
     name: Create Javadcript distributions index
