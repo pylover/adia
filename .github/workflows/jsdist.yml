@@ -31,13 +31,17 @@ jobs:
         folder: build/jsdist
         target-folder: jsdist
         clean: false
-    - name: Deploy to Javascript files to CDN
-      uses: appleboy/scp-action@master
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
       with:
         key: ${{ secrets.CDN_AT_DOBISEL }}
-        port: ${{ secrets.DOBISEL_PORT }}
-        source: build/jsdist/adia.lib.js
-        target: /var/www/cdn1/adia
+        known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+
+    - name: Adding Known Hosts
+      run: ssh-keyscan -H ${{ secrets.DOBISEL_ADDR }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to Javascript files to CDN
+      run: scp -P ${{ secrets.DOBISEL_PORT }}  build/jsdist/adia.lib.js cdn@dobisel.com:/var/www/cdn1/adia
 
   jsdist_index:
     name: Create Javadcript distributions index
