@@ -12,7 +12,7 @@ an optional ``text`` as follow:
 
 .. code-block:: bash
 
-   operation [: text]
+   operation[: text]
 
 
 Example:
