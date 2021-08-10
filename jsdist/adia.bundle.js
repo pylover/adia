@@ -1,1 +1,1 @@
-adia.bundle-0.4.js
+adia.bundle-0.6.js
