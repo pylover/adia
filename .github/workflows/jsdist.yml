@@ -35,7 +35,7 @@ jobs:
       uses: shimataro/ssh-key-action@v2
       with:
         key: ${{ secrets.CDN_AT_DOBISEL }}
-        known_hosts: ${{ secrets.DOBISEL_KNOWN_HOSTS }}
+        known_hosts: unnecessary
 
     - name: Deploy to Javascript files to CDN
       run: scp -vP ${{ secrets.DOBISEL_PORT }} build/jsdist/adia.lib.js cdn@dobisel.com:/var/www/cdn1/adia
