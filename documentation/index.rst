@@ -66,12 +66,15 @@ supported. But the roadmap is to implement two additional diagram types:
    +-----+             +-----+
    | foo |             | bar |
    +-----+             +-----+
-   
-Try the `ADia Live Demo <https://pylover.github.io/adia>`_.
 
 .. seealso::
 
    :func:`adia.diagram`, :func:`adia.print` and :class:`adia.Diagram`.
+
+Live Demo
+#########
+  
+Try the `ADia Live Demo <https://pylover.github.io/adia>`_.
 
 Install
 #######
