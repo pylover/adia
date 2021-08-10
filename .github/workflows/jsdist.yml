@@ -33,8 +33,8 @@ jobs:
         clean: false
     - name: Install SSH key
       run: |
-        echo ${{ secrets.CDN_AT_DOBISEL }} > ~/.ssh/cdn_id_rsa
-        echo ${{ secrets.DOBISEL_KNOWN_HOSTS }} > ~/.ssh/known_hosts
+        echo "${{ secrets.CDN_AT_DOBISEL }}" > ~/.ssh/cdn_id_rsa
+        echo "${{ secrets.DOBISEL_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
     - name: Deploy to Javascript files to CDN
       run: scp -v -i ~/.ssh/cdn_id_rsa -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia.lib.js cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
