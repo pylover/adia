@@ -1,8 +1,10 @@
 name: Javascript Distribution
 
 on:
+  push:
+    branches: [ master ]
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   jsdist:
@@ -29,7 +31,13 @@ jobs:
         folder: build/jsdist
         target-folder: jsdist
         clean: false
-
+    . name: Deploy to Javascript files to CDN
+      uses: appleboy/scp-action
+      with:
+        key: ${{ secrets.CDN_AT_DOBISEL }}
+        port: ${{ secrets.DOBISEL_PORT }}
+        source: build/jsdist/adia.lib.js
+        target: /var/www/cdn1/adia
   jsdist_index:
     name: Create Javadcript distributions index
     needs: jsdist
