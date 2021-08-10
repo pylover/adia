@@ -40,7 +40,7 @@ jobs:
         chmod 600 ~/.ssh/cdn_id_rsa
 
     - name: Deploy to Javascript files to CDN
-      run: scp -v -i ~/.ssh/cdn_id_rsa -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia.lib.js cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
+      run: scp -i ~/.ssh/cdn_id_rsa -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia.lib.js cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
 
   jsdist_index:
     name: Create Javadcript distributions index
