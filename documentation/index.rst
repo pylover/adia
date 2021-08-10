@@ -6,7 +6,7 @@
 ADia v\ |version| documentation!
 ================================
 
-.. image:: http://img.shields.io/pypi/v/adia.svg?style=for-the-badge&logo=python&logoColor=white&logoWidth=20
+.. image:: https://img.shields.io/pypi/v/adia.svg?style=for-the-badge&logo=python&logoColor=white&logoWidth=20
    :alt: PyPI
    :target: https://pypi.python.org/pypi/adia
 
@@ -67,6 +67,7 @@ supported. But the roadmap is to implement two additional diagram types:
    | foo |             | bar |
    +-----+             +-----+
    
+Try the `ADia Live Demo <https://pylover.github.io/adia>`_.
 
 .. seealso::
 

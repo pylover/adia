@@ -38,7 +38,15 @@ Currently, only sequence diagrams are supported, but the roadmap is to support
 two more types of diagrams: `fork` and `class`,  check out the `TODO.md` to 
 figure out what I talking about.
 
+## Get Closer!
+
+- [live demo page](https://pylover.github.io/adia/)
+- [documentation](https://pylover.github.io/adia/docs/latest/html/)
+
 The ADia can also run flawlessly inside the browsers using the awesome 
 project: [Brython](https://github.com/brython-dev/brython). 
 
-See the [documentation](https://pylover.github.io/adia/docs/latest/html/) for more info.
+The https://github.com/pylover/adia-live is a good example of how
+to use it inside the Javascript. In addition, please read the 
+[Javascript API](https://pylover.github.io/adia/docs/0.4/html/javascriptapi.html#introduction)
+section of the [documentation](https://pylover.github.io/adia/docs/latest/html/).
