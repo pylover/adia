@@ -299,7 +299,7 @@ def test_sequence_returntext():
     s = '''
         sequence:
 
-        foo -> bar: hello() -> hi
+        foo -> bar: hello() => hi
     '''
     d = seq(s)
     assert eqbigstr(d, s)

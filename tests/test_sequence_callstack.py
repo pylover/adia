@@ -152,8 +152,8 @@ def test_sequence_calltext():
         sequence:
 
         @foo: Start
-        foo -> bar: hello() -> HI
-          bar -> baz: hey() -> Hey
+        foo -> bar: hello() => HI
+          bar -> baz: hey() => Hey
 
         @foo: End
     ''')
@@ -235,10 +235,10 @@ def test_sequence_callreturntext():
         version: 1.0
         sequence:
 
-        f -> b: init() -> int
-        foo -> bar: init() -> Object
+        f -> b: init() => int
+        foo -> bar: init() => Object
         foo -> b: init()
-        f -> bar: 0101 -> 010101010101010101010101010101010101
+        f -> bar: 0101 => 010101010101010101010101010101010101
     ''')
     assert eqdia(d, '''
     ......................................................

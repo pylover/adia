@@ -158,7 +158,7 @@ class Call(ContainerItem):
     caller = None
     callee = None
     returntext = None
-    returnsign = '->'
+    returnsign = '=>'
 
     @LazyAttribute
     def left(self):

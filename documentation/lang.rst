@@ -288,11 +288,15 @@ A ``Multi-Module Note`` may cover two or more modules.
 Call
 ^^^^
 
-A call is consists of ``CALLER -> CALLEE[: [FUNCTION] [-> RETURN]]``.
+A call is consists of ``CALLER -> CALLEE[: [FUNCTION] [=> RETURN]]``.
 
 ``CALLER`` and ``CALLEE`` are modules which described above.
 
 ``FUNCTION`` and ``RETURN`` can be any ``ASCII`` character.
+
+.. versionchanged:: 1.0
+
+   ``-> RETURN`` is replaced by ``=> RETURN``.
 
 .. testcode::
 
@@ -307,10 +311,10 @@ A call is consists of ``CALLER -> CALLEE[: [FUNCTION] [-> RETURN]]``.
        foo -> bar: init(options)
 
        @foo ~ bar: With function name & return value
-       foo -> bar: init(options) -> err
+       foo -> bar: init(options) => err
 
        @foo ~ bar: Only return value
-       foo -> bar: -> err
+       foo -> bar: => err
    ''')
 
 .. testoutput::
@@ -367,7 +371,7 @@ Self Call
        diagram: foo
        sequence:
        foo -> foo
-       foo -> foo: self_test() -> Result
+       foo -> foo: self_test() => Result
    ''')
 
 .. testoutput::
@@ -577,7 +581,7 @@ While Loop
        diagram: foo
        sequence:
        while: True
-         foo -> bar: accept() -> socket
+         foo -> bar: accept() => socket
    ''')
 
 .. testoutput::

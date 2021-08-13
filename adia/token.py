@@ -19,7 +19,7 @@ HASH = 15
 MULTILINE = 16
 EVERYTHING = 17
 TILDA = 18
-
+HASHROCKET = 19
 
 TOKEN_NAMES = {
     value: name for name, value in globals().items()
@@ -32,6 +32,7 @@ __all__.extend(TOKEN_NAMES.values())
 
 EXACT_TOKENS = [
     ('->', RARROW),
+    ('=>', HASHROCKET),
     ('@', AT),
     (':', COLON),
     ('\\', BACKSLASH),

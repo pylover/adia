@@ -102,7 +102,7 @@ def test_sequence_note_issue_8():
         db.title: Database
 
         @alice ~ bob: Alice tries to login
-        alice -> bob: login() -> token
+        alice -> bob: login() => token
           @db: TCP Connection
           bob -> db: connect()
 

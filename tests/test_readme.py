@@ -44,16 +44,16 @@ def test_readme_complte_examaple():
 
         # Login
         @alice ~ bob: Alice tries to authenticate herself
-        alice -> bob: authenticate(email, password) -> token
+        alice -> bob: authenticate(email, password) => token
           if: db is null
-            bob -> db: initialize() -> db
+            bob -> db: initialize() => db
           elif: db.is_connected()
             bob -> db: keepalive()
           else:
             while: not db.is_connected()
               bob -> db: connect()
 
-          bob -> bob: create_token() -> token
+          bob -> bob: create_token() => token
 
         @alice: |
           Alice decides to

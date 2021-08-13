@@ -45,8 +45,8 @@ def test_sequence_selfcall_returntext():
         version: 1.0
         sequence:
 
-        foo -> foo: init() -> error/zero
-        bar -> bar: -> Exception
+        foo -> foo: init() => error/zero
+        bar -> bar: => Exception
     ''')
     assert eqdia(d, '''
     ............................................
