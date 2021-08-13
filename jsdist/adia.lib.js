@@ -1,1 +1,1 @@
-adia.lib-0.6.js
+adia.lib-1.0.js
