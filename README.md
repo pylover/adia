@@ -35,8 +35,7 @@ Output:
 render ASCII diagrams.
 
 Currently, only sequence diagrams are supported, but the roadmap is to support 
-two more types of diagrams: `fork` and `class`,  check out the `TODO.md` to 
-figure out what I talking about.
+two more types of diagrams: `fork` (#42) and `class` (#41).
 
 ## Get Closer!
 
