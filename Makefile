@@ -5,6 +5,7 @@ PYTEST_FLAGS = -v
 ADIA_VER = $(shell adia --version | cut -d'.' -f1-2)
 SPHINX_BUILDDIR = documentation/_build
 JSDIST = build/jsdist
+JSDISTVER = "$(JSDIST)/$(ADIA_VER)"
 
 .PHONY: test
 test:
@@ -67,31 +68,40 @@ BRYTHON_FILES = \
 
 DIST_FILES = \
 	$(WEBCLINIC_BUILD)/index.html \
-	$(WEBCLINIC_BUILD)/jsdemo.html \
 	$(WEBCLINIC_BUILD)/check.html \
 	$(WEBCLINIC_BUILD)/check.py \
-	$(WEBCLINIC_BUILD)/kitchen.py \
-	$(WEBCLINIC_BUILD)/kitchen.html \
+	$(WEBCLINIC_BUILD)/adia_worker.py \
+	$(WEBCLINIC_BUILD)/adia.js \
+	$(WEBCLINIC_BUILD)/global.css \
 	$(WEBCLINIC_BUILD)/favicon.ico
 
-$(WEBCLINIC_BUILD)/adia.js:
+# Not neede anymore after v2.
+$(WEBCLINIC_BUILD)/adia.brython.js:
 	- mkdir -p $(WEBCLINIC_BUILD)
 	brython pack \
 		--package-directory $(ADIA) \
 		--output-directory $(WEBCLINIC_BUILD) \
 		adia
-	
-$(WEBCLINIC_BUILD)/lib.js: $(WEBCLINIC_BUILD)/brython_stdlib.js
+
+$(WEBCLINIC_BUILD)/adia:
+	ln -s $(shell readlink -f adia) $(WEBCLINIC_BUILD)
+
+$(WEBCLINIC_BUILD)/adia.stdlib.js: \
+		$(WEBCLINIC_BUILD)/brython_stdlib.js \
+		$(WEBCLINIC_BUILD)/adia \
+		$(WEBCLINIC_BUILD)/adia_worker.py
 	- mkdir -p $(WEBCLINIC_BUILD)
 	brython pack-dependencies \
 		--output-directory $(WEBCLINIC_BUILD) \
-		--search-directory $(ADIA) \
+		--search-directory $(WEBCLINIC) \
 		--stdlib-directory $(WEBCLINIC_BUILD) \
-		--filename lib.js
+		--exclude check* \
+		--exclude test/* \
+		--filename adia.stdlib.js
 
 $(WEBCLINIC_BUILD)/tests:
 	- mkdir -p $(WEBCLINIC_BUILD)
-	- ln -s $(shell readlink -f tests) $(WEBCLINIC_BUILD_ABS)
+	ln -s $(shell readlink -f tests) $(WEBCLINIC_BUILD_ABS)
 
 $(BRYTHON_FILES): $(WEBCLINIC_BUILD)/%.js:
 	- mkdir -p $(WEBCLINIC_BUILD)
@@ -103,28 +113,32 @@ $(DIST_FILES): $(WEBCLINIC_BUILD)/%:
 		$(WEBCLINIC_BUILD_ABS)
 
 $(WEBCLINIC_BUILD)/adia.bundle.js: $(BRYTHON_FILES) \
-		$(WEBCLINIC_BUILD)/adia.js $(WEBCLINIC_BUILD)/lib.js
+		$(WEBCLINIC_BUILD)/adia.js $(WEBCLINIC_BUILD)/adia.stdlib.js
 	cat $(WEBCLINIC_BUILD)/brython.js > $@
 	echo >> $@
-	cat $(WEBCLINIC_BUILD)/lib.js >> $@
+	cat $(WEBCLINIC_BUILD)/adia.stdlib.js >> $@
 	echo >> $@
 	cat $(WEBCLINIC_BUILD)/adia.js >> $@
 	echo >> $@
 
+
 .PHONY: jsdist
 jsdist: $(WEBCLINIC_BUILD)/adia.bundle.js $(WEBCLINIC_BUILD)/adia.js
-	mkdir -p $(JSDIST)
-	cp $(WEBCLINIC_BUILD)/adia.bundle.js $(JSDIST)/adia.bundle-$(ADIA_VER).js
-	cp $(WEBCLINIC_BUILD)/lib.js $(JSDIST)/adia.lib-$(ADIA_VER).js
-	cp $(WEBCLINIC_BUILD)/adia.js $(JSDIST)/adia-$(ADIA_VER).js
-	ln -sf adia.bundle-$(ADIA_VER).js $(JSDIST)/adia.bundle.js
-	ln -sf adia.lib-$(ADIA_VER).js $(JSDIST)/adia.lib.js
-	ln -sf adia-$(ADIA_VER).js $(JSDIST)/adia.js
-	
+	-rm -rf $(JSDISTVER)
+	mkdir -p $(JSDISTVER)
+	cp $(WEBCLINIC_BUILD)/adia.bundle.js $(JSDISTVER)/adia.bundle.js
+	cp $(WEBCLINIC_BUILD)/adia.stdlib.js $(JSDISTVER)/adia.stdlib.js
+	cp $(WEBCLINIC_BUILD)/adia.js $(JSDISTVER)/adia.js
+	cp $(WEBCLINIC_BUILD)/adia_worker.py $(JSDISTVER)/adia_worker.py
+	cp -r $(ADIA) $(JSDISTVER)
+	rm -rf $(JSDISTVER)/adia/__pycache__
+	cd $(JSDISTVER); tar -cvzf ../adia-$(ADIA_VER).tar.gz ./*
+
 .PHONY: webclinic
-webclinic: $(DIST_FILES) $(WEBCLINIC_BUILD)/adia.bundle.js \
-		$(WEBCLINIC_BUILD)/adia.js $(WEBCLINIC_BUILD)/tests \
-		$(WEBCLINIC_BUILD)/lib.js
+webclinic: \
+		$(DIST_FILES) \
+		$(WEBCLINIC_BUILD)/adia.bundle.js \
+		$(WEBCLINIC_BUILD)/tests 
 
 
 .PHONY: serve
@@ -136,10 +150,12 @@ webclinic_serve: webclinic
 clean:
 	- rm -rf $(ADIA)/__pycache__
 	- rm $(DIST_FILES)
+	- rm -rf $(JSDIST)/*
 	- rm $(WEBCLINIC_BUILD)/tests
-	- rm $(WEBCLINIC_BUILD)/lib.js
-	- rm $(WEBCLINIC_BUILD)/adia.js
+	- rm $(WEBCLINIC_BUILD)/adia.stdlib.js
+	- rm $(WEBCLINIC_BUILD)/adia.brython.js
 	- rm $(WEBCLINIC_BUILD)/adia.bundle.js
+	- rm $(WEBCLINIC_BUILD)/adia
 	- rm dist/*.egg
 	- rm dist/*.gz
 

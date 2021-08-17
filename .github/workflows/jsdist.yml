@@ -38,7 +38,7 @@ jobs:
         chmod 600 ~/.ssh/cdn_id_rsa
 
     - name: Deploy to Javascript files to CDN
-      run: scp -i ~/.ssh/cdn_id_rsa -o ConnectTimeout=15 -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia*.js cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
+      run: scp -i ~/.ssh/cdn_id_rsa -o ConnectTimeout=15 -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia*.tar.gz cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
 
   jsdist_index:
     name: Create Javadcript distributions index
@@ -51,7 +51,7 @@ jobs:
     - name: Eumerate Javascript distribution files
       run: |
         echo '[' > /tmp/index.json
-        ls jsdist/adia-*.js | sort -r | sed -r 's|jsdist/adia-(.*)\.js|"\1",|' >> /tmp/index.json
+        ls jsdist/adia-*.tar.gz | sort -r | sed -r 's|jsdist/adia-(.*)\.tar\.gz|"\1",|' >> /tmp/index.json
         head -n -1 /tmp/index.json > jsdist/index.json
         tail -n 1 /tmp/index.json | sed 's|,||' >> jsdist/index.json
         echo ']' >> jsdist/index.json

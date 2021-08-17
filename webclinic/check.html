@@ -1,40 +1,35 @@
 <!doctype html>
 <html>
-
 <head>
 <meta charset="utf-8">
 <script type="text/javascript" src="brython.js"></script>
 <script type="text/javascript" src="lib.js"></script>
-<script type="text/javascript" src="adia.js"></script>
-<style>
-  font-family: monospace;
-</style>
+<link rel="stylesheet" href="global.css">
 </head>
-
 <body onload="brython({debug: 1})">
 
-<textarea cols="60" rows="40" id="target"></textarea>
+<!-- Page DOM -->
+<textarea cols="60" rows="80" id="target" spellcheck="false"></textarea>
+
+<script type="text/python" id="checkWorker" class="webworker" src="check.py">
+</script>
+
 
 <script type="text/python">
-from browser import document, bind
-import check
+from browser import document, bind, worker
 
 target = document['target']
-counter = 0
+checkworker = worker.Worker('checkWorker')
 
-start = 'Running ADia web tests'
-target.value += f'{start}\n'
-print(start)
 
-for t in check.run():
-  counter += 1
-  print(t)
-  target.value += f'{t}\n'
+@bind(checkworker, 'message')
+def onmessage(e):
+  data = e.data
+  log = f'{"Ok" if data.status else "Error"} {data.message}'
+  print(log)
+  target.value += f'{log}\n'
 
-final = f'{counter} tests are passed successfully.'
-target.value += f'{final}\n'
-print(final)
-
+checkworker.send('start')
 </script>
 </body>
 

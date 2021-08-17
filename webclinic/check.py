@@ -1,13 +1,23 @@
-def runtests(module):
+from browser import bind, self
+
+
+OK = True
+FAILURE = False
+ok_counter = 0
+fail_counter = 0
+
+
+def run_module_tests(module):
     for k, v in module.__dict__.items():
-        if k.startswith('test_'):
-            try:
-                v()
-            except Exception as ex:
-                yield f'Failed {k}: {ex}'
-                raise ex
-            else:
-                yield f'OK {k}'
+        if not k.startswith('test_'):
+            continue
+
+        try:
+            v()
+        except Exception as ex:
+            yield k, FAILURE, ex
+        else:
+            yield k, OK, v
 
 
 def run():
@@ -50,5 +60,32 @@ def run():
         test_token,
         test_tokenizer,
     ]:
-        for test in runtests(module):
+        for test in run_module_tests(module):
             yield test
+
+
+def report(msg, status=OK):
+    self.send({
+        'message': msg,
+        'status': status
+    })
+
+
+@bind(self, 'message')
+def message(ev):
+    global ok_counter, fail_counter
+
+    if ev.data != 'start':
+        report(f'Invalid message: {ev.data}', FAILURE)
+
+    report('Check process started successfully')
+
+    for test, status, details in run():
+        if status:
+            ok_counter += 1
+        else:
+            fail_counter += 1
+
+        report(test, status)
+
+    report(f'{ok_counter} passed, {fail_counter} failed.', fail_counter == 0)
