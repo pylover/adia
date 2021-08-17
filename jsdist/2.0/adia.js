@@ -17,9 +17,6 @@ class ADia {
     if (options.delay != undefined) {
       this.delay = options.delay;
     }
-    const handler = this.go.bind(this);
-    this.input.addEventListener('input', handler);
-    window.addEventListener('load', handler);
   }
   
   get status() {
@@ -46,13 +43,14 @@ class ADia {
   }
   
   send() {
-    if (this.#_source == this.input.value) {
+    let newSource = this.input();
+    if (this.#_source == newSource) {
       /* Do Nothing */
       return;
     }
     
     this.status = 'working';
-    this.#_source = this.input.value;
+    this.#_source = newSource;
     window.__adia__.send(this.#_source);
   }
 
