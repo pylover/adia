@@ -1,8 +1,6 @@
 name: Documentation & Github pages
 
 on:
-  push:
-    branches: [master]
   release:
     types: [created]
 
