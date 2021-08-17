@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 
-<!--
+<link rel="stylesheet" href="global.css">
 <script type="text/javascript" src="brython.js"></script>
 <script type="text/javascript" src="adia.stdlib.js"></script>
 <script type="text/javascript" src="adia.js"></script>
--->
+<!--
 <script type="text/javascript" src="adia.bundle.js"></script>
+-->
 
 <!-- Worker -->
 <script 
@@ -20,7 +21,6 @@
   ></script>
 
 
-<link rel="stylesheet" href="global.css">
 </head>
 <body onload="brython({debug: 1})">
 
@@ -64,7 +64,6 @@ window.__adia__ = {
 }
 </script>
 
-
 <!-- Usage -->
 <script>
 let sourceArea = document.getElementById('source');
@@ -75,7 +74,7 @@ let statusArea = document.getElementById('status');
 /* Create ADia instance */
 const aDia = new ADia({
   delay: 10,  // ms
-  input: sourceArea,
+  input: () => sourceArea.value,
   clean: () => {
     errorArea.value = '';
     targetArea.value = '';
@@ -85,6 +84,9 @@ const aDia = new ADia({
   status: state => statusArea.innerText = state
 });
 
+const go = aDia.go.bind(aDia);
+window.addEventListener('load', go);
+sourceArea.addEventListener('input', go);
 </script>
 
 

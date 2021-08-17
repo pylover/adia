@@ -106,7 +106,7 @@ as the below:
      /* Create ADia instance */
      const aDia = new ADia({
        delay: 10,  // ms
-       input: sourceArea,
+       input: () => sourceArea.value,
        clean: () => {
          errorArea.value = '';
          targetArea.value = '';
@@ -115,12 +115,11 @@ as the below:
        error: msg => errorArea.value = msg,
        status: state => statusArea.innerText = state
      });
-     </script>
-
-   ...
-
-   </body>
-   </html>
+     
+     const go = aDia.go.bind(aDia);
+     window.addEventListener('load', go);
+     sourceArea.addEventListener('input', go);
+   </script>
 
 
 The ``ADia`` class will listen for changes of source element and inform you
