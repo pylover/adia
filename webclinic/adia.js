@@ -1,4 +1,3 @@
-// TODO: rename to adia.js
 class ADia {
   delay = 0; // ms
 
