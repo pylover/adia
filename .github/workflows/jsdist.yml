@@ -29,6 +29,7 @@ jobs:
         folder: build/jsdist
         target-folder: jsdist
         clean: false
+        silent: false
     - name: Install SSH key
       run: |
         mkdir ~/.ssh
@@ -38,7 +39,7 @@ jobs:
         chmod 600 ~/.ssh/cdn_id_rsa
 
     - name: Deploy to Javascript files to CDN
-      run: scp -i ~/.ssh/cdn_id_rsa -o ConnectTimeout=15 -P ${{ secrets.DOBISEL_PORT }} build/jsdist/adia*.tar.gz cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
+      run: scp -r -i ~/.ssh/cdn_id_rsa -o ConnectTimeout=15 -P ${{ secrets.DOBISEL_PORT }} build/jsdist/* cdn@${{ secrets.DOBISEL_ADDR }}:/var/www/cdn1/adia
 
   jsdist_index:
     name: Create Javadcript distributions index
