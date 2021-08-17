@@ -99,5 +99,6 @@ jobs:
         author_email: vahid.mardani@gmail.com
         message: 'Update: Documentation & Javascript distribution index'
         branch: gh-pages
-        add: 'docs/index.json'
-        add: 'jsdist/index.json'
+        add: 
+        - 'docs/index.json'
+        - 'jsdist/index.json'
