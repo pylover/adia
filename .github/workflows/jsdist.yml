@@ -1,8 +1,0 @@
-name: Javascript Distribution
-
-on:
-  release:
-    types: [ created ]
-
-jobs:
-
