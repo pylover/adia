@@ -1,6 +1,8 @@
 name: Documentation & Github pages
 
 on:
+  push:
+    branches: [master]
   release:
     types: [created]
 
@@ -99,6 +101,4 @@ jobs:
         author_email: vahid.mardani@gmail.com
         message: 'Update: Documentation & Javascript distribution index'
         branch: gh-pages
-        add: 
-        - 'docs/index.json'
-        - 'jsdist/index.json'
+        add: "['docs/index.json', 'jsdist/index.json']"
