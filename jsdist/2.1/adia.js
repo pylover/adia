@@ -41,8 +41,7 @@ class ADia {
     }
     
     window.__adia__.callback = this.onResult.bind(this);
-    this.status = 'idle';
-    this.go();
+    window.__adia__.send('');
   }
   
   send() {
