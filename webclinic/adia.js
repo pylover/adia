@@ -1,7 +1,7 @@
 class ADia {
   delay = 0; // ms
 
-  // new, inititializing, working, idle
+  // new, inititializing, processing, idle
   #_status = 'new';
 
   /* Private Fields */
@@ -16,6 +16,9 @@ class ADia {
     this.input = options.input;
     if (options.delay != undefined) {
       this.delay = options.delay;
+    }
+    if (options.loadingProbeInterval != undefined) {
+      this.loadingProbeInterval = options.loadingProbeInterval;
     }
   }
   
@@ -33,7 +36,7 @@ class ADia {
   ensureADiaAPI() {
     this.status = 'initializing'
     if (window.__adia__ == undefined) {
-      setTimeout(this.ensureADiaAPI.bind(this), 200);
+      setTimeout(this.ensureADiaAPI.bind(this), this.loadingProbeInterval);
       return;
     }
     
@@ -49,7 +52,7 @@ class ADia {
       return;
     }
     
-    this.status = 'working';
+    this.status = 'processing';
     this.#_source = newSource;
     window.__adia__.send(this.#_source);
   }
@@ -68,7 +71,7 @@ class ADia {
           this.send();
         }
       case 'initializing':
-      case 'working':
+      case 'processing':
         /* Do nothing, initializer and fee will call me again. */
         break;
     }

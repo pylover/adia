@@ -55,7 +55,6 @@ as the below:
 
    <html>
    <head>
-   ...   
 
    <!-- One-By-One  -->
    <script type="text/javascript" src="brython.js"></script>
@@ -74,7 +73,6 @@ as the below:
      async
      ></script>
 
-   ... 
    </head>
    <body onload="brython()">
 
@@ -153,5 +151,3 @@ adia-live Source Code
 The `ADia Live Demo <https://pylover.github.io/adia>`_ source code 
 which exists at https://github.com/pylover/adia-live is a good example of how
 to use the Javascript API. 
-
-
