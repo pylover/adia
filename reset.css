@@ -68,3 +68,7 @@ textarea, pre {
   font-family: monospace;
   vertical-align: baseline;
 }
+
+a {
+  text-decoration: none
+}

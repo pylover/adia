@@ -110,9 +110,9 @@ new Function("$locals_script",js)({})}})(__BRYTHON__)
 __BRYTHON__.implementation=[3,9,5,'final',0]
 __BRYTHON__.__MAGIC__="3.9.5"
 __BRYTHON__.version_info=[3,9,0,'final',0]
-__BRYTHON__.compiled_date="2021-08-10 16:45:01.497636"
-__BRYTHON__.timestamp=1628606701497
-__BRYTHON__.builtin_module_names=["_aio","_ajax","_base64","_binascii","_io_classes","_json","_jsre","_locale","_multiprocessing","_posixsubprocess","_profile","_sre_utils","_string","_strptime","_svg","_webcomponent","_webworker","_zlib_utils","array","bry_re","builtins","dis","encoding_cp932","hashlib","html_parser","long_int","marshal","math","modulefinder","posix","python_re","random","unicodedata"]
+__BRYTHON__.compiled_date="2021-08-16 19:21:00.147232"
+__BRYTHON__.timestamp=1629134460147
+__BRYTHON__.builtin_module_names=["_aio","_ajax","_base64","_binascii","_cmath","_io_classes","_json","_jsre","_locale","_multiprocessing","_posixsubprocess","_profile","_sre1","_sre_utils","_string","_strptime","_svg","_webcomponent","_webworker","_zlib_utils","array","bry_re","builtins","dis","encoding_cp932","hashlib","html_parser","long_int","marshal","math","module1","modulefinder","posix","python_re","python_re1","python_re2","random","unicodedata"]
 ;
 ;(function($B){function ord(char){if(char.length==1){return char.charCodeAt(0)}
 var code=0x10000
@@ -6111,6 +6111,7 @@ if($B.isWebWorker ||$B.isNode){$href_elts.pop()}
 $B.curdir=$href_elts.join('/')
 if(options.pythonpath !==undefined){$B.path=options.pythonpath
 $B.$options.static_stdlib_import=false}
+options.python_extension=options.python_extension ||'.py'
 if(options.python_paths){for(var path of options.python_paths){var lang,prefetch
 if(typeof path !=="string"){lang=path.lang
 prefetch=path.prefetch
@@ -9778,10 +9779,16 @@ for(var i=0;i < string.length;i+=2){if(i+2 > string.length){throw _b_.ValueError
 source.push(_b_.int.$factory(string.substr(i,2),16))}
 return $.cls.$factory(source)}
 bytes.hex=function(){
-var $=$B.args('hex',1,{self:null},['self'],arguments,{},null,null),self=$.self,res=""
-for(var i=0,len=self.source.length;i < len;i++){var hexa=self.source[i].toString(16)
-if(hexa.length < 2){hexa="0"+hexa}
-res+=hexa}
+var $=$B.args('hex',3,{self:null,sep:null,bytes_per_sep:null},['self','sep','bytes_per_sep'],arguments,{sep:"",bytes_per_sep:1},null,null),self=$.self,sep=$.sep,bytes_per_sep=$.bytes_per_sep,res="",digits="0123456789abcdef",bps=bytes_per_sep,jstart=bps,len=self.source.length;
+if(bytes_per_sep < 0){bps=-bytes_per_sep;
+jstart=bps}else if(bytes_per_sep==0){sep=''}else{jstart=len % bps
+if(jstart==0){jstart=bps}}
+for(var i=0,j=jstart;i < len;i++){var c=self.source[i]
+if(j==0){res+=sep
+j=bps}
+j--
+res+=digits[c >> 4]
+res+=digits[c & 0x0f]}
 return res}
 bytes.index=function(){var $=$B.args('rfind',4,{self:null,sub:null,start:null,end:null},['self','sub','start','end'],arguments,{start:0,end:-1},null,null)
 var index=bytes.find($.self,$.sub,$.start,$.end)
@@ -10657,11 +10664,11 @@ return new_js_class}
 $B.set_func_names($B.JSMeta,"builtins")})(__BRYTHON__)
 ;
 ;(function($B){$B.stdlib={}
-var pylist=['VFS_import','__future__','_codecs','_codecs_jp','_collections','_collections_abc','_compat_pickle','_contextvars','_csv','_dummy_thread','_frozen_importlib','_functools','_imp','_io','_markupbase','_multibytecodec','_operator','_py_abc','_pydecimal','_queue','_random','_socket','_sre','_struct','_sysconfigdata','_sysconfigdata_0_brython_','_testcapi','_thread','_threading_local','_weakref','_weakrefset','abc','antigravity','argparse','atexit','base64','bdb','binascii','bisect','browser.aio','browser.ajax','browser.highlight','browser.html','browser.indexed_db','browser.local_storage','browser.markdown','browser.object_storage','browser.session_storage','browser.svg','browser.template','browser.timer','browser.webcomponent','browser.websocket','browser.webworker','browser.worker','calendar','cmath','cmd','code','codecs','codeop','colorsys','configparser','contextlib','contextvars','copy','copyreg','csv','dataclasses','datetime','decimal','difflib','doctest','enum','errno','external_import','faulthandler','fnmatch','formatter','fractions','functools','gc','genericpath','getopt','gettext','glob','heapq','hmac','imp','inspect','interpreter','io','ipaddress','itertools','json','keyword','linecache','locale','mimetypes','nntplib','ntpath','numbers','opcode','operator','optparse','os','pathlib','pdb','pickle','pkgutil','platform','posixpath','pprint','profile','pwd','py_compile','pydoc','queue','quopri','re','reprlib','select','selectors','shlex','shutil','signal','site','site-packages.__future__','site-packages.docs','site-packages.header','site-packages.test_sp','socket','sre_compile','sre_constants','sre_parse','stat','string','stringprep','struct','subprocess','sys','sysconfig','tarfile','tb','tempfile','test.namespace_pkgs.module_and_namespace_package.a_test','textwrap','this','threading','time','timeit','token','tokenize','traceback','turtle','types','typing','uu','uuid','warnings','weakref','webbrowser','zipfile','zipimport','zlib']
+var pylist=['VFS_import','__future__','_codecs','_codecs_jp','_collections','_collections_abc','_compat_pickle','_contextvars','_csv','_dummy_thread','_frozen_importlib','_functools','_imp','_io','_markupbase','_multibytecodec','_operator','_py_abc','_pydecimal','_queue','_random','_socket','_sre','_struct','_sysconfigdata','_sysconfigdata_0_brython_','_testcapi','_thread','_threading_local','_weakref','_weakrefset','abc','antigravity','argparse','atexit','base64','bdb','binascii','bisect','browser.aio','browser.ajax','browser.highlight','browser.html','browser.indexed_db','browser.local_storage','browser.markdown','browser.object_storage','browser.session_storage','browser.svg','browser.template','browser.timer','browser.webcomponent','browser.websocket','browser.webworker','browser.worker','calendar','cmath','cmd','code','codecs','codeop','colorsys','configparser','contextlib','contextvars','copy','copyreg','csv','dataclasses','datetime','decimal','difflib','doctest','enum','errno','external_import','faulthandler','fnmatch','formatter','fractions','functools','gc','genericpath','getopt','gettext','glob','heapq','hmac','imp','inspect','interpreter','io','ipaddress','itertools','json','keyword','linecache','locale','mimetypes','nntplib','ntpath','numbers','opcode','operator','optparse','os','pathlib','pdb','pickle','pkgutil','platform','posixpath','pprint','profile','pwd','py_compile','pydoc','queue','quopri','re','reprlib','select','selectors','shlex','shutil','signal','site','site-packages.__future__','site-packages.docs','site-packages.header','site-packages.test','site-packages.test_sp','socket','sre_compile','sre_constants','sre_parse','stat','string','stringprep','struct','subprocess','sys','sysconfig','tarfile','tb','tempfile','test.namespace_pkgs.module_and_namespace_package.a_test','textwrap','this','threading','time','timeit','token','tokenize','traceback','turtle','types','typing','uu','uuid','warnings','weakref','webbrowser','zipfile','zipimport','zlib']
 for(var i=0;i < pylist.length;i++){$B.stdlib[pylist[i]]=['py']}
-var js=['_aio','_ajax','_base64','_binascii','_io_classes','_json','_jsre','_locale','_multiprocessing','_posixsubprocess','_profile','_sre_utils','_string','_strptime','_svg','_webcomponent','_webworker','_zlib_utils','aes','array','bry_re','builtins','dis','encoding_cp932','hashlib','hmac-md5','hmac-ripemd160','hmac-sha1','hmac-sha224','hmac-sha256','hmac-sha3','hmac-sha384','hmac-sha512','html_parser','long_int','marshal','math','md5','modulefinder','pbkdf2','posix','python_re','rabbit','rabbit-legacy','random','rc4','ripemd160','sha1','sha224','sha256','sha3','sha384','sha512','tripledes','unicodedata']
+var js=['_aio','_ajax','_base64','_binascii','_cmath','_io_classes','_json','_jsre','_locale','_multiprocessing','_posixsubprocess','_profile','_sre1','_sre_utils','_string','_strptime','_svg','_webcomponent','_webworker','_zlib_utils','aes','array','bry_re','builtins','dis','encoding_cp932','hashlib','hmac-md5','hmac-ripemd160','hmac-sha1','hmac-sha224','hmac-sha256','hmac-sha3','hmac-sha384','hmac-sha512','html_parser','long_int','marshal','math','md5','module1','modulefinder','pbkdf2','posix','python_re','python_re1','python_re2','rabbit','rabbit-legacy','random','rc4','ripemd160','sha1','sha224','sha256','sha3','sha384','sha512','tripledes','unicodedata']
 for(var i=0;i < js.length;i++){$B.stdlib[js[i]]=['js']}
-var pkglist=['browser.widgets','collections','concurrent','concurrent.futures','email','email.mime','encodings','html','http','importlib','logging','multiprocessing','multiprocessing.dummy','pydoc_data','site-packages.foobar','site-packages.simpleaio','site-packages.ui','test','test.encoded_modules','test.leakers','test.namespace_pkgs.not_a_namespace_pkg.foo','test.support','test.test_email','test.test_importlib','test.test_importlib.builtin','test.test_importlib.extension','test.test_importlib.frozen','test.test_importlib.import_','test.test_importlib.source','test.test_json','test.tracedmodules','unittest','unittest.test','unittest.test.testmock','urllib']
+var pkglist=['browser.widgets','collections','concurrent','concurrent.futures','email','email.mime','encodings','html','http','importlib','logging','multiprocessing','multiprocessing.dummy','pydoc_data','site-packages.foobar','site-packages.pkg_resources','site-packages.pkg_resources._vendor','site-packages.pkg_resources._vendor.packaging','site-packages.pkg_resources.extern','site-packages.simpleaio','site-packages.simpy','site-packages.simpy.resources','site-packages.ui','test','test.encoded_modules','test.leakers','test.namespace_pkgs.not_a_namespace_pkg.foo','test.support','test.test_email','test.test_importlib','test.test_importlib.builtin','test.test_importlib.extension','test.test_importlib.frozen','test.test_importlib.import_','test.test_importlib.source','test.test_json','test.tracedmodules','unittest','unittest.test','unittest.test.testmock','urllib']
 for(var i=0;i < pkglist.length;i++){$B.stdlib[pkglist[i]]=['py',true]}})(__BRYTHON__)
 ;
 
@@ -10936,10 +10943,10 @@ var PathEntryFinder=$B.make_class("PathEntryFinder",function(path_entry,hint){re
 __class__:PathEntryFinder,path_entry:path_entry,hint:hint}}
 )
 PathEntryFinder.find_spec=function(self,fullname){
-var loader_data={},notfound=true,hint=self.hint,base_path=self.path_entry+fullname.match(/[^.]+$/g)[0],modpaths=[]
+var loader_data={},notfound=true,hint=self.hint,base_path=self.path_entry+fullname.match(/[^.]+$/g)[0],modpaths=[],py_ext=$B.$options.python_extension 
 var tryall=hint===undefined
 if(tryall ||hint=='py'){
-modpaths=modpaths.concat([[base_path+".py","py",false],[base_path+"/__init__.py","py",true]])}
+modpaths=modpaths.concat([[base_path+py_ext,"py",false],[base_path+"/__init__"+py_ext,"py",true]])}
 for(var j=0;notfound && j < modpaths.length;++j){try{var file_info=modpaths[j],module={__name__:fullname,$is_package:false}
 loader_data.code=$download_module(module,file_info[0],undefined)
 notfound=false
@@ -11168,20 +11175,26 @@ if(s.surrogates===undefined){return pypos}
 var nb=0
 while(s.surrogates[nb]< pypos){nb++}
 return pypos+nb}
+function jspos2pypos(s,jspos){
+if(s.surrogates===undefined){return jspos}
+var nb=0
+while(s.surrogates[nb]+nb < jspos){nb++}
+return jspos-nb}
 var str={__class__:_b_.type,__dir__:_b_.object.__dir__,$infos:{__module__:"builtins",__name__:"str"},$is_class:true,$native:true}
-function normalize_start_end($){if(typeof $.self=="string"){$.self=$B.String($.self)}
-var len=str.__len__($.self)
+function normalize_start_end($){var len
+if(typeof $.self=="string"){len=$.self.length}else{len=str.__len__($.self)}
 if($.start===null ||$.start===_b_.None){$.start=0}else if($.start < 0){$.start+=len
 $.start=Math.max(0,$.start)}
 if($.end===null ||$.end===_b_.None){$.end=len}else if($.end < 0){$.end+=len
 $.end=Math.max(0,$.end)}
 if(! _b_.isinstance($.start,_b_.int)||! _b_.isinstance($.end,_b_.int)){throw _b_.TypeError.$factory("slice indices must be integers "+
 "or None or have an __index__ method")}
-$.js_start=pypos2jspos($.self,$.start)
-$.js_end=pypos2jspos($.self,$.end)}
+if($.self.surrogates){$.js_start=pypos2jspos($.self,$.start)
+$.js_end=pypos2jspos($.self,$.end)}}
 function reverse(s){
 return s.split("").reverse().join("")}
-function check_str(obj,prefix){if(! _b_.isinstance(obj,str)){throw _b_.TypeError.$factory((prefix ||'')+
+function check_str(obj,prefix){if(obj instanceof String ||typeof obj=="string"){return}
+if(! _b_.isinstance(obj,str)){throw _b_.TypeError.$factory((prefix ||'')+
 "must be str, not "+$B.class_name(obj))}}
 function to_chars(s){
 var chars=[]
@@ -11229,7 +11242,7 @@ str.__getitem__=function(self,arg){var len=str.__len__(self)
 if(_b_.isinstance(arg,_b_.int)){var pos=arg
 if(arg < 0){pos+=len}
 if(pos >=0 && pos < len){var jspos=pypos2jspos(self,pos)
-if(self.codePointAt(jspos)>=0x10000){return $B.String(self.substr(jspos,2))}else{return $B.String(self[jspos])}}
+if(self.codePointAt(jspos)>=0x10000){return $B.String(self.substr(jspos,2))}else{return self[jspos]}}
 throw _b_.IndexError.$factory("string index out of range")}
 if(_b_.isinstance(arg,_b_.slice)){var s=_b_.slice.$conv_for_seq(arg,len),start=pypos2jspos(self,s.start),stop=pypos2jspos(self,s.stop),step=s.step
 var res="",i=null
@@ -11584,10 +11597,9 @@ normalize_start_end($)
 var len=str.__len__($.self),sub_len=str.__len__($.sub)
 if(sub_len==0 && $.start==len){return len}
 if(len+sub_len==0){return-1}
-var last_search=len-sub_len
-for(var i=$.start;i <=last_search;i++){var js_pos=pypos2jspos($.self,i)
-if($.self.substr(js_pos,$.sub.length)==$.sub){return i}}
-return-1}
+var js_start=pypos2jspos($.self,$.start),js_end=pypos2jspos($.self,$.end),ix=$.self.substring(js_start,js_end).indexOf($.sub)
+if(ix==-1){return-1}
+return jspos2pypos($.self,js_start+ix)-$.start}
 $B.parse_format=function(fmt_string){
 var elts=fmt_string.split(":"),name,conv,spec,name_ext=[]
 if(elts.length==1){
@@ -11764,11 +11776,14 @@ if($.width <=len){return self}
 return self+$.fillchar.repeat($.width-len)}
 str.lower=function(self){var $=$B.args("lower",1,{self:null},["self"],arguments,{},null,null)
 return self.toLowerCase()}
-str.lstrip=function(self,x){var $=$B.args("lstrip",2,{self:null,chars:null},["self","chars"],arguments,{chars:_b_.None},null,null)
-if($.chars===_b_.None){return $.self.trimLeft()}
-var chars=to_chars(self)
-for(var i=0,len=chars.length;i < len;i++){if($.chars.indexOf(chars[i])===-1){return chars.slice(i).join('')}}
-return ""}
+str.lstrip=function(self,x){var $=$B.args("lstrip",2,{self:null,chars:null},["self","chars"],arguments,{chars:_b_.None},null,null),self=$.self,chars=$.chars
+if(chars===_b_.None){return self.trimStart()}
+while(self.length > 0){var flag=false
+for(var char of chars){if(self.startsWith(char)){self=self.substr(char.length)
+flag=true
+break}}
+if(! flag){return $.self.surrogates ? $B.String(self):self}}
+return ''}
 str.maketrans=function(){var $=$B.args("maketrans",3,{x:null,y:null,z:null},["x","y","z"],arguments,{y:null,z:null},null,null)
 var _t=$B.empty_dict()
 if($.y===null && $.z===null){
@@ -11838,22 +11853,22 @@ pos=pos+_new.length
 count--}
 return res}
 str.rfind=function(self,substr){
-if(arguments.length==2 && typeof substr=="string"){return self.lastIndexOf(substr)}
 var $=$B.args("rfind",4,{self:null,sub:null,start:null,end:null},["self","sub","start","end"],arguments,{start:0,end:null},null,null)
 normalize_start_end($)
 check_str($.sub)
 var len=str.__len__($.self),sub_len=str.__len__($.sub)
 if(sub_len==0){if($.js_start > len){return-1}else{return str.__len__($.self)}}
-for(var py_pos=$.end-sub_len;py_pos >=$.start;py_pos--){var js_pos=pypos2jspos($.self,py_pos)
-if($.self.substr(js_pos,$.sub.length)==$.sub){return py_pos}}
-return-1}
+var js_start=pypos2jspos($.self,$.start),js_end=pypos2jspos($.self,$.end),ix=$.self.substring(js_start,js_end).lastIndexOf($.sub)
+if(ix==-1){return-1}
+return jspos2pypos($.self,js_start+ix)-$.start}
 str.rindex=function(){
 var res=str.rfind.apply(null,arguments)
 if(res==-1){throw _b_.ValueError.$factory("substring not found")}
 return res}
 str.rjust=function(self){var $=$B.args("rjust",3,{self:null,width:null,fillchar:null},["self","width","fillchar"],arguments,{fillchar:" "},null,null)
-if($.width <=self.length){return self}
-return $.fillchar.repeat($.width-self.length)+self}
+var len=str.__len__(self)
+if($.width <=len){return self}
+return $B.String($.fillchar.repeat($.width-len)+self)}
 str.rpartition=function(self,sep){var $=$B.args("rpartition",2,{self:null,sep:null},["self","sep"],arguments,{},null,null)
 check_str($.sep)
 var self=reverse($.self),sep=reverse($.sep)
@@ -11865,11 +11880,14 @@ var rev_str=reverse($.self),rev_sep=sep===_b_.None ? sep :reverse($.sep),rev_res
 rev_res.reverse()
 for(var i=0;i < rev_res.length;i++){rev_res[i]=reverse(rev_res[i])}
 return rev_res}
-str.rstrip=function(self,x){var $=$B.args("rstrip",2,{self:null,chars:null},["self","chars"],arguments,{chars:_b_.None},null,null)
-if($.chars===_b_.None){return $.self.trimRight()}
-var chars=to_chars(self)
-for(var j=chars.length-1;j >=0;j--){if($.chars.indexOf(chars[j])==-1){return chars.slice(0,j+1).join('')}}
-return ""}
+str.rstrip=function(self,x){var $=$B.args("rstrip",2,{self:null,chars:null},["self","chars"],arguments,{chars:_b_.None},null,null),self=$.self,chars=$.chars
+if(chars===_b_.None){return self.trimEnd()}
+while(self.length > 0){var flag=false
+for(var char of chars){if(self.endsWith(char)){self=self.substr(0,self.length-char.length)
+flag=true
+break}}
+if(! flag){return $.self.surrogates ? $B.String(self):self}}
+return ''}
 str.split=function(){var $=$B.args("split",3,{self:null,sep:null,maxsplit:null},["self","sep","maxsplit"],arguments,{sep:_b_.None,maxsplit:-1},null,null),sep=$.sep,maxsplit=$.maxsplit,self=$.self,pos=0
 if(maxsplit.__class__===$B.long_int){maxsplit=parseInt(maxsplit.value)}
 if(sep==""){throw _b_.ValueError.$factory("empty separator")}
@@ -11904,7 +11922,7 @@ while(pos < self.length){if(self.substr(pos,2)=='\r\n'){res.push(self.slice(star
 start=pos=pos+2}else if(self[pos]=='\r' ||self[pos]=='\n'){res.push(self.slice(start,keepends ? pos+1 :pos))
 start=pos=pos+1}else{pos++}}
 if(start < self.length){res.push(self.slice(start))}
-return res}
+return res.map($B.String)}
 str.startswith=function(){
 var $=$B.args("startswith",4,{self:null,prefix:null,start:null,end:null},["self","prefix","start","end"],arguments,{start:0,end:null},null,null)
 normalize_start_end($)
@@ -11917,10 +11935,7 @@ if(s.substr(0,prefix.length)==prefix){return true}}
 return false}
 str.strip=function(){var $=$B.args("strip",2,{self:null,chars:null},["self","chars"],arguments,{chars:_b_.None},null,null)
 if($.chars===_b_.None){return $.self.trim()}
-var chars=to_chars($.self)
-for(var i=0;i < chars.length;i++){if($.chars.indexOf(chars[i])==-1){break}}
-for(var j=chars.length-1;j >=i;j--){if($.chars.indexOf(chars[j])==-1){break}}
-return chars.slice(i,j+1).join('')}
+return str.rstrip(str.lstrip($.self,$.chars),$.chars)}
 str.swapcase=function(self){var $=$B.args("swapcase",1,{self},["self"],arguments,{},null,null),res="",cp
 for(var char of to_chars(self)){cp=_b_.ord(char)
 if(unicode_tables.Ll[cp]){res+=char.toUpperCase()}else if(unicode_tables.Lu[cp]){res+=char.toLowerCase()}else{res+=char}}
