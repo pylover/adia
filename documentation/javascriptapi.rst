@@ -64,6 +64,16 @@ as the below:
 
    <!-- OR Bundle -->
    <script type="text/javascript" src="adia.bundle.js"></script>
+
+   <!-- Worker -->
+   <script 
+     type="text/python" 
+     id="adiaWorker" 
+     class="webworker" 
+     src="adia_worker.py"
+     async
+     ></script>
+
    ... 
    </head>
    <body onload="brython()">
