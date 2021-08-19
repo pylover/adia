@@ -132,7 +132,7 @@ as the below:
    let statusArea = document.getElementById('status');
    let versionArea = document.getElementById('version');
    
-   /* Create ADia instance */
+   /* ADia configuration */
    window.aDia.delay = 10
    window.aDia.addHook('init', (aDia) => {
      versionArea.innerText = `ADia version: ${aDia.__version__}`
