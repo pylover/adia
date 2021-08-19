@@ -1,0 +1,6 @@
+.wy-side-nav-search>a img.logo,
+.wy-side-nav-search .wy-dropdown>a img.logo {
+  background-color: #fcfcfc;
+  border-radius: 4px;
+  display: block;
+}

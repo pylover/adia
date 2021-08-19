@@ -1,0 +1,181 @@
+Javascript API
+==============
+
+Introduction
+************
+
+The ADia can also run flawlessly inside the browsers's web worker environment
+because we pass all tests with both ``CPython`` and 
+`Brython <https://brython.info/>`_ environments before each commit.
+
+This page aims to demonstrate how to use the ``adia`` inside your javascript 
+project.
+
+For the first you have to grab the file: "adia-\ |version|\ .tar.gz" from the
+https://pylover.github.io/adia/about page or generate it using:
+
+.. code-block:: bash
+
+   cd path/to/adia
+   make jsdist
+
+
+The ``build/jsdist/adia-<ver>.tar.gz`` is what you need now.
+
+Archive contains:
+
+.. code-block::
+
+   adia.bundle.js
+   adia.js
+   adia.stdlib.js
+   adia_worker.py
+   adia/
+     __init__.py
+     canvas.py
+     constants.py
+     container.py
+     diagram.py
+     exceptions.py
+     interpreter.py
+     lazyattr.py
+     mutablestring.py
+     renderer.py
+     renderingplans.py
+     sequence.py
+     tokenizer.py
+     token.py
+
+Extract the ``adia-<ver>.tar.gz`` file into Javascript project's static
+directory, where you can fetch it's content by URL. then modify your HTML file
+as the below:
+
+
+.. code-block:: html
+
+   <!doctype html>
+   <html>
+   <head>
+   <meta charset="utf-8">
+   
+   <link rel="stylesheet" href="global.css">
+   
+   <!-- One-By-One  -->
+   <script type="text/javascript" src="brython.js"></script>
+   <script type="text/javascript" src="adia.stdlib.js"></script>
+   <script type="text/javascript" src="adia.js"></script>
+   
+   <!-- OR Bundle -->
+   <!--
+   <script type="text/javascript" src="adia.bundle.js"></script>
+   -->
+   
+   <!-- Worker -->
+   <script 
+     type="text/python" 
+     id="adiaWorker" 
+     class="webworker" 
+     src="adia_worker.py"
+     async
+     ></script>
+   
+   
+   </head>
+   <body onload="brython({debug: 1})">
+   
+   <!-- Page DOM -->
+   <textarea cols="100" rows="8" id="error"></textarea>
+   <label id="version"></label>
+   <label id="status"></label>
+   <br />
+   <textarea cols="55" rows="40" id="source">
+   diagram: ADia demo
+   version: 1.0
+   author: pylover
+   
+   sequence:
+   
+   @foo: Start
+   foo -> bar: hello() => HI
+     bar -> baz: hey() => Hey
+   
+   @foo: End
+   </textarea>
+   <textarea cols="120" rows="40" id="target"></textarea>
+   
+   <!-- Brython Setup -->
+   <script type="text/python">
+   # Coding style: PEP8
+   
+   from browser import window, bind, worker
+   
+   
+   adiaworker = worker.Worker('adiaWorker')
+   
+   
+   @bind(adiaworker, 'message')
+   def onmessage(e):
+     window.__adia__.callback(e.data)
+   
+   
+   window.__adia__ = {
+     'send': adiaworker.send,
+     'callback': None
+   }
+   </script>
+   
+   <!-- Usage -->
+   <script>
+   let sourceArea = document.getElementById('source');
+   let targetArea = document.getElementById('target');
+   let errorArea = document.getElementById('error');
+   let statusArea = document.getElementById('status');
+   let versionArea = document.getElementById('version');
+   
+   /* Create ADia instance */
+   window.aDia.delay = 10
+   window.aDia.addHook('init', (aDia) => {
+     versionArea.innerText = `ADia version: ${aDia.__version__}`
+   });
+   
+   window.aDia.input =  () => sourceArea.value
+   window.aDia.addHook('result', () => {
+     errorArea.value = '';
+     targetArea.value = '';
+   });
+   
+   window.aDia.addHook('success', (aDia, dia) => targetArea.value = dia)
+   window.aDia.addHook('error', (aDia, err) => errorArea.value = msg)
+   window.aDia.addHook('status', (aDia, state) => statusArea.innerText = state)
+   
+   
+   const go = aDia.go.bind(aDia);
+   window.addEventListener('load', go);
+   sourceArea.addEventListener('input', go);
+   </script>
+   
+   </body>
+   </html>
+
+
+The ``ADia`` class will listen for changes of source element and inform you
+by provided callbacks.
+
+
+Let's make and visit the pure javascript echo system of the ``ADia`` inside 
+the ``webclinic`` directory: 
+
+.. code-block:: bash
+
+   cd path/to/adia
+   make clean webclinic_serve
+
+Now browse the http://localhost:8000/index.html.
+
+
+adia-live Source Code
+*********************
+
+The `ADia Live Demo <https://pylover.github.io/adia>`_ source code 
+which exists at https://github.com/pylover/adia-live is a good example of how
+to use the Javascript API. 
