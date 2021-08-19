@@ -53,14 +53,18 @@ as the below:
 
 .. code-block:: html
 
+   <!doctype html>
    <html>
    <head>
+   <meta charset="utf-8">
+   
+   <link rel="stylesheet" href="global.css">
 
    <!-- One-By-One  -->
    <script type="text/javascript" src="brython.js"></script>
    <script type="text/javascript" src="adia.stdlib.js"></script>
    <script type="text/javascript" src="adia.js"></script>
-
+   
    <!-- OR Bundle -->
    <script type="text/javascript" src="adia.bundle.js"></script>
 
@@ -72,63 +76,81 @@ as the below:
      src="adia_worker.py"
      async
      ></script>
-
+   
+   
    </head>
-   <body onload="brython()">
-
-     <!-- Page DOM -->
-     <textarea cols="100" rows="8" id="error"></textarea>
-     <label id="status"></label>
-     <br />
-     <textarea cols="55" rows="40" id="source"></textarea>
-     <textarea cols="120" rows="40" id="target"></textarea>
-
-     <!-- Brython Setup -->
-     <script type="text/python">
-     # Coding style: PEP8
-
-     from browser import window, bind, worker
-     
-     
-     adiaworker = worker.Worker('adiaWorker')
-     
-     
-     @bind(adiaworker, 'message')
-     def onmessage(e):
-       window.__adia__.callback(e.data)
-     
-     
-     window.__adia__ = {
-       'send': adiaworker.send,
-       'callback': None
-     }
-     </script>
-
-     <!-- Usage -->
-     <script>
-     let sourceArea = document.getElementById('source');
-     let targetArea = document.getElementById('target');
-     let errorArea = document.getElementById('error');
-     let statusArea = document.getElementById('status');
-     
-     /* Create ADia instance */
-     const aDia = new ADia({
-       delay: 10,  // ms
-       input: () => sourceArea.value,
-       clean: () => {
-         errorArea.value = '';
-         targetArea.value = '';
-       },
-       success: dia => targetArea.value = dia,
-       error: msg => errorArea.value = msg,
-       status: state => statusArea.innerText = state
-     });
-     
-     const go = aDia.go.bind(aDia);
-     window.addEventListener('load', go);
-     sourceArea.addEventListener('input', go);
+   <body onload="brython({debug: 1})">
+   
+   <!-- Page DOM -->
+   <textarea cols="100" rows="8" id="error"></textarea>
+   <label id="version"></label>
+   <label id="status"></label>
+   <br />
+   <textarea cols="55" rows="40" id="source">
+   diagram: ADia demo
+   version: 1.0
+   author: pylover
+   
+   sequence:
+   
+   @foo: Start
+   foo -> bar: hello() => HI
+     bar -> baz: hey() => Hey
+   
+   @foo: End
+   </textarea>
+   <textarea cols="120" rows="40" id="target"></textarea>
+   
+   <!-- Brython Setup -->
+   <script type="text/python">
+   # Coding style: PEP8
+   
+   from browser import window, bind, worker
+   
+   
+   adiaworker = worker.Worker('adiaWorker')
+   
+   
+   @bind(adiaworker, 'message')
+   def onmessage(e):
+     window.__adia__.callback(e.data)
+   
+   
+   window.__adia__ = {
+     'send': adiaworker.send,
+     'callback': None
+   }
    </script>
-
+   
+   <!-- Usage -->
+   <script>
+   let sourceArea = document.getElementById('source');
+   let targetArea = document.getElementById('target');
+   let errorArea = document.getElementById('error');
+   let statusArea = document.getElementById('status');
+   let versionArea = document.getElementById('version');
+   
+   /* Create ADia instance */
+   const aDia = new ADia({
+     delay: 10,  // ms
+     init: (aDia) => versionArea.innerText = `ADia version: ${aDia.__version__}`,
+     input: () => sourceArea.value,
+     clean: () => {
+       errorArea.value = '';
+       targetArea.value = '';
+     },
+     success: dia => targetArea.value = dia,
+     error: msg => errorArea.value = msg,
+     status: state => statusArea.innerText = state
+   });
+   
+   const go = aDia.go.bind(aDia);
+   window.addEventListener('load', go);
+   sourceArea.addEventListener('input', go);
+   </script>
+   
+   </body>
+   </html>
 
 The ``ADia`` class will listen for changes of source element and inform you
 by provided callbacks.

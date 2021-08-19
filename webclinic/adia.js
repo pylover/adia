@@ -13,6 +13,7 @@ class ADia {
     this.successCallback = options.success;
     this.errorCallback = options.error;
     this.statusCallback = options.status;
+    this.initCallback = options.init;
     this.input = options.input;
     if (options.delay != undefined) {
       this.delay = options.delay;
@@ -41,7 +42,7 @@ class ADia {
     }
     
     window.__adia__.callback = this.onResult.bind(this);
-    window.__adia__.send('');
+    window.__adia__.send('?version');
   }
   
   send() {
@@ -77,6 +78,13 @@ class ADia {
   }
   
   onResult(result) {
+    if (result.version != undefined) {
+      this.__version__ = result.version
+      this.status = 'idle';
+      this.initCallback(this)
+      return
+    }
+
     this.cleanCallback();
     if (result.error) {
       this.errorCallback(result.error);
