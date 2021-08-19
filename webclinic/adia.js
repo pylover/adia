@@ -1,41 +1,54 @@
 class ADia {
   delay = 0; // ms
+  loadingProbeInterval = 300; // ms
+  input;
 
-  // new, inititializing, processing, idle
-  #_status = 'new';
+  // inititializing, processing, idle
+  #_status = 'initializing';
 
   /* Private Fields */
   #_delayTimer;
   #_source;
 
-  constructor(options) {
-    this.cleanCallback = options.clean;
-    this.successCallback = options.success;
-    this.errorCallback = options.error;
-    this.statusCallback = options.status;
-    this.initCallback = options.init;
-    this.input = options.input;
-    if (options.delay != undefined) {
-      this.delay = options.delay;
+  constructor() {
+    this.hooks = {
+      result: [],
+      success: [],
+      error: [],
+      status: [],
+      init: [],
     }
-    if (options.loadingProbeInterval != undefined) {
-      this.loadingProbeInterval = options.loadingProbeInterval;
+    this.ensureADiaAPI();
+  }
+  
+  addHook(name, func) {
+    let handlers = this.hooks[name]
+    if (!handlers.includes(func)) {
+      handlers.push(func)
     }
   }
   
+  hook(name, data) {
+    let handlers = this.hooks[name]
+    if (handlers == undefined) {
+      throw `Invalid hook name: ${name}`;
+    }
+    
+    for (var i = 0; i < handlers.length; i++) {
+      handlers[i](this, data);
+    }
+  }
+
   get status() {
     return this.#_status;
   }
 
   set status(newValue) {
     this.#_status = newValue;
-    if (this.statusCallback) {
-      this.statusCallback(newValue);
-    }
+    this.hook('status', newValue);
   }
 
   ensureADiaAPI() {
-    this.status = 'initializing'
     if (window.__adia__ == undefined) {
       setTimeout(this.ensureADiaAPI.bind(this), this.loadingProbeInterval);
       return;
@@ -46,6 +59,9 @@ class ADia {
   }
   
   send() {
+    if (this.input == undefined) {
+      return;
+    }
     let newSource = this.input();
     if (this.#_source == newSource) {
       /* Do Nothing */
@@ -59,9 +75,6 @@ class ADia {
 
   go() {
     switch (this.status) {
-      case 'new':
-        this.ensureADiaAPI();
-        break;
       case 'idle':
         if (this.delay > 0) {
           clearTimeout(this.#_delayTimer);
@@ -80,19 +93,20 @@ class ADia {
   onResult(result) {
     if (result.version != undefined) {
       this.__version__ = result.version
-      this.status = 'idle';
-      this.initCallback(this)
-      return
-    }
-
-    this.cleanCallback();
-    if (result.error) {
-      this.errorCallback(result.error);
+      this.hook('init')
     }
     else {
-      this.successCallback(result.diagram);
+      this.hook('result', result)
+      if (result.error) {
+        this.hook('error', result.error)
+      }
+      else {
+        this.hook('success', result.diagram)
+      }
     }
     this.status = 'idle';
     this.go();
   }
 }
+
+window.aDia = new ADia();

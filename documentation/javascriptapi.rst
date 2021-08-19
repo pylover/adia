@@ -59,15 +59,17 @@ as the below:
    <meta charset="utf-8">
    
    <link rel="stylesheet" href="global.css">
-
+   
    <!-- One-By-One  -->
    <script type="text/javascript" src="brython.js"></script>
    <script type="text/javascript" src="adia.stdlib.js"></script>
    <script type="text/javascript" src="adia.js"></script>
    
    <!-- OR Bundle -->
+   <!--
    <script type="text/javascript" src="adia.bundle.js"></script>
-
+   -->
+   
    <!-- Worker -->
    <script 
      type="text/python" 
@@ -131,18 +133,21 @@ as the below:
    let versionArea = document.getElementById('version');
    
    /* Create ADia instance */
-   const aDia = new ADia({
-     delay: 10,  // ms
-     init: (aDia) => versionArea.innerText = `ADia version: ${aDia.__version__}`,
-     input: () => sourceArea.value,
-     clean: () => {
-       errorArea.value = '';
-       targetArea.value = '';
-     },
-     success: dia => targetArea.value = dia,
-     error: msg => errorArea.value = msg,
-     status: state => statusArea.innerText = state
+   window.aDia.delay = 10
+   window.aDia.addHook('init', (aDia) => {
+     versionArea.innerText = `ADia version: ${aDia.__version__}`
    });
+   
+   window.aDia.input =  () => sourceArea.value
+   window.aDia.addHook('result', () => {
+     errorArea.value = '';
+     targetArea.value = '';
+   });
+   
+   window.aDia.addHook('success', (aDia, dia) => targetArea.value = dia)
+   window.aDia.addHook('error', (aDia, err) => errorArea.value = msg)
+   window.aDia.addHook('status', (aDia, state) => statusArea.innerText = state)
+   
    
    const go = aDia.go.bind(aDia);
    window.addEventListener('load', go);
@@ -151,6 +156,7 @@ as the below:
    
    </body>
    </html>
+
 
 The ``ADia`` class will listen for changes of source element and inform you
 by provided callbacks.

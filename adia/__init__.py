@@ -11,7 +11,7 @@ from .exceptions import InterpreterError, BadAttribute, BadSyntax
 from .renderer import Renderer
 
 
-__version__ = '2.2.0'
+__version__ = '3.0.0'
 __all__ = [
     'Diagram',
     'SequenceDiagram',

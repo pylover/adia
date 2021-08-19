@@ -96,7 +96,7 @@ $(WEBCLINIC_BUILD)/adia.stdlib.js: \
 		--search-directory $(WEBCLINIC) \
 		--stdlib-directory $(WEBCLINIC_BUILD) \
 		--exclude check* \
-		--exclude test/* \
+		--exclude build/* \
 		--filename adia.stdlib.js
 
 $(WEBCLINIC_BUILD)/tests:

@@ -78,18 +78,21 @@ let statusArea = document.getElementById('status');
 let versionArea = document.getElementById('version');
 
 /* Create ADia instance */
-const aDia = new ADia({
-  delay: 10,  // ms
-  init: (aDia) => versionArea.innerText = `ADia version: ${aDia.__version__}`,
-  input: () => sourceArea.value,
-  clean: () => {
-    errorArea.value = '';
-    targetArea.value = '';
-  },
-  success: dia => targetArea.value = dia,
-  error: msg => errorArea.value = msg,
-  status: state => statusArea.innerText = state
+window.aDia.delay = 10
+window.aDia.addHook('init', (aDia) => {
+  versionArea.innerText = `ADia version: ${aDia.__version__}`
 });
+
+window.aDia.input =  () => sourceArea.value
+window.aDia.addHook('result', () => {
+  errorArea.value = '';
+  targetArea.value = '';
+});
+
+window.aDia.addHook('success', (aDia, dia) => targetArea.value = dia)
+window.aDia.addHook('error', (aDia, err) => errorArea.value = msg)
+window.aDia.addHook('status', (aDia, state) => statusArea.innerText = state)
+
 
 const go = aDia.go.bind(aDia);
 window.addEventListener('load', go);
