@@ -198,11 +198,11 @@ class ConditionStartPlan(ItemPlan):
     def _calc_singlemodule(self):
         self.start = self.startmodule.col
 
-        linelen = 0
+        linelen = len(self.kind) + 5
         if self.item.text:
-            linelen = len(self.item.text)
+            linelen += len(self.item.text)
 
-        self.length = linelen + 7
+        self.length = linelen
         self.end = self.start + self.length
         self.end -= 1
         return 0, 3, 0
