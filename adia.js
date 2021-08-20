@@ -2,41 +2,37 @@ class ADia {
   delay = 0; // ms
   loadingProbeInterval = 300; // ms
   input;
+  source;
+
+  /* Hooks */
+  onresult = null
+  onsuccess = null
+  onerror = null
+  onstatus = null
+  oninit = null
 
   // inititializing, processing, idle
   #_status = 'initializing';
 
   /* Private Fields */
   #_delayTimer;
-  #_source;
 
   constructor() {
     this.hooks = {
-      result: [],
-      success: [],
-      error: [],
-      status: [],
-      init: [],
     }
     this.ensureADiaAPI();
   }
   
-  addHook(name, func) {
-    let handlers = this.hooks[name]
-    if (!handlers.includes(func)) {
-      handlers.push(func)
-    }
-  }
-  
   hook(name, data) {
-    let handlers = this.hooks[name]
-    if (handlers == undefined) {
+    let handler = this[name]
+    if (handler == undefined) {
       throw `Invalid hook name: ${name}`;
     }
-    
-    for (var i = 0; i < handlers.length; i++) {
-      handlers[i](this, data);
+    if (handler == null) {
+      return
     }
+    
+    handler(this, data);
   }
 
   get status() {
@@ -45,7 +41,7 @@ class ADia {
 
   set status(newValue) {
     this.#_status = newValue;
-    this.hook('status', newValue);
+    this.hook('onstatus', newValue);
   }
 
   ensureADiaAPI() {
@@ -63,14 +59,14 @@ class ADia {
       return;
     }
     let newSource = this.input();
-    if (this.#_source == newSource) {
+    if (this.source == newSource) {
       /* Do Nothing */
       return;
     }
     
     this.status = 'processing';
-    this.#_source = newSource;
-    window.__adia__.send(this.#_source);
+    this.source = newSource;
+    window.__adia__.send(this.source);
   }
 
   go() {
@@ -93,15 +89,15 @@ class ADia {
   onResult(result) {
     if (result.version != undefined) {
       this.__version__ = result.version
-      this.hook('init')
+      this.hook('oninit')
     }
     else {
-      this.hook('result', result)
+      this.hook('onresult', result)
       if (result.error) {
-        this.hook('error', result.error)
+        this.hook('onerror', result.error)
       }
       else {
-        this.hook('success', result.diagram)
+        this.hook('onsuccess', result.diagram)
       }
     }
     this.status = 'idle';
