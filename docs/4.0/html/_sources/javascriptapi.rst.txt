@@ -134,19 +134,19 @@ as the below:
    
    /* ADia configuration */
    window.aDia.delay = 10
-   window.aDia.addHook('init', (aDia) => {
+   window.aDia.oninit = (aDia) => {
      versionArea.innerText = `ADia version: ${aDia.__version__}`
-   });
+   };
    
-   window.aDia.input =  () => sourceArea.value
-   window.aDia.addHook('result', () => {
+   window.aDia.input = () => sourceArea.value
+   window.aDia.onresult = () => {
      errorArea.value = '';
      targetArea.value = '';
-   });
+   };
    
-   window.aDia.addHook('success', (aDia, dia) => targetArea.value = dia)
-   window.aDia.addHook('error', (aDia, err) => errorArea.value = msg)
-   window.aDia.addHook('status', (aDia, state) => statusArea.innerText = state)
+   window.aDia.onsuccess = (aDia, dia) => targetArea.value = dia
+   window.aDia.onerror = (aDia, err) => errorArea.value = msg
+   window.aDia.onstatus = (aDia, state) => statusArea.innerText = state
    
    
    const go = aDia.go.bind(aDia);
@@ -156,7 +156,6 @@ as the below:
    
    </body>
    </html>
-
 
 The ``ADia`` class will listen for changes of source element and inform you
 by provided callbacks.
