@@ -6,6 +6,18 @@
   <link href="favicon.svg" rel="icon" type="image/svg+xml">
   <link href="favicon.png" rel="icon" type="image/png">
 	<link rel="stylesheet" href="build/bundle.css" >
+  <script>
+    if (document.documentMode || /Edge/.test(navigator.userAgent)) {
+        alert('Oh Sorry!\nWe\'re not taking care of the IE and Edge. '
+          + 'So, you have two options:\n'
+          + '1. Make your own ASCII diagram service for your environment.\n'
+          + '2. Use a web browser, for example: Google Chrome, Firefox etc.\n'
+          + '\nWe strongly recommend the second option.');
+    }
+  </script>
+  <noscript>Please enable the Javascript to use ADia.</noscript>
+
+  <!-- Brython -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"></script>
 
   <!-- ADia -->
