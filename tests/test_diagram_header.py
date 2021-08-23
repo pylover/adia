@@ -54,3 +54,16 @@ def test_diagram_header():
     . version: 1.0  .
     .................
     ''')
+
+
+def test_space_at_emptyline_issue46():
+    d = Diagram('\n'.join((
+        'diagram: Foo',
+        '  ',
+        '# foo'
+    )))
+    assert eqdia(d, '''
+    ................
+    . DIAGRAM: Foo .
+    ................
+    ''')

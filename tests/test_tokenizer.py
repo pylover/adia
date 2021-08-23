@@ -82,7 +82,7 @@ def test_tokenizer_emptyinput():
         next(gen)
 
 
-def test_tokenizer_sequencediagram_indented():
+def test_tokenizer_sequencediagram_indentation():
     gen = tokenize(
         'foo\n'
         '  bar\n'
@@ -119,7 +119,7 @@ def test_tokenizer_sequencediagram_indented():
         next(gen)
 
 
-def test_tokenizer_sequencediagram_indented_autocoloffset():
+def test_tokenizer_sequencediagram_indent_autocoloffset():
     gen = tokenize('''
         foo bar
         bar
@@ -208,7 +208,7 @@ def test_tokenizer_escapechar():
         next(gen)
 
     gen = tokenize('\\\n \n')
-    assert next(gen) == (NEWLINE,   '\n',    (2,  1), (2,  2))
+    assert next(gen) == (NEWLINE,   '\n',    (2,  0), (2,  1))
     assert next(gen) == (EOF,       '',      (3,  0), (3,  0))
     with raises(StopIteration):
         next(gen)
@@ -228,5 +228,16 @@ def test_tokenizer_escapechar():
     assert next(gen) == (DOT,     '.',     (3,  0), (3,  1))
     assert next(gen) == (NAME,    'baz',   (3,  1), (3,  4))
     assert next(gen) == (EOF,     '',      (4,  0), (4,  0))
+    with raises(StopIteration):
+        next(gen)
+
+
+def test_space_at_emptyline_issue46():
+    gen = tokenize('foo\n  \nbar')
+    assert next(gen) == (NAME,    'foo', (1,  0), (1,  3))
+    assert next(gen) == (NEWLINE, '\n',  (1,  3), (1,  4))
+    assert next(gen) == (NEWLINE, '\n',  (2,  0), (2,  1))
+    assert next(gen) == (NAME,    'bar', (3,  0), (3,  3))
+    assert next(gen) == (EOF,     '',    (4,  0), (4,  0))
     with raises(StopIteration):
         next(gen)

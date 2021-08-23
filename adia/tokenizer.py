@@ -13,6 +13,7 @@ ALLTOKENS_RE = \
     [WHITESPACE_RE, NAME_RE, NEWLINE_RE]
 ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS_RE) + ')')
 TOKENS_DICT = {t: n for t, n in EXACT_TOKENS}
+EMPTYLINE = re.compile(r'^([\t ]*)\n$')
 
 
 class Tokenizer:
@@ -113,8 +114,12 @@ class Tokenizer:
                 return
 
         if line == '':
+            # EOF
             yield self._eoftoken(line)
             return
+
+        if EMPTYLINE.match(line):
+            line = '\n'
 
         for m in ALLTOKENS_RE.finditer(line):
             token = m.group()
