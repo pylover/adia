@@ -13,6 +13,7 @@ ALLTOKENS_RE = \
     [WHITESPACE_RE, NAME_RE, NEWLINE_RE]
 ALLTOKENS_RE = re.compile('(' + '|'.join(ALLTOKENS_RE) + ')')
 TOKENS_DICT = {t: n for t, n in EXACT_TOKENS}
+EMPTYLINE = re.compile(r'^([\t ]*)\n$')
 
 
 class Tokenizer:
@@ -47,8 +48,8 @@ class Tokenizer:
     def _indenttoken(self, token, start, end, line):
         return Token(
             INDENT,
-            token[self.coloffset:],
-            (self.lineno, start + self.coloffset),
+            token,
+            (self.lineno, start),
             (self.lineno, end),
             line
         )
@@ -113,8 +114,12 @@ class Tokenizer:
                 return
 
         if line == '':
+            # EOF
             yield self._eoftoken(line)
             return
+
+        if EMPTYLINE.match(line):
+            line = '\n'
 
         for m in ALLTOKENS_RE.finditer(line):
             token = m.group()
@@ -150,8 +155,11 @@ class Tokenizer:
                     self.coloffset = start
 
                 if lineindent > self.indent:
-                    self.indent = lineindent
-                    yield self._indenttoken(token, start, end, line)
+                    for i in range(self.indent, lineindent):
+                        self.indent += 1
+                        s = (start + self.coloffset) + (self.indentsize * i)
+                        e = s + self.indentsize
+                        yield self._indenttoken(token[s:e], s, e, line)
 
                 elif lineindent < self.indent:
                     for i in range(self.indent - lineindent):
