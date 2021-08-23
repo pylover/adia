@@ -352,6 +352,7 @@ class SequenceDiagram(Interpreter, Container):
             NAME: Switch(default=Goto(nextstate='  name'), **_keywords),
             AT: Ignore(nextstate='@'),
             NEWLINE: Ignore(nextstate='start'),
+            INDENT: Ignore(callback=_indent, nextstate='indent'),
         },
         'name': {
             RARROW: New(Call, callback=_new_call, nextstate='start'),
