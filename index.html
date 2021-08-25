@@ -23,15 +23,6 @@
   <!-- ADia -->
 	<script src="adia.stdlib.js"></script>
 
-  <!-- Worker -->
-  <script
-    type="text/python"
-    id="adiaWorker"
-    class="webworker"
-    src="adia_worker.py"
-    async
-    ></script>
-
   <!-- Svelte -->
 	<script defer src="build/bundle.js"></script>
 </head>
@@ -106,23 +97,75 @@ DIAGRAM: ADia Javascript API
 </code></pre>
 
   <!-- Brython Setup -->
+  <script type="text/python" id="adiaWorker" class="webworker" >
+  from browser import bind, self
+  
+  import adia
+  
+  
+  @bind(self, 'message')
+  def message(ev):
+      key = ev.data['key']
+      request = ev.data['request']
+      result = {'key': key}
+  
+      if request.startswith('?version'):
+          result.update({
+              'type': 'version',
+              'answer': adia.__version__
+          })
+          self.send(result)
+          return
+  
+      result.update({
+          'type': 'diagram',
+      })
+      try:
+          result['answer'] = adia.diagram(request)
+      except adia.BadSyntax as ex:
+          result['error'] = f'Syntax Error: {ex}'
+      except adia.BadAttribute as ex:
+          result['error'] = f'Attribute Error: {ex}'
+      except Exception as ex:
+          result['error'] = f'Unhandled Error: {ex}'
+      finally:
+          self.send(result)
+  </script>
   <script type="text/python">
   # Coding style: PEP8
   from browser import window, bind, worker
 
-
+  callbacks = {}
   adiaworker = worker.Worker('adiaWorker')
 
 
   @bind(adiaworker, 'message')
   def onmessage(e):
-    window.__adia__.callback(e.data)
+    global callbacks
+    key = e.data['key']
+    if key in callbacks:
+      callbacks[key](e.data)
 
+
+  def send(key, request):
+    adiaworker.send(dict(key=key, request=request))
+
+
+  def registerCallback(key, function):
+    global callbacks
+    callbacks[key] = function
+
+
+  def unregisterCallback(key):
+    global callbacks
+    del callbacks[key]
 
   window.__adia__ = {
-    'send': adiaworker.send,
-    'callback': None
+    'send': send,
+    'registerCallback': registerCallback,
+    'unregisterCallback': unregisterCallback
   }
+
   </script>
   <!-- Clicky -->
   <script async src="//static.getclicky.com/101330535.js"></script>
