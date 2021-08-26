@@ -4,3 +4,12 @@
     <link href="{{ pathto("_static/favicon.svg", True) }}" rel="icon" type="image/svg+xml">
     <link href="{{ pathto("_static/favicon.png", True) }}" rel="icon" type="image/png">
 {% endblock %}
+{% block footer %}
+  {{ super() }} 
+  <!-- Clicky -->
+  <script async src="//static.getclicky.com/101330535.js"></script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/101330535ns.gif" /></p></noscript>
+{% endblock %}
+
+
+

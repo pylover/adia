@@ -18,8 +18,6 @@ class ADia {
   #_delayTimer;
 
   constructor() {
-    this.hooks = {
-    }
     this.ensureADiaAPI();
   }
   
