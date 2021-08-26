@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Contributing &#8212; ADia 4.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Javascript API" href="javascriptapi.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+    <link href="_static/favicon.svg" rel="icon" type="image/svg+xml">
+    <link href="_static/favicon.png" rel="icon" type="image/png">
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>First of all, fork and clone the <a class="reference external" href="https://github.com/pylover/adia">ADia</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> path/to/adia
+</pre></div>
+</div>
+<p>What you have to do before sending any pull request:</p>
+<ul class="simple">
+<li><p>Pass All CPython tests</p></li>
+<li><p>Ensure the code coverage factor remains at <code class="docutils literal notranslate"><span class="pre">100%</span></code>.</p></li>
+<li><p>Pass Javascript tests</p></li>
+<li><p>Lint</p></li>
+<li><p>Doctest</p></li>
+</ul>
+<section id="setup-development-environment">
+<h2>Setup Development Environment<a class="headerlink" href="#setup-development-environment" title="Permalink to this headline">¶</a></h2>
+<p>Use your favorite virtual environment tool such as
+<a class="reference external" href="https://pypi.org/project/virtualenvwrapper/">https://pypi.org/project/virtualenvwrapper/</a>.</p>
+<p>In order, you need <code class="docutils literal notranslate"><span class="pre">GNU</span> <span class="pre">Make</span></code> to continue.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install make
+make env
+</pre></div>
+</div>
+</section>
+<section id="running-cpython-tests">
+<h2>Running CPython tests<a class="headerlink" href="#running-cpython-tests" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make <span class="nb">test</span>
+</pre></div>
+</div>
+<section id="coverage-result">
+<h3>Coverage Result<a class="headerlink" href="#coverage-result" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make cover
+</pre></div>
+</div>
+</section>
+</section>
+<section id="lint">
+<h2>Lint<a class="headerlink" href="#lint" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make lint
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make doc
+</pre></div>
+</div>
+<p>Generated HTML documentation can be found at <code class="docutils literal notranslate"><span class="pre">documentation/build</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">https://www.sphinx-doc.org/en/master/usage/quickstart.html</a></p>
+</div>
+<section id="live-documenetation">
+<h3>Live Documenetation<a class="headerlink" href="#live-documenetation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make livedoc
+</pre></div>
+</div>
+<p>Now browse the <a class="reference external" href="http://localhost:8082">http://localhost:8082</a>.</p>
+</section>
+<section id="doctest">
+<h3>Doctest<a class="headerlink" href="#doctest" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make doctest
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/doctest.html">https://www.sphinx-doc.org/en/master/usage/extensions/doctest.html</a></p>
+</div>
+</section>
+</section>
+<section id="javascript-tests">
+<h2>Javascript Tests<a class="headerlink" href="#javascript-tests" title="Permalink to this headline">¶</a></h2>
+<p>Run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make clean webclinic_serve
+</pre></div>
+</div>
+<p>To build and serve the client side test files.</p>
+<p>Then browse <a class="reference external" href="http://0.0.0.0:8000/check.html">http://0.0.0.0:8000/check.html</a> and wait to pass/fail tests.</p>
+<section id="update-brython-runtime">
+<h3>Update Brython runtime<a class="headerlink" href="#update-brython-runtime" title="Permalink to this headline">¶</a></h3>
+<p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">cleanall</span></code> to force the <code class="docutils literal notranslate"><span class="pre">webclinic</span></code> makefile rule to download and
+update <code class="docutils literal notranslate"><span class="pre">brython*.js</span></code> files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make cleanall webclinic
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://brython.info/">https://brython.info/</a></p>
+</div>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ADia</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lang.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascriptapi.html">Javascript API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup-development-environment">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-cpython-tests">Running CPython tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lint">Lint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#javascript-tests">Javascript Tests</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="javascriptapi.html" title="previous chapter">Javascript API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer">
+      &copy;2020, Vahid Mardani.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/contributing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+     
+  <!-- Clicky -->
+  <script async src="//static.getclicky.com/101330535.js"></script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/101330535ns.gif" /></p></noscript>
+
+  </body>
+</html>
