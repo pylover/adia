@@ -20,9 +20,6 @@
   <!-- Brython -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"></script>
 
-  <!-- ADia -->
-	<script src="adia.stdlib.js"></script>
-
   <!-- Svelte -->
 	<script defer src="build/bundle.js"></script>
 </head>
@@ -131,6 +128,9 @@ DIAGRAM: ADia Javascript API
       finally:
           self.send(result)
   </script>
+  <!-- ADia -->
+	<script src="adia.stdlib.js"></script>
+
   <script type="text/python">
   # Coding style: PEP8
   from browser import window, bind, worker
