@@ -41,7 +41,7 @@ class Diagram(Interpreter, Container):
         if self.title:
             return f'Diagram: {self.title}'
         else:
-            return f'Diagram: Untitled'
+            return 'Diagram: Untitled'
 
     def dumps(self):
         """Serialize back the diagram class into valid ``ADia`` source code.

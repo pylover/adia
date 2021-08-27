@@ -40,7 +40,6 @@ def test_sequence_header():
     .................
     ''')
 
-
     d = Diagram('''
         sequence:
     ''')
