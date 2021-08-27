@@ -1,0 +1,2 @@
+class ClassDiagram(Interpreter):
+    pass

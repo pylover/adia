@@ -3,6 +3,7 @@ from io import StringIO
 from .container import Container
 from .interpreter import Interpreter, Ignore, Switch, Goto, Consume, New
 from .sequence import SequenceDiagram
+from .class_ import ClassDiagram
 from .token import NEWLINE, NAME, EVERYTHING, INDENT, EOF, HASH, COLON
 from .renderer import Renderer
 
@@ -167,11 +168,15 @@ class Diagram(Interpreter, Container):
     def _new_seq(self, sequence):
         self.append(sequence)
 
+    def _new_class(self, class_):
+        self.append(class_)
+
     _keywords = {
         'diagram': Goto(nextstate='title'),
         'author': Goto(nextstate='attr'),
         'version': Goto(nextstate='attr'),
         'sequence': Goto(nextstate='sequence'),
+        'class': Goto(nextstate='class'),
     }
 
     statemap = {
@@ -193,12 +198,12 @@ class Diagram(Interpreter, Container):
             },
         },
         'sequence': {COLON: Ignore(nextstate='new-sequence')},
-        'new-sequence': {
-            EVERYTHING: {
-                NEWLINE: New(
-                    SequenceDiagram,
-                    callback=_new_seq,
-                )
-            }
-        }
+        'new-sequence': {EVERYTHING: {NEWLINE:
+            New(SequenceDiagram, callback=_new_seq)
+        }},
+        'class': {COLON: Ignore(nextstate='new-class')},
+        'new-class': {EVERYTHING: {NEWLINE:
+            New(ClassDiagram, callback=_new_class)
+        }},
+
     }
