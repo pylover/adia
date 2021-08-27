@@ -82,7 +82,7 @@ def test_tokenizer_emptyinput():
         next(gen)
 
 
-def test_tokenizer_sequencediagram_indentation():
+def test_tokenizer_indentation():
     gen = tokenize(
         'foo\n'
         '  bar\n'
@@ -119,7 +119,7 @@ def test_tokenizer_sequencediagram_indentation():
         next(gen)
 
 
-def test_tokenizer_sequencediagram_indent_autocoloffset():
+def test_tokenizer_indentation_autocoloffset():
     gen = tokenize('''
         foo bar
         bar
@@ -241,3 +241,37 @@ def test_space_at_emptyline_issue46():
     assert next(gen) == (EOF,     '',    (4,  0), (4,  0))
     with raises(StopIteration):
         next(gen)
+
+
+def test_class_diagram():
+    gen = tokenize('''
+        Foo(Bar, Baz)
+          int bar
+          + qux -> Qux
+          ---
+    ''')
+    assert next(gen) == (NEWLINE, '\n',    (1,  0), (1,  1))
+    assert next(gen) == (NAME,    'Foo',   (2,  8), (2, 11))
+    assert next(gen) == (LPAR,    '(',     (2, 11), (2, 12))
+    assert next(gen) == (NAME,    'Bar',   (2, 12), (2, 15))
+    assert next(gen) == (COMMA,   ',',     (2, 15), (2, 16))
+    assert next(gen) == (NAME,    'Baz',   (2, 17), (2, 20))
+    assert next(gen) == (RPAR,    ')',     (2, 20), (2, 21))
+    assert next(gen) == (NEWLINE, '\n',    (2, 21), (2, 22))
+    assert next(gen) == (INDENT,  '  ',    (3,  8), (3, 10))
+    assert next(gen) == (NAME,    'int',   (3, 10), (3, 13))
+    assert next(gen) == (NAME,    'bar',   (3, 14), (3, 17))
+    assert next(gen) == (NEWLINE, '\n',    (3, 17), (3, 18))
+    assert next(gen) == (PLUS,    '+',     (4, 10), (4, 11))
+    assert next(gen) == (NAME,    'qux',   (4, 12), (4, 15))
+    assert next(gen) == (RARROW,  '->',    (4, 16), (4, 18))
+    assert next(gen) == (NAME,    'Qux',   (4, 19), (4, 22))
+    assert next(gen) == (NEWLINE, '\n',    (4, 22), (4, 23))
+    assert next(gen) == (HSEP,    '---',   (5, 10), (5, 13))
+    assert next(gen) == (NEWLINE, '\n',    (5, 13), (5, 14))
+    assert next(gen) == (DEDENT,  '',      (6,  8), (6,  8))
+    assert next(gen) == (EOF,     '',      (7,  0), (7,  0))
+    with raises(StopIteration):
+        next(gen)
+
+
