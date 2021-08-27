@@ -23,7 +23,7 @@ class Diagram(Interpreter, Container):
        You may use the :meth:`dumps` method to dump back the diagram instance
        to ``ADia`` source code.
     """
-    title = 'Untitled Diagram'
+    title = None
     version = None
     author = None
 
@@ -38,7 +38,10 @@ class Diagram(Interpreter, Container):
             self.parsefile(source)
 
     def __repr__(self):
-        return f'Diagram: {self.title}'
+        if self.title:
+            return f'Diagram: {self.title}'
+        else:
+            return f'Diagram: Untitled'
 
     def dumps(self):
         """Serialize back the diagram class into valid ``ADia`` source code.
@@ -68,16 +71,23 @@ class Diagram(Interpreter, Container):
         """
 
         f = StringIO()
-        f.write(f'diagram: {self.title}\n')
+        br = False
+        if self.title:
+            f.write(f'diagram: {self.title}\n')
+            br = True
 
         if self.version:
             f.write(f'version: {self.version}\n')
+            br = True
 
         if self.author:
             f.write(f'author: {self.author}\n')
+            br = True
 
         if len(self):
-            f.write('\n')
+            if br:
+                f.write('\n')
+
             for c in self:
                 f.write(f'{c.dumps()}')
 

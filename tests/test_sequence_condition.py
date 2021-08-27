@@ -5,8 +5,6 @@ from .helpers import eqdia
 
 def test_sequence_condition():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         if: Yes
@@ -23,9 +21,6 @@ def test_sequence_condition():
     ''')
     assert eqdia(d, '''
     .................................
-    . DIAGRAM: Foo                  .
-    . version: 1.0                  .
-    .                               .
     . +---+ +---+ +---+ +---+ +---+ .
     . | f | | b | | c | | d | | e | .
     . +---+ +---+ +---+ +---+ +---+ .
@@ -85,8 +80,6 @@ def test_sequence_condition():
 
 def test_sequence_conditiontext():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         s -> f
@@ -100,9 +93,6 @@ def test_sequence_conditiontext():
     ''')
     assert eqdia(d, '''
     ...................................
-    . DIAGRAM: Foo                    .
-    . version: 1.0                    .
-    .                                 .
     . +---+ +---+  +---+        +---+ .
     . | s | | f |  | b |        | c | .
     . +---+ +---+  +---+        +---+ .
@@ -152,54 +142,44 @@ def test_sequence_conditiontext():
 
 def test_sequence_emptyif():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         if
     ''')
     assert eqdia(d, '''
-    ................
-    . DIAGRAM: Foo .
-    . version: 1.0 .
-    .              .
-    . **********   .
-    . * if     *   .
-    . **********   .
-    . **********   .
-    . * end if *   .
-    . **********   .
-    ................
+    ..............
+    .            .
+    . ********** .
+    . * if     * .
+    . ********** .
+    . ********** .
+    . * end if * .
+    . ********** .
+    ..............
     ''')
 
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         if
         else
     ''')
     assert eqdia(d, '''
-    ................
-    . DIAGRAM: Foo .
-    . version: 1.0 .
-    .              .
-    . **********   .
-    . * if     *   .
-    . **********   .
-    . **********   .
-    . * else   *   .
-    . **********   .
-    . **********   .
-    . * end if *   .
-    . **********   .
-    ................
+    ..............
+    .            .
+    . ********** .
+    . * if     * .
+    . ********** .
+    . ********** .
+    . * else   * .
+    . ********** .
+    . ********** .
+    . * end if * .
+    . ********** .
+    ..............
     ''')
 
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         if: foo > bar
@@ -207,8 +187,6 @@ def test_sequence_emptyif():
     ''')
     assert eqdia(d, '''
     ....................
-    . DIAGRAM: Foo     .
-    . version: 1.0     .
     .                  .
     . **************** .
     . * if foo > bar * .
@@ -225,8 +203,6 @@ def test_sequence_emptyif():
 
 def test_sequence_condition_on_reversecall():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         a -> b
@@ -236,9 +212,6 @@ def test_sequence_condition_on_reversecall():
     ''')
     assert eqdia(d, '''
     .....................
-    . DIAGRAM: Foo      .
-    . version: 1.0      .
-    .                   .
     . +---+ +---+ +---+ .
     . | a | | b | | c | .
     . +---+ +---+ +---+ .

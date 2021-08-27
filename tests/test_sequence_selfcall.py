@@ -5,8 +5,6 @@ from .helpers import eqdia
 
 def test_sequence_selfcall():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         foo -> foo: init()
@@ -15,9 +13,6 @@ def test_sequence_selfcall():
     ''')
     assert eqdia(d, '''
     ...............................
-    . DIAGRAM: Foo                .
-    . version: 1.0                .
-    .                             .
     . +-----+         +-----+     .
     . | foo |         | bar |     .
     . +-----+         +-----+     .
@@ -41,8 +36,6 @@ def test_sequence_selfcall():
 
 def test_sequence_selfcall_returntext():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         foo -> foo: init() => error/zero
@@ -50,9 +43,6 @@ def test_sequence_selfcall_returntext():
     ''')
     assert eqdia(d, '''
     ............................................
-    . DIAGRAM: Foo                             .
-    . version: 1.0                             .
-    .                                          .
     . +-----+             +-----+              .
     . | foo |             | bar |              .
     . +-----+             +-----+              .
@@ -74,7 +64,6 @@ def test_sequence_selfcall_returntext():
 
 def test_sequence_selfcall_issue6():
     d = Diagram('''
-        diagram: foo
         sequence:
 
         foo -> bar: ensure()
@@ -83,8 +72,6 @@ def test_sequence_selfcall_issue6():
     ''')
     assert eqdia(d, '''
     ...............................................
-    . DIAGRAM: foo                                .
-    .                                             .
     . +-----+         +-----+                     .
     . | foo |         | bar |                     .
     . +-----+         +-----+                     .
@@ -114,7 +101,6 @@ def test_sequence_selfcall_issue6():
 
 def test_sequence_condition_inside_selfcall_issue5_test1():
     d = Diagram('''
-        diagram: foo
         sequence:
 
         bar -> bar: connect()
@@ -122,8 +108,6 @@ def test_sequence_condition_inside_selfcall_issue5_test1():
     ''')
     assert eqdia(d, '''
     ...............................
-    . DIAGRAM: foo                .
-    .                             .
     . +-----+                     .
     . | bar |                     .
     . +-----+                     .
@@ -148,7 +132,6 @@ def test_sequence_condition_inside_selfcall_issue5_test1():
 
 def test_sequence_condition_inside_selfcall_issue5_test2():
     d = Diagram('''
-        diagram: foo
         sequence:
 
         bar -> bar: connect()
@@ -157,8 +140,6 @@ def test_sequence_condition_inside_selfcall_issue5_test2():
     ''')
     assert eqdia(d, '''
     .............................................
-    . DIAGRAM: foo                              .
-    .                                           .
     . +-----+                           +-----+ .
     . | bar |                           | baz | .
     . +-----+                           +-----+ .
@@ -188,7 +169,6 @@ def test_sequence_condition_inside_selfcall_issue5_test2():
 
 def test_sequence_condition_inside_selfcall_issue5_test3():
     d = Diagram('''
-        diagram: foo
         sequence:
 
         foo -> bar: ensure()
@@ -197,8 +177,6 @@ def test_sequence_condition_inside_selfcall_issue5_test3():
     ''')
     assert eqdia(d, '''
     ...............................................
-    . DIAGRAM: foo                                .
-    .                                             .
     . +-----+         +-----+                     .
     . | foo |         | bar |                     .
     . +-----+         +-----+                     .
@@ -225,7 +203,6 @@ def test_sequence_condition_inside_selfcall_issue5_test3():
 
 def test_sequence_condition_inside_selfcall_issue5_test4():
     d = Diagram('''
-        diagram: foo
         sequence:
 
         foo -> bar: ensure()
@@ -235,8 +212,6 @@ def test_sequence_condition_inside_selfcall_issue5_test4():
     ''')
     assert eqdia(d, '''
     ...............................................
-    . DIAGRAM: foo                                .
-    .                                             .
     . +-----+         +-----+             +-----+ .
     . | foo |         | bar |             | baz | .
     . +-----+         +-----+             +-----+ .
@@ -268,7 +243,6 @@ def test_sequence_condition_inside_selfcall_issue5_test4():
 
 def test_sequence_loop_over_selfcall_issue44():
     d = Diagram('''
-        diagram: foo
         sequence:
         while: Lorem ipsum
           foo -> foo
@@ -278,8 +252,6 @@ def test_sequence_loop_over_selfcall_issue44():
     ''')
     assert eqdia(d, '''
     .........................
-    . DIAGRAM: foo          .
-    .                       .
     . +-----+               .
     . | foo |               .
     . +-----+               .

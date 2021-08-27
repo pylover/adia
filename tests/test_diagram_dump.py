@@ -64,7 +64,7 @@ def test_diagram_comment():
 
 def test_diagram_repr():
     diagram = Diagram()
-    assert repr(diagram) == 'Diagram: Untitled Diagram'
+    assert repr(diagram) == 'Diagram: Untitled'
 
     diagram.parseline('diagram: Foo')
     assert repr(diagram) == 'Diagram: Foo'
@@ -77,7 +77,7 @@ def test_diagram_emptyline():
 
     s = 'sequence: foo\n  \n'
     diagram = Diagram(StringIO(s))
-    assert diagram.dumps() == 'diagram: Untitled Diagram\n\nsequence: foo'
+    assert diagram.dumps() == 'sequence: foo'
 
 
 def test_diagram_attr_error():

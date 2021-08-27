@@ -5,8 +5,6 @@ from .helpers import eqdia
 
 def test_sequence_loop():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         for: i in 0~10
@@ -17,9 +15,6 @@ def test_sequence_loop():
     ''')
     assert eqdia(d, '''
     ........................
-    . DIAGRAM: Foo         .
-    . version: 1.0         .
-    .                      .
     . +---+ +---+    +---+ .
     . | b | | a |    | c | .
     . +---+ +---+    +---+ .
@@ -62,8 +57,6 @@ def test_sequence_loop():
 
 def test_sequence_loop_isolation():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         foo -> bar:
@@ -73,9 +66,6 @@ def test_sequence_loop_isolation():
     ''')
     assert eqdia(d, '''
     ..........................................
-    . DIAGRAM: Foo                           .
-    . version: 1.0                           .
-    .                                        .
     . +-----+ +-----+ +---+            +---+ .
     . | foo | | bar | | a |            | b | .
     . +-----+ +-----+ +---+            +---+ .

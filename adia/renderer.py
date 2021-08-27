@@ -52,8 +52,9 @@ class Renderer:
 
     def _render_header(self):
         dia = self.diagram
-        self._extend(1)
-        self.canvas.write_textline(0, self.row, f'DIAGRAM: {dia.title}')
+        if dia.title:
+            self._extend(1)
+            self.canvas.write_textline(0, self.row, f'DIAGRAM: {dia.title}')
 
         if dia.author:
             self._extend(1)
@@ -409,12 +410,18 @@ class SequenceRenderer(Renderer):
 
         # Sequence Header
         if self.diagram.title:
-            self._extend(3)
+            if self.canvas.rows > 0:
+                self._extend(3)
+            else:
+                self._extend(1)
+
             self.canvas.write_textline(
                 0, self.row, f'SEQUENCE: {self.diagram.title}')
 
         if self._moduleplans:
-            self._extend(1)
+            if self.canvas.rows > 0:
+                self._extend(1)
+
             self._render_modules()
 
         if self._itemplans:

@@ -4,6 +4,23 @@ from .helpers import eqdia
 
 
 def test_diagram_header():
+    # Empty Input
+    d = Diagram()
+    assert eqdia(d, '''
+    ........
+    ........
+    ''')
+
+    # Version Only
+    d = Diagram('''
+        version: 1.0
+    ''')
+    assert eqdia(d, '''
+    ................
+    . version: 1.0 .
+    ................
+    ''')
+
     d = Diagram('''
         diagram: Foo
         version: 1.0
@@ -13,13 +30,6 @@ def test_diagram_header():
     . DIAGRAM: Foo .
     . version: 1.0 .
     ................
-    ''')
-
-    d = Diagram()
-    assert eqdia(d, '''
-    .............................
-    . DIAGRAM: Untitled Diagram .
-    .............................
     ''')
 
     d = Diagram('''

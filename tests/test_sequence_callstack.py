@@ -5,8 +5,6 @@ from .helpers import eqdia
 
 def test_sequence_callstack():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         foo.title: Foo
@@ -20,9 +18,6 @@ def test_sequence_callstack():
     ''')
     assert eqdia(d, '''
     ...............................................
-    . DIAGRAM: Foo                                .
-    . version: 1.0                                .
-    .                                             .
     . +-----+ +-----+ +-------+ +-----+ +-------+ .
     . | Foo | | bar | | thud  | | qux | | quux  | .
     . +-----+ +-----+ +-------+ +-----+ +-------+ .
@@ -58,10 +53,7 @@ def test_sequence_callstack():
 
 def test_sequence_call_notext():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
-
         f -> b
         foo -> bar
         foo -> b
@@ -69,9 +61,6 @@ def test_sequence_call_notext():
     ''')
     assert eqdia(d, '''
     ...............................
-    . DIAGRAM: Foo                .
-    . version: 1.0                .
-    .                             .
     . +---+ +---+ +-----+ +-----+ .
     . | f | | b | | foo | | bar | .
     . +---+ +---+ +-----+ +-----+ .
@@ -101,8 +90,6 @@ def test_sequence_call_notext():
 
 def test_sequence_calltext_minimum():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         f -> b: 1
@@ -112,9 +99,6 @@ def test_sequence_calltext_minimum():
     ''')
     assert eqdia(d, '''
     ..................................
-    . DIAGRAM: Foo                   .
-    . version: 1.0                   .
-    .                                .
     . +---+  +---+  +-----+  +-----+ .
     . | f |  | b |  | foo |  | bar | .
     . +---+  +---+  +-----+  +-----+ .
@@ -145,10 +129,6 @@ def test_sequence_calltext_minimum():
 def test_sequence_calltext():
 
     d = Diagram('''
-        diagram: ADia demo
-        version: 1.0
-        author: pylover
-
         sequence:
 
         @foo: Start
@@ -159,10 +139,6 @@ def test_sequence_calltext():
     ''')
     assert eqdia(d, '''
     .......................................
-    . DIAGRAM: ADia demo                  .
-    . author: pylover                     .
-    . version: 1.0                        .
-    .                                     .
     . +-----+        +-----+      +-----+ .
     . | foo |        | bar |      | baz | .
     . +-----+        +-----+      +-----+ .
@@ -188,8 +164,6 @@ def test_sequence_calltext():
     ''')
 
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         f -> b: init()
@@ -199,9 +173,6 @@ def test_sequence_calltext():
     ''')
     assert eqdia(d, '''
     ......................................................
-    . DIAGRAM: Foo                                       .
-    . version: 1.0                                       .
-    .                                                    .
     . +---+            +---+       +-----+       +-----+ .
     . | f |            | b |       | foo |       | bar | .
     . +---+            +---+       +-----+       +-----+ .
@@ -231,8 +202,6 @@ def test_sequence_calltext():
 
 def test_sequence_callreturntext():
     d = Diagram('''
-        diagram: Foo
-        version: 1.0
         sequence:
 
         f -> b: init() => int
@@ -242,9 +211,6 @@ def test_sequence_callreturntext():
     ''')
     assert eqdia(d, '''
     ......................................................
-    . DIAGRAM: Foo                                       .
-    . version: 1.0                                       .
-    .                                                    .
     . +---+            +---+       +-----+       +-----+ .
     . | f |            | b |       | foo |       | bar | .
     . +---+            +---+       +-----+       +-----+ .
@@ -274,7 +240,6 @@ def test_sequence_callreturntext():
 
 def test_sequence_indentation_blankline_issue47():
     d = Diagram('''
-        diagram: Foo
         sequence:
 
         foo -> bar
@@ -285,8 +250,6 @@ def test_sequence_indentation_blankline_issue47():
     ''')
     assert eqdia(d, '''
     ...................................
-    . DIAGRAM: Foo                    .
-    .                                 .
     . +-----+ +-----+ +-----+ +-----+ .
     . | foo | | bar | | baz | | qux | .
     . +-----+ +-----+ +-----+ +-----+ .
