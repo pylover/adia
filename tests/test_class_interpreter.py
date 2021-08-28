@@ -21,5 +21,48 @@ def test_class_minimal():
 
         foo
         bar
+        baz
     '''
     eqrepr(s)
+
+
+def test_class_title():
+    s = '''
+        class: Foo
+
+        foo
+    '''
+    eqrepr(s)
+
+
+def test_class_simple_attribute():
+    s = '''
+        class: Foo
+
+        foo
+          bar
+          baz
+
+        Foo
+          Bar
+          Baz
+    '''
+    eqrepr(s)
+
+
+def test_class_repr():
+    c = class_('''
+        class:
+    ''')
+    assert repr(c) == 'ClassDiagram: Untitled'
+
+    c = class_('''
+        class: Foo
+    ''')
+    assert repr(c) == 'ClassDiagram: Foo'
+
+    c = class_('''
+        class: Foo
+        foo
+    ''')
+    assert repr(c[0]) == 'Class: foo'
