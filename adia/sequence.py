@@ -2,8 +2,7 @@ from io import StringIO
 
 from .lazyattr import LazyAttribute
 from .container import Container
-from .interpreter import Interpreter, Consume, Final, FinalConsume, New, \
-    Ignore, Goto, Switch
+from .interpreter import Interpreter, GoTo, Switch, Terminate, New
 from .token import NAME, NEWLINE, EVERYTHING, RARROW, COLON, AT, HASH, EOF, \
     DOT, DEDENT, INDENT, MULTILINE, TILDA
 
@@ -78,18 +77,18 @@ class Item(Interpreter):
 
     statemap = {
         'start': {
-            NAME: Goto(nextstate='name'),
+            NAME: GoTo('name'),
         },
         'name': {
-            NAME: Goto(nextstate='name'),
-            TILDA: Goto(nextstate='name'),
-            NEWLINE: FinalConsume(_finish, alltokens=True),
-            COLON: Goto(nextstate=':'),
+            NAME: GoTo('name'),
+            TILDA: GoTo('name'),
+            NEWLINE: Terminate(cb=_finish, limit=False),
+            COLON: GoTo(':', limit=False),
         },
         ':': {
-            MULTILINE: FinalConsume(_finish_multiline, alltokens=True),
+            MULTILINE: Terminate(cb=_finish_multiline, limit=False),
             EVERYTHING: {
-                NEWLINE: FinalConsume(_finish, alltokens=True)
+                NEWLINE: Terminate(cb=_finish, limit=False),
             }
         },
     }
@@ -123,17 +122,17 @@ class Note(Item):
     statemap = {
         'start': {NAME: {
             TILDA: {
-                COLON: Goto(nextstate=':'),
+                COLON: GoTo(':', limit=False),
                 NAME: {
-                    COLON: Goto(nextstate=':'),
+                    COLON: GoTo(':', limit=False),
                 },
             },
-            COLON: Goto(nextstate=':'),
+            COLON: GoTo(':', limit=False),
         }},
         ':': {
-            MULTILINE: FinalConsume(Item._finish_multiline, alltokens=True),
+            MULTILINE: Terminate(cb=Item._finish_multiline, limit=False),
             EVERYTHING: {
-                NEWLINE: FinalConsume(_finish, alltokens=True)
+                NEWLINE: Terminate(cb=_finish, limit=False)
             }
         },
     }
@@ -185,14 +184,14 @@ class Call(ContainerItem):
         super()._complete('call', text=text)
 
     statemap = {
-        'start': {NAME: {RARROW: {NAME: Goto(nextstate='name -> name')}}},
+        'start': {NAME: {RARROW: {NAME: GoTo('name -> name')}}},
         'name -> name': {
-            NEWLINE: FinalConsume(_complete),
-            EOF: FinalConsume(_complete),
-            COLON: Goto(nextstate=':'),
+            NEWLINE: Terminate(cb=_complete),
+            EOF: Terminate(cb=_complete),
+            COLON: GoTo(':'),
         },
         ':': {EVERYTHING: {
-            NEWLINE: FinalConsume(_complete)
+            NEWLINE: Terminate(cb=_complete)
         }}
     }
 
@@ -212,7 +211,7 @@ class SequenceDiagram(Interpreter, Container):
     each sequence diagram section.
 
     """
-    title = 'Untitled Sequence Diagram'
+    title = None
     description = None
     tags = None
 
@@ -256,7 +255,8 @@ class SequenceDiagram(Interpreter, Container):
         if len(self):
             f.write('\n')
             for c in self:
-                f.write(f'{c.dumps()}\n')
+                f.write(c.dumps())
+                f.write('\n')
 
         return f.getvalue()
 
@@ -320,55 +320,54 @@ class SequenceDiagram(Interpreter, Container):
         setattr(self.modules[module], attr, value.strip())
 
     _keywords = {
-        'sequence': Final(nextstate='sequence'),
-        'state': Final(nextstate='start'),
-        'class': Final(nextstate='start'),
-        'for': New(Loop, callback=_new_loop, nextstate='start'),
-        'while': New(Loop, callback=_new_loop, nextstate='start'),
-        'loop': New(Loop, callback=_new_loop, nextstate='start'),
-        'if': New(Condition, callback=_new_condition, nextstate='start'),
-        'alt': New(Condition, callback=_new_condition, nextstate='start'),
-        'elif': New(Condition, callback=_new_condition, nextstate='start'),
-        'else': New(Condition, callback=_new_condition, nextstate='start'),
+        'sequence': Terminate(reuse=True),
+        'class': Terminate(reuse=True),
+        'for': New(Loop, 'start', cb=_new_loop),
+        'while': New(Loop, 'start', cb=_new_loop),
+        'loop': New(Loop, 'start', cb=_new_loop),
+        'if': New(Condition, 'start', cb=_new_condition),
+        'alt': New(Condition, 'start', cb=_new_condition),
+        'elif': New(Condition, 'start', cb=_new_condition),
+        'else': New(Condition, 'start', cb=_new_condition),
     }
 
     statemap = {
         'title': {
             EVERYTHING: {
-                NEWLINE: Consume(_set_title, nextstate='start')
+                NEWLINE: GoTo('start', cb=_set_title)
             }
         },
         'start': {
-            HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
-            NEWLINE: Ignore(nextstate='start'),
-            INDENT: Ignore(callback=_indent, nextstate='indent'),
-            DEDENT: Ignore(callback=_dedent, nextstate='start'),
-            EOF: Final(nextstate='start'),
-            NAME: Switch(default=Goto(nextstate='name'), **_keywords),
-            AT: Ignore(nextstate='@'),
+            HASH: {EVERYTHING: {NEWLINE: GoTo('start', ignore=True)}},
+            NEWLINE: GoTo('start', ignore=True),
+            INDENT: GoTo('indent', cb=_indent, ignore=True),
+            DEDENT: GoTo('start', cb=_dedent, ignore=True),
+            EOF: Terminate(),
+            NAME: Switch(default=GoTo('name'), **_keywords),
+            AT: GoTo('@', ignore=True),
         },
         'indent': {
-            HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
-            NAME: Switch(default=Goto(nextstate='  name'), **_keywords),
-            AT: Ignore(nextstate='@'),
-            NEWLINE: Ignore(nextstate='start'),
-            INDENT: Ignore(callback=_indent, nextstate='indent'),
+            HASH: {EVERYTHING: {NEWLINE: GoTo('start', ignore=True)}},
+            NAME: Switch(default=GoTo('  name'), **_keywords),
+            AT: GoTo('@', ignore=True),
+            NEWLINE: GoTo('start', ignore=True),
+            INDENT: GoTo('indent', cb=_indent, ignore=True),
         },
         'name': {
-            RARROW: New(Call, callback=_new_call, nextstate='start'),
-            COLON: Goto(nextstate='attr:'),
-            DOT: {NAME: {COLON: Goto(nextstate='mod.attr:')}},
+            RARROW: New(Call, 'start', cb=_new_call),
+            COLON: GoTo('attr:'),
+            DOT: {NAME: {COLON: GoTo('mod.attr:')}},
         },
         '  name': {
-            RARROW: New(Call, callback=_new_call, nextstate='start')
+            RARROW: New(Call, 'start', cb=_new_call)
         },
         'attr:': {
-            EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
+            EVERYTHING: {NEWLINE: GoTo('start', cb=_attr)}
         },
         'mod.attr:': {
-            EVERYTHING: {NEWLINE: Consume(_module_attr, nextstate='start')}
+            EVERYTHING: {NEWLINE: GoTo('start', cb=_module_attr)}
         },
         '@': {
-            NAME: New(Note, callback=_new_note, nextstate='start'),
+            NAME: New(Note, 'start', cb=_new_note),
         }
     }

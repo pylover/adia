@@ -30,6 +30,8 @@ def run():
     from tests import test_mutablestring
     from tests import test_readme
     from tests import test_renderer
+    from tests import test_token
+    from tests import test_tokenizer
     from tests import test_sequence_callstack
     from tests import test_sequence_condition
     from tests import test_sequence_header
@@ -37,8 +39,7 @@ def run():
     from tests import test_sequence_loop
     from tests import test_sequence_note
     from tests import test_sequence_selfcall
-    from tests import test_token
-    from tests import test_tokenizer
+    from tests import test_class_interpreter
 
     for module in [
         test_api,
@@ -50,6 +51,8 @@ def run():
         test_mutablestring,
         test_readme,
         test_renderer,
+        test_token,
+        test_tokenizer,
         test_sequence_callstack,
         test_sequence_condition,
         test_sequence_header,
@@ -57,8 +60,7 @@ def run():
         test_sequence_loop,
         test_sequence_note,
         test_sequence_selfcall,
-        test_token,
-        test_tokenizer,
+        test_class_interpreter,
     ]:
         for test in run_module_tests(module):
             yield test

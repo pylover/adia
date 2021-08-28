@@ -29,8 +29,8 @@ def test_error(app):
         assert stdout == ''
         assert eqbigstr(stderr, '''
             BadSyntax: File "<stdin>", Interpreter: Diagram, line 1, col 0
-            Expected one of `diagram author version sequence`, got: `invalid`.
-        ''', offset=12)
+            Expected one of `diagram author version sequence class`, got: `invalid`.
+        ''', offset=12)  # noqa
 
 
 def test_standardinput(app):
@@ -165,7 +165,7 @@ def test_multiple_inputfiles_error(app, tempstruct):
     with app(f'{temproot}/foo.adia {temproot}/bad.adia {temproot}/baz.adia'):
         assert eqbigstr(stderr, f'''
             BadSyntax: File "{temproot}/bad.adia", Interpreter: Diagram, line 1, col 0
-            Expected one of `diagram author version sequence`, got: `bad`.
+            Expected one of `diagram author version sequence class`, got: `bad`.
         ''', offset=12)  # noqa
 
         assert eqdia(stdout, '''

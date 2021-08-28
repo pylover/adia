@@ -1,7 +1,7 @@
 from io import StringIO
 
 from .container import Container
-from .interpreter import Interpreter, Ignore, Switch, Goto, Consume, New
+from .interpreter import Interpreter, GoTo, New, Switch
 from .sequence import SequenceDiagram
 from .class_ import ClassDiagram
 from .token import NEWLINE, NAME, EVERYTHING, INDENT, EOF, HASH, COLON
@@ -154,7 +154,7 @@ class Diagram(Interpreter, Container):
         """
         return Renderer(self).dumps(rstrip)
 
-    def _set_title(self, attr, value):
+    def _set_title(self, value):
         self.title = value.strip()
 
     def _attr(self, attr, value):
@@ -172,38 +172,41 @@ class Diagram(Interpreter, Container):
         self.append(class_)
 
     _keywords = {
-        'diagram': Goto(nextstate='title'),
-        'author': Goto(nextstate='attr'),
-        'version': Goto(nextstate='attr'),
-        'sequence': Goto(nextstate='sequence'),
-        'class': Goto(nextstate='class'),
+        'diagram': GoTo('title', ignore=True),
+        'author': GoTo('attr'),
+        'version': GoTo('attr'),
+        'sequence': GoTo('sequence'),
+        'class': GoTo('class'),
     }
 
     statemap = {
         'start': {
-            HASH: {EVERYTHING: {NEWLINE: Ignore(nextstate='start')}},
-            INDENT: {NEWLINE: Ignore(nextstate='start')},
-            NEWLINE: Ignore(nextstate='start'),
-            EOF: Ignore(nextstate='start'),
+            HASH: {EVERYTHING: {NEWLINE: GoTo('start', ignore=True)}},
+            INDENT: {NEWLINE: GoTo('start', ignore=True)},
+            NEWLINE: GoTo('start', ignore=True),
+            EOF: GoTo('start', ignore=True),
             NAME: Switch(**_keywords),
         },
         'title': {
             COLON: {EVERYTHING: {
-                NEWLINE: Consume(_set_title, nextstate='start')
+                NEWLINE: GoTo('start', cb=_set_title)
             }}
         },
         'attr': {
             COLON: {
-                EVERYTHING: {NEWLINE: Consume(_attr, nextstate='start')}
+                EVERYTHING: {NEWLINE: GoTo('start', cb=_attr)}
             },
         },
-        'sequence': {COLON: Ignore(nextstate='new-sequence')},
-        'new-sequence': {EVERYTHING: {NEWLINE:
-            New(SequenceDiagram, callback=_new_seq)
-        }},
-        'class': {COLON: Ignore(nextstate='new-class')},
-        'new-class': {EVERYTHING: {NEWLINE:
-            New(ClassDiagram, callback=_new_class)
-        }},
-
+        'sequence': {COLON: GoTo('new-sequence', ignore=True)},
+        'new-sequence': {EVERYTHING: {NEWLINE: New(
+            SequenceDiagram,
+            'start',
+            cb=_new_seq
+        )}},
+        'class': {COLON: GoTo('new-class', ignore=True)},
+        'new-class': {EVERYTHING: {NEWLINE: New(
+            ClassDiagram,
+            'start',
+            cb=_new_class
+        )}},
     }

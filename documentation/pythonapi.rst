@@ -9,8 +9,14 @@ Python API
 .. autoclass:: Diagram
    :members:
 
-
 .. autoclass:: SequenceDiagram
    :members:
 
+.. autoclass:: InterpreterError
+   :members:
 
+.. autoclass:: BadAttributes
+   :members:
+
+.. autoclass:: BadSyntax
+   :members:
