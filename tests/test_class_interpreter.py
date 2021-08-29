@@ -35,21 +35,6 @@ def test_class_title():
     eqrepr(s)
 
 
-def test_class_simple_attribute():
-    s = '''
-        class: Foo
-
-        foo
-          bar
-          baz
-
-        Foo
-          Bar
-          Baz
-    '''
-    eqrepr(s)
-
-
 def test_class_repr():
     c = class_('''
         class:
@@ -66,3 +51,43 @@ def test_class_repr():
         foo
     ''')
     assert repr(c[0]) == 'Class: foo'
+
+
+def test_class_simple_attribute():
+    s = '''
+        class: Foo
+
+        foo
+          bar
+          baz
+
+        Foo
+          Bar
+          Baz
+    '''
+    eqrepr(s)
+
+
+def test_class_multiwords_attribute():
+    s = '''
+        class: Foo
+
+        foo
+          bar baz
+
+        Foo
+          Bar Baz
+          Baz Qux
+    '''
+    eqrepr(s)
+
+
+def test_class_method():
+    s = '''
+        class: Foo
+
+        foo
+          int bar(a, *b, c)
+          *Bar bar(int *a)
+    '''
+    eqrepr(s)

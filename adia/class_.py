@@ -1,7 +1,9 @@
+import re
 from io import StringIO
 
 from .interpreter import Interpreter, GoTo, New, Terminate
-from .token import EVERYTHING, NEWLINE, HASH, EOF, NAME, INDENT, DEDENT
+from .token import EVERYTHING, NEWLINE, HASH, EOF, NAME, INDENT, DEDENT, \
+    LPAR, RPAR, COMMA, ASTERISK
 from .container import Container
 
 
@@ -30,7 +32,19 @@ class Class_(Interpreter):
 
         return f.getvalue()
 
-    def _new_attr(self, attr):
+    def _new_attr(self, *args):
+        f = StringIO()
+        prev = None
+        for i, a in enumerate(args[:-1]):
+            # TODO: compile regex patterns
+            if i > 0 \
+                    and re.match('[a-z*]', a[0], re.I) \
+                    and not re.match('[)(*]', prev[-1]):
+                f.write(' ')
+            f.write(a)
+            prev = a
+
+        attr = f.getvalue()
         self.attrs.append(attr)
 
     statemap = {
@@ -45,9 +59,13 @@ class Class_(Interpreter):
             INDENT: GoTo('attr', ignore=True),
         },
         'attr': {
-            NEWLINE: GoTo('attr', ignore=True),
             DEDENT: GoTo('  attr', ignore=True),
-            NAME: GoTo('attr', cb=_new_attr),
+            NEWLINE: GoTo('attr', cb=_new_attr, limit=None),
+            NAME: GoTo('attr', limit=None),
+            LPAR: GoTo('attr', limit=None),
+            RPAR: GoTo('attr', limit=None),
+            COMMA: GoTo('attr', limit=None),
+            ASTERISK: GoTo('attr', limit=None),
         }
     }
 
