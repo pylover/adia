@@ -45,32 +45,32 @@ class Attr:
 
 
 class Class_(Interpreter):
-    name = None
+    title = None
 
     def __init__(self, *args, **kw):
-        self.attrs = []
+        self.members = []
         super().__init__('start', *args, **kw)
 
-    def _set_name(self, name):
-        self.name = name
+    def _set_name(self, title):
+        self.title = title
 
     def __repr__(self):
-        return f'Class: {self.name}'
+        return f'Class: {self.title}'
 
     def dumps(self):
         f = StringIO()
-        f.write(self.name)
+        f.write(self.title)
 
-        if self.attrs:
+        if self.members:
             f.write('\n')
 
-            for attr in self.attrs:
+            for attr in self.members:
                 f.write(f'  {attr.dumps()}\n')
 
         return f.getvalue()
 
     def _new_attr(self, *args):
-        self.attrs.append(Attr.parse(*args))
+        self.members.append(Attr.parse(*args))
 
     statemap = {
         'start': {

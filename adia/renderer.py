@@ -5,6 +5,7 @@ import itertools
 
 from .lazyattr import LazyAttribute
 from .sequence import SequenceDiagram, Call, Condition, Loop, Note
+from .class_ import ClassDiagram
 from .canvas import Canvas
 from .constants import LEFT, RIGHT
 
@@ -43,9 +44,22 @@ class BaseRenderer:
     def _extend(self, i):
         self.canvas.extendbottom(i)
 
+    def _rextend(self, i):
+        self.canvas.extendright(i)
+
     @property
     def row(self):
-        return self.canvas.rows - 1
+        if self.canvas.rows:
+            return self.canvas.rows - 1
+
+        return 0
+
+    @property
+    def col(self):
+        if self.canvas.cols:
+            return self.canvas.cols - 1
+
+        return 0
 
 
 class RenderingPlan:
@@ -367,6 +381,8 @@ class Renderer(BaseRenderer):
         for unit in self.diagram:
             if isinstance(unit, SequenceDiagram):
                 SequenceRenderer(unit, self.canvas).render()
+            elif isinstance(unit, ClassDiagram):
+                ClassRenderer(unit, self.canvas).render()
 
     def _dumplines(self, rstrip):
         for line in self.canvas:
@@ -668,7 +684,7 @@ class SequenceRenderer(BaseRenderer):
             col += m.boxlen + max(m.rpad, nm.lpad if nm else 0)
 
         if col > self.canvas.cols:
-            self.canvas.extendright(col - self.canvas.cols)
+            self._rextend(col - self.canvas.cols)
 
     def _render_emptyline(self):
         self._extend(1)
@@ -728,3 +744,81 @@ class SequenceRenderer(BaseRenderer):
         if self._moduleplans:
             self._render_emptylines()
             self._render_modules()
+
+
+class ClassPlan(RenderingPlan):
+    width = None
+    height = None
+
+    def __init__(self, diagram):
+        self.diagram = diagram
+
+    @LazyAttribute
+    def memberslen(self):
+        return len(self.diagram.members)
+
+    @LazyAttribute
+    def max_textlen(self):
+        lens = [len(m.text) for m in self.diagram.members]
+        lens.append(len(self.diagram.title))
+        return max(lens)
+
+    def calc(self):
+        self.width = self.max_textlen + 4
+        self.height = 3
+        if self.memberslen:
+            self.height += self.memberslen + 1
+
+    def _draw_separator(self, canvas, col, row):
+        canvas.draw_hline(col + 1, row, self.width - 2)
+        canvas.set_char(col, row, '+')
+        canvas.set_char(col + self.width - 1, row, '+')
+
+    def draw(self, renderer, col, row):
+        canvas = renderer.canvas
+        canvas.draw_box(col, row, self.width, self.height)
+        canvas.write_textline(
+            col + 2,
+            row + 1,
+            self.diagram.title
+        )
+
+        if self.memberslen:
+            self._draw_separator(canvas, col, row + 2)
+            for i, attr in enumerate(self.diagram.members):
+                canvas.write_textline(
+                    col + 2,
+                    row + 3 + i,
+                    attr.text
+                )
+
+
+class ClassRenderer(BaseRenderer):
+    _classplans = None
+
+    def plan(self):
+        self._classplans = []
+
+        for classdiagram in self.diagram:
+            self._classplans.append(ClassPlan(classdiagram))
+
+    def _render_classes(self):
+        for classplan in self._classplans:
+            classplan.calc()
+            classplan.draw(self, self.row, self.col)
+
+    def render(self):
+        self.plan()
+
+        # Class diagram Header
+        if self.diagram.title:
+            if self.canvas.rows > 0:
+                self._extend(3)
+            else:
+                self._extend(1)
+
+            self.canvas.write_textline(
+                0, self.row, f'CLASS DIAGRAM: {self.diagram.title}')
+
+        if self._classplans:
+            self._render_classes()
