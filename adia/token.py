@@ -26,6 +26,7 @@ COMMA = 22
 PLUS = 23
 HSEP = 24
 ASTERISK = 25
+MINUS = 26
 
 TOKEN_NAMES = {
     value: name for name, value in globals().items()
@@ -52,6 +53,7 @@ EXACT_TOKENS = [
     (',', COMMA),
     ('+', PLUS),
     ('*', ASTERISK),
+    ('-', MINUS),
 ]
 EXACT_TOKENS_DICT = {value: string for string, value in EXACT_TOKENS}
 

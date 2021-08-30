@@ -3,8 +3,45 @@ from io import StringIO
 
 from .interpreter import Interpreter, GoTo, New, Terminate
 from .token import EVERYTHING, NEWLINE, HASH, EOF, NAME, INDENT, DEDENT, \
-    LPAR, RPAR, COMMA, ASTERISK
+    LPAR, RPAR, COMMA, ASTERISK, PLUS, MINUS, RARROW
 from .container import Container
+
+
+SPACEAFTER = re.compile(r'[a-z*]', re.I)
+NOSPACEAFTER = re.compile(r'[)(*+-]')
+
+
+class Attr:
+    def __init__(self, text, ref=None):
+        self.text = text
+        self.ref = ref
+
+    @classmethod
+    def parse(cls, *args):
+        ref = None
+        f = StringIO()
+        prev = None
+
+        for i, a in enumerate(args[:-1]):
+            if a == '->':
+                ref = '.'.join(args[i + 1: -1])
+                break
+            if i > 0 \
+                    and SPACEAFTER.match(a[0]) \
+                    and not NOSPACEAFTER.match(prev[-1]):
+                f.write(' ')
+            f.write(a)
+            prev = a
+
+        return cls(f.getvalue(), ref)
+
+    def dumps(self):
+        parts = [self.text]
+
+        if self.ref is not None:
+            parts.extend(['->', self.ref])
+
+        return ' '.join(parts)
 
 
 class Class_(Interpreter):
@@ -28,24 +65,12 @@ class Class_(Interpreter):
             f.write('\n')
 
             for attr in self.attrs:
-                f.write(f'  {attr}\n')
+                f.write(f'  {attr.dumps()}\n')
 
         return f.getvalue()
 
     def _new_attr(self, *args):
-        f = StringIO()
-        prev = None
-        for i, a in enumerate(args[:-1]):
-            # TODO: compile regex patterns
-            if i > 0 \
-                    and re.match('[a-z*]', a[0], re.I) \
-                    and not re.match('[)(*]', prev[-1]):
-                f.write(' ')
-            f.write(a)
-            prev = a
-
-        attr = f.getvalue()
-        self.attrs.append(attr)
+        self.attrs.append(Attr.parse(*args))
 
     statemap = {
         'start': {
@@ -66,6 +91,9 @@ class Class_(Interpreter):
             RPAR: GoTo('attr', limit=None),
             COMMA: GoTo('attr', limit=None),
             ASTERISK: GoTo('attr', limit=None),
+            PLUS: GoTo('attr', limit=None),
+            MINUS: GoTo('attr', limit=None),
+            RARROW: GoTo('attr', limit=None),
         }
     }
 

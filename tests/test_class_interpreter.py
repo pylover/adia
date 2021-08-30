@@ -74,6 +74,7 @@ def test_class_multiwords_attribute():
 
         foo
           bar baz
+          +baz
 
         Foo
           Bar Baz
@@ -89,5 +90,15 @@ def test_class_method():
         foo
           int bar(a, *b, c)
           *Bar bar(int *a)
+    '''
+    eqrepr(s)
+
+
+def test_class_reference():
+    s = '''
+        class: Foo
+
+        foo
+          bar -> baz
     '''
     eqrepr(s)
