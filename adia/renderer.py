@@ -794,13 +794,20 @@ class ClassPlan(RenderingPlan):
 
 
 class ClassRenderer(BaseRenderer):
+    _classplans_dict = None
     _classplans = None
 
+    def _add_classplan(self, d):
+        plan = ClassPlan(d)
+        self._classplans_dict[d.title] = plan
+        self._classplans.append(plan)
+
     def plan(self):
+        self._classplans_dict = {}
         self._classplans = []
 
-        for classdiagram in self.diagram:
-            self._classplans.append(ClassPlan(classdiagram))
+        for d in self.diagram:
+            self._add_classplan(d)
 
     def _render_classes(self):
         for classplan in self._classplans:
