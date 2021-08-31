@@ -95,24 +95,25 @@ def test_class_method():
 
 
 def test_class_reference():
-    s = '''
-        class: Foo
-
-        foo
-          bar -> baz
-    '''
-    eqrepr(s)
-
     d = class_('''
         class: Foo
+
         foo
           bar -> baz
     ''')
-    assert len(d) == 1
+    assert len(d) == 2
+    assert eqbigstr(d, '''
+        class: Foo
+
+        foo
+          bar -> baz
+
+        baz
+    ''')
 
 
 def test_class_inheritance():
-    s = '''
+    d = class_('''
         class: Foo
 
         foo(bar)
@@ -120,5 +121,15 @@ def test_class_inheritance():
           *Bar bar(int *a)
 
         bar(baz, qux)
-    '''
-    eqrepr(s)
+    ''')
+    assert eqbigstr(d, '''
+        class: Foo
+
+        foo(bar)
+          int bar(a, *b, c)
+          *Bar bar(int *a)
+
+        bar(baz, qux)
+        baz
+        qux
+    ''')

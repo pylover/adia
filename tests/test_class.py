@@ -60,3 +60,39 @@ def test_class_position():
     . +-----+ +-----+ .
     ...................
     ''')
+
+
+def test_class_ref():
+    d = Diagram('''
+        class:
+        foo
+          b -> bar
+    ''')
+    assert eqdia(d, '''
+    ...................
+    . +-----+ +-----+ .
+    . | foo | | bar | .
+    . +-----+ +-----+ .
+    . | b   |         .
+    . +-----+         .
+    ...................
+    ''')
+    assert d[0][0].title == 'foo'
+    assert d[0][1].title == 'bar'
+
+
+def test_class_inheritance():
+    d = Diagram('''
+        class:
+        foo(bar, baz)
+    ''')
+    assert eqdia(d, '''
+    ...........................
+    . +-----+ +-----+ +-----+ .
+    . | foo | | bar | | baz | .
+    . +-----+ +-----+ +-----+ .
+    ...........................
+    ''')
+    assert d[0][0].title == 'foo'
+    assert d[0][1].title == 'bar'
+    assert d[0][2].title == 'baz'

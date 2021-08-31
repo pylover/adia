@@ -127,6 +127,7 @@ class ClassDiagram(Interpreter, Container):
 
     def __init__(self, *args, **kwargs):
         super().__init__('title', *args, **kwargs)
+        self._classdict = {}
 
     def __repr__(self):
         return f'ClassDiagram: {self.title or "Untitled"}'
@@ -150,6 +151,26 @@ class ClassDiagram(Interpreter, Container):
     def _set_title(self, value, *args):
         self.title = value.strip()
 
+    def _complete(self):
+        classdict = {c.title: c for c in self}
+
+        def _ensure_class(title):
+            c = classdict.get(title)
+            if c:
+                return
+
+            c = Class_()
+            c.title = title
+            self.append(c)
+
+        for c in self:
+            for p in c.parents:
+                _ensure_class(p)
+
+            for m in c.members:
+                if m.ref:
+                    _ensure_class(m.ref)
+
     def _new_class(self, class_):
         self.append(class_)
 
@@ -162,7 +183,7 @@ class ClassDiagram(Interpreter, Container):
         'start': {
             HASH: {EVERYTHING: {NEWLINE: GoTo('start', ignore=True)}},
             NEWLINE: GoTo('start', ignore=True),
-            EOF: Terminate(),
+            EOF: Terminate(cb=_complete),
             NAME: New(Class_, 'start', cb=_new_class)
         }
     }

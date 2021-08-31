@@ -797,17 +797,29 @@ class ClassRenderer(BaseRenderer):
     _classplans_dict = None
     _classplans = None
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._classplans_dict = {}
+        self._classplans = []
+
     def _add_classplan(self, d):
+        if d.title in self._classplans_dict:
+            return
+
         plan = ClassPlan(d)
         self._classplans_dict[d.title] = plan
         self._classplans.append(plan)
 
     def plan(self):
-        self._classplans_dict = {}
-        self._classplans = []
-
         for d in self.diagram:
             self._add_classplan(d)
+
+            # for p in d.parents:
+            #     self._add_classplan(p)
+
+            # for m in d.members:
+            #     if m.ref:
+            #         self._add_classplan(m.ref)
 
     def _autoposition(self):
         col = 0
