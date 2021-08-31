@@ -763,7 +763,7 @@ class ClassPlan(RenderingPlan):
         lens.append(len(self.diagram.title))
         return max(lens)
 
-    def calc(self):
+    def calc_size(self):
         self.width = self.max_textlen + 4
         self.height = 3
         if self.memberslen:
@@ -809,10 +809,20 @@ class ClassRenderer(BaseRenderer):
         for d in self.diagram:
             self._add_classplan(d)
 
+    def _autoposition(self):
+        col = 0
+        row = 0
+
+        for plan in self._classplans:
+            yield plan, col, row
+            col += plan.width + 1
+
     def _render_classes(self):
-        for classplan in self._classplans:
-            classplan.calc()
-            classplan.draw(self, self.row, self.col)
+        for plan in self._classplans:
+            plan.calc_size()
+
+        for plan, col, row in self._autoposition():
+            plan.draw(self, col, row)
 
     def render(self):
         self.plan()

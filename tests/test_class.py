@@ -45,3 +45,18 @@ def test_class_attr():
     . +-----+ .
     ...........
     ''')
+
+
+def test_class_position():
+    d = Diagram('''
+        class:
+        foo
+        bar
+    ''')
+    assert eqdia(d, '''
+    ...................
+    . +-----+ +-----+ .
+    . | foo | | bar | .
+    . +-----+ +-----+ .
+    ...................
+    ''')

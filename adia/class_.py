@@ -70,7 +70,8 @@ class Class_(Interpreter):
         return f.getvalue()
 
     def _new_attr(self, *args):
-        self.members.append(Attr.parse(*args))
+        attr = Attr.parse(*args)
+        self.members.append(attr)
 
     statemap = {
         'start': {

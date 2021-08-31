@@ -102,3 +102,10 @@ def test_class_reference():
           bar -> baz
     '''
     eqrepr(s)
+
+    d = class_('''
+        class: Foo
+        foo
+          bar -> baz
+    ''')
+    assert len(d) == 1
