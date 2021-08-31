@@ -49,6 +49,7 @@ class Class_(Interpreter):
 
     def __init__(self, *args, **kw):
         self.members = []
+        self.parents = []
         super().__init__('start', *args, **kw)
 
     def _set_name(self, title):
@@ -60,6 +61,9 @@ class Class_(Interpreter):
     def dumps(self):
         f = StringIO()
         f.write(self.title)
+
+        if self.parents:
+            f.write(f'({", ".join(self.parents)})')
 
         if self.members:
             f.write('\n')
@@ -73,10 +77,23 @@ class Class_(Interpreter):
         attr = Attr.parse(*args)
         self.members.append(attr)
 
+    def _add_parent(self, name):
+        self.parents.append(name)
+
     statemap = {
         'start': {
-            NAME: {NEWLINE: GoTo('  attr', cb=_set_name)},
+            NAME: GoTo('name+', cb=_set_name),
             NEWLINE: GoTo('start', ignore=True)
+        },
+        'name+': {
+            NEWLINE: GoTo('  attr'),
+            LPAR: GoTo('('),
+        },
+        '(': {
+            NAME: {
+                RPAR: GoTo('name+', cb=_add_parent),
+                COMMA: GoTo('(', cb=_add_parent)
+            }
         },
         '  attr': {
             NEWLINE: GoTo('  attr', ignore=True),

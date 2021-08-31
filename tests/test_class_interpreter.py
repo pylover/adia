@@ -109,3 +109,16 @@ def test_class_reference():
           bar -> baz
     ''')
     assert len(d) == 1
+
+
+def test_class_inheritance():
+    s = '''
+        class: Foo
+
+        foo(bar)
+          int bar(a, *b, c)
+          *Bar bar(int *a)
+
+        bar(baz, qux)
+    '''
+    eqrepr(s)
