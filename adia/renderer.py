@@ -747,11 +747,25 @@ class SequenceRenderer(BaseRenderer):
 
 
 class ClassPlan(RenderingPlan):
+    col = None
+    row = None
     width = None
     height = None
 
     def __init__(self, diagram):
         self.diagram = diagram
+
+    @property
+    def parents(self):
+        return self.diagram.parents
+
+    @property
+    def refs(self):
+        return [i.ref for i in self.diagram.members if i.ref]
+
+    @LazyAttribute
+    def refslen(self):
+        return len(self.refs)
 
     @LazyAttribute
     def memberslen(self):
@@ -774,21 +788,21 @@ class ClassPlan(RenderingPlan):
         canvas.set_char(col, row, '+')
         canvas.set_char(col + self.width - 1, row, '+')
 
-    def draw(self, renderer, col, row):
+    def draw(self, renderer):
         canvas = renderer.canvas
-        canvas.draw_box(col, row, self.width, self.height)
+        canvas.draw_box(self.col, self.row, self.width, self.height)
         canvas.write_textline(
-            col + 2,
-            row + 1,
+            self.col + 2,
+            self.row + 1,
             self.diagram.title
         )
 
         if self.memberslen:
-            self._draw_separator(canvas, col, row + 2)
+            self._draw_separator(canvas, self.col, self.row + 2)
             for i, attr in enumerate(self.diagram.members):
                 canvas.write_textline(
-                    col + 2,
-                    row + 3 + i,
+                    self.col + 2,
+                    self.row + 3 + i,
                     attr.text
                 )
 
@@ -814,27 +828,45 @@ class ClassRenderer(BaseRenderer):
         for d in self.diagram:
             self._add_classplan(d)
 
-            # for p in d.parents:
-            #     self._add_classplan(p)
-
-            # for m in d.members:
-            #     if m.ref:
-            #         self._add_classplan(m.ref)
-
     def _autoposition(self):
         col = 0
         row = 0
 
-        for plan in self._classplans:
-            yield plan, col, row
+        items = self._classplans
+
+        # Find orphan classes
+        orphans = [i for i in items if not i.parents]
+
+        # Sort by references
+        orphans = sorted(orphans, key=lambda i: i.refslen)
+
+        # TODO: Find orphan classes references
+        # TODO: Sort orphan classes: less refrence first
+        height = 0
+        for plan in orphans:
+            plan.row = row
+            plan.col = col
             col += plan.width + 1
+            yield plan
+            height = max(height, plan.height)
+            items.remove(plan)
+
+            # TODO: Process refrences
+
+        row += height + 2
+        col = 0
+
+        for plan in items:
+            plan.row = row
+            plan.col = col
+            yield plan
 
     def _render_classes(self):
         for plan in self._classplans:
             plan.calc_size()
 
-        for plan, col, row in self._autoposition():
-            plan.draw(self, col, row)
+        for plan in self._autoposition():
+            plan.draw(self)
 
     def render(self):
         self.plan()
