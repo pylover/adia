@@ -236,3 +236,22 @@ def test_canvas_drawarrowtext():
     .         thud       .
     ......................
     ''')
+
+
+def test_canvas_route_horizontal():
+    c = Canvas()
+    c.route(2, 3, 7, 8)
+    c.route(2, 4, 7, 8)
+    assert eqdia(str(c), '''
+    ............
+    .          .
+    .          .
+    .          .
+    .   -----+ .
+    .   |    | .
+    .   |    | .
+    .   |    | .
+    .   |    v .
+    .   +--->  .
+    ............
+    ''')
