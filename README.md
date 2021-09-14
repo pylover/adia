@@ -35,8 +35,9 @@ Output:
 render ASCII diagrams.
 
 Currently, only sequence diagrams are supported, but the roadmap is to support 
-two more types of diagrams: `fork` (pylover/adia#42) and `class` 
-(pylover/adia#41).
+two more types of diagrams: `fork` 
+[#42](https://github.com/pylover/adia/issues/42) and `class` 
+[#41](https://github.com/pylover/adia/issues/41)).
 
 ## Get Closer!
 
