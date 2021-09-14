@@ -142,3 +142,27 @@ class Canvas:
     def draw_bottomarrow(self, col, row, length, **kw):
         self.draw_vline(col, row, length - 1, **kw)
         self.set_char(col, row + length - 1, 'v')
+
+    def route(self, col1, row1, col2, row2):
+        overlap = False
+
+        try:
+            for i in self._backend[row1][col1:col2 + 1]:
+                if i == '-' or '|':
+                    overlap = True
+                    break
+
+        except IndexError:
+            overlap = False
+
+        if not overlap:
+            self.draw_hline(col1, row1, col2 - col1)
+            self.draw_vline(col2, row1 + 1, row2 - row1 - 2)
+            self.set_char(col2, row2 - 1, 'v')
+            self.set_char(col2, row1, '+')
+
+        else:
+            self.draw_vline(col1, row1, (row2 - row1))
+            self.set_char(col1, row2, '+')
+            self.draw_hline(col1 + 1, row2, col2 - col1 - 1)
+            self.set_char(col2 - 1, row2, '>')
