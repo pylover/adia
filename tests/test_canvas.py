@@ -240,17 +240,17 @@ def test_canvas_drawarrowtext():
 
 def test_canvas_route_horizontal():
     c = Canvas()
-    c.route(2, 3, 7, 8, direction='h')
+    c.route(2, 3, 7, 8, 'horizontal')
     assert eqdia(str(c), '''
-    ............
-    .          .
-    .          .
-    .          .
-    .   --+    .
-    .     |    .
-    .     |    .
-    .     |    .
-    .     |    .
-    .     +->  .
-    ............
+    ...........
+    .         .
+    .         .
+    .         .
+    .   --+   .
+    .     |   .
+    .     |   .
+    .     |   .
+    .     |   .
+    .     +-> .
+    ...........
     ''')
