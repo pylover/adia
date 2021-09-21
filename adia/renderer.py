@@ -756,6 +756,18 @@ class ClassPlan(RenderingPlan):
         self.diagram = diagram
 
     @property
+    def title(self):
+        return self.diagram.title
+
+    @property
+    def endcol(self):
+        return self.col + self.width
+
+    @property
+    def endrow(self):
+        return self.row + self.height
+
+    @property
     def parents(self):
         return self.diagram.parents
 
@@ -776,6 +788,13 @@ class ClassPlan(RenderingPlan):
         lens = [len(m.text) for m in self.diagram.members]
         lens.append(len(self.diagram.title))
         return max(lens)
+
+    def issubclassof(self, *classes):
+        for c in classes:
+            if c in self.parents:
+                return True
+
+        return False
 
     def calc_size(self):
         self.width = self.max_textlen + 4
@@ -810,6 +829,7 @@ class ClassPlan(RenderingPlan):
 class ClassRenderer(BaseRenderer):
     _classplans_dict = None
     _classplans = None
+    maxcols = 80
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -829,43 +849,57 @@ class ClassRenderer(BaseRenderer):
             self._add_classplan(d)
 
     def _autoposition(self):
+        hgutter = 1
+        vgutter = 0
         col = 0
         row = 0
+        last = None
+        newrow = 0
+        plannames = []
 
-        items = self._classplans
+        items = self._classplans.copy()
+        self._classplans.clear()
+        items = sorted(items, key=lambda i: i.refslen)
+        items = sorted(items, key=lambda i: len(i.parents))
 
-        # Find orphan classes
-        orphans = [i for i in items if not i.parents]
+        while items:
+            plan = items.pop(0)
 
-        # Sort by references
-        orphans = sorted(orphans, key=lambda i: i.refslen)
+            if last is not None:
+                col += hgutter
 
-        # TODO: Find orphan classes references
-        # TODO: Sort orphan classes: less refrence first
-        height = 0
-        for plan in orphans:
-            plan.row = row
+                plan.col = col
+                plan.row = row
+                if plan.issubclassof(*plannames) or \
+                        plan.endcol > self.maxcols:
+                    # Switch to next row
+                    row = newrow + vgutter
+                    last = None
+                    col = 0
+
             plan.col = col
-            col += plan.width + 1
-            yield plan
-            height = max(height, plan.height)
-            items.remove(plan)
-
-            # TODO: Process refrences
-
-        row += height + 2
-        col = 0
-
-        for plan in items:
             plan.row = row
-            plan.col = col
-            yield plan
+            plannames.append(plan.title)
+            # Process attribute refrences
+
+            newrow = max(newrow, plan.endrow)
+            self._classplans.append(plan)
+            col = plan.endcol
+            last = plan
+
+    def _autospace(self):
+        for plan in self._classplans:
+            # TODO: calculate space and shift for parents
+            # TODO: calculate space and shift for refrences
+            pass
 
     def _render_classes(self):
         for plan in self._classplans:
             plan.calc_size()
 
-        for plan in self._autoposition():
+        self._autoposition()
+        self._autospace()
+        for plan in self._classplans:
             plan.draw(self)
 
     def render(self):

@@ -51,6 +51,38 @@ def test_class_position():
     d = Diagram('''
         class:
         foo
+          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+        bar
+          bbbbbbbbbbbbbb
+
+        baz
+        qux
+        quux
+        thud
+          cccc
+          dddd
+    ''')
+    assert eqdia(d, '''
+    ....................................................................................
+    . +-------------------------------------------+ +----------------+ +-----+ +-----+ .
+    . | foo                                       | | bar            | | baz | | qux | .
+    . +-------------------------------------------+ +----------------+ +-----+ +-----+ .
+    . | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | | bbbbbbbbbbbbbb |                 .
+    . +-------------------------------------------+ +----------------+                 .
+    . +------+ +------+                                                                .
+    . | quux | | thud |                                                                .
+    . +------+ +------+                                                                .
+    .          | cccc |                                                                .
+    .          | dddd |                                                                .
+    .          +------+                                                                .
+    ....................................................................................
+    ''')  # noqa
+
+
+    d = Diagram('''
+        class:
+        foo
         bar
     ''')
     assert eqdia(d, '''
