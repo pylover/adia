@@ -152,9 +152,10 @@ class Canvas:
             secondhalf = col2 - (col1 + firsthalf) - 1
             minrow = min(row1, row2)
 
-            self.draw_hline(col1, row1, firsthalf)
-            self.set_char(col1 + firsthalf, row1, '+')
-            self.draw_vline(col1 + firsthalf, minrow + 1, abs(row2 - row1) - 1)
-            self.set_char(col1 + firsthalf, row2, '+')
+            self.draw_hline(col1, row1, firsthalf + 1)
+            self.draw_vline(col1 + firsthalf, minrow, abs(row2 - row1))
+            if row1 != row2:
+                self.set_char(col1 + firsthalf, row1, '+')
+                self.set_char(col1 + firsthalf, row2, '+')
             self.draw_hline(col1 + firsthalf + 1, row2, secondhalf)
             self.set_char(col2 - 1, row2, '>')

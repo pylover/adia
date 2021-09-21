@@ -269,3 +269,13 @@ def test_canvas_route_horizontal():
     . --+   .
     .........
     ''')
+
+    c = Canvas()
+    c.route(0, 2, 7, 2, 'horizontal')
+    assert eqdia(str(c), '''
+    ...........
+    .         .
+    .         .
+    . ------> .
+    ...........
+    ''')
