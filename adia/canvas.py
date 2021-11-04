@@ -156,7 +156,8 @@ class Canvas:
         path = [(startcol, startrow)]
 
         def can(col, row):
-            return self.get_char(col, row) == ' '
+            return self.get_char(col, row) == ' ' and \
+                (col, row) not in path
 
         def try_(col, row):
             if can(col, row):
@@ -167,6 +168,7 @@ class Canvas:
 
         def walk():
             col, row = path[-1]
+            done = False
 
             if col == endcol and row == endrow:
                 return
@@ -182,16 +184,33 @@ class Canvas:
                 intrested_vdir = 1 if row < endrow else -1
 
             try:
+                # from pudb import set_trace; col > 16 and set_trace()
                 # Try horizontal
-                if intrested_hdir and try_(col + intrested_hdir, row):
-                    return
+                if intrested_hdir:
+                    if try_(col + intrested_hdir, row):
+                        return
+                    elif try_(col, row + intrested_vdir):
+                        return
+                    elif try_(col, row - 1):
+                        return
+                    elif try_(col, row + 1):
+                        return
 
                 # Try vertical
-                if intrested_vdir and try_(col, row + intrested_vdir):
-                    return
+                elif intrested_vdir:
+                    if try_(col, row + intrested_vdir):
+                        return
+                    elif try_(col - 1, row):
+                        return
+                    elif try_(col + 1, row):
+                        return
+
+                else:
+                    done = True
 
             finally:
-                walk()
+                if not done:
+                    walk()
 
         walk()
         for col, row in path:

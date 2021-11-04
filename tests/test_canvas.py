@@ -248,61 +248,20 @@ def test_canvas_get_char():
 
 def test_canvas_route_horizontal():
     c = Canvas()
-    c.route(2, 3, 7, 8)
+    c.draw_box(2, 2, 5, 5)
+    c.draw_box(10, 2, 5, 5)
+    c.draw_box(18, 2, 5, 5)
+    c.route(6, 4, 18, 4)
     assert eqdia(str(c), '''
     ...........
     .         .
     .         .
     .         .
-    .   --+   .
-    .     |   .
-    .     |   .
-    .     |   .
-    .     |   .
-    .     +-> .
-    ...........
-    ''')
-
-    """
-    c = Canvas()
-    c.route(0, 7, 5, 1, 'horizontal')
-    assert eqdia(str(c), '''
-    .........
-    .       .
-    .   +-> .
-    .   |   .
-    .   |   .
-    .   |   .
-    .   |   .
-    .   |   .
-    . --+   .
-    .........
-    ''')
-
-    c = Canvas()
-    c.route(0, 2, 7, 2, 'horizontal')
-    assert eqdia(str(c), '''
-    ...........
     .         .
     .         .
-    . ------> .
+    .         .
+    .         .
+    .         .
+    .         .
     ...........
     ''')
-
-    c = Canvas()
-    c.route(2, 3, 7, 8, 'horizontal')
-    c.route(0, 5, 10, 7, 'horizontal')
-    assert eqdia(str(c), '''
-    ............
-    .          .
-    .          .
-    .  +---+   .
-    .  |--+|   .
-    .  |  ||   .
-    . -+  ||   .
-    .     ||   .
-    .     |+-> .
-    .     +->  .
-    ............
-   ''')
-    """
