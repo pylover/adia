@@ -238,9 +238,17 @@ def test_canvas_drawarrowtext():
     ''')
 
 
+def test_canvas_get_char():
+    c = Canvas()
+    assert c.get_char(0, 0) == ' '
+    assert c.get_char(1, 1) == ' '
+    c.set_char(1, 1, 'x')
+    assert c.get_char(1, 1) == 'x'
+
+
 def test_canvas_route_horizontal():
     c = Canvas()
-    c.route(2, 3, 7, 8, 'horizontal')
+    c.route(2, 3, 7, 8)
     assert eqdia(str(c), '''
     ...........
     .         .
@@ -255,6 +263,7 @@ def test_canvas_route_horizontal():
     ...........
     ''')
 
+    """
     c = Canvas()
     c.route(0, 7, 5, 1, 'horizontal')
     assert eqdia(str(c), '''
@@ -279,3 +288,21 @@ def test_canvas_route_horizontal():
     . ------> .
     ...........
     ''')
+
+    c = Canvas()
+    c.route(2, 3, 7, 8, 'horizontal')
+    c.route(0, 5, 10, 7, 'horizontal')
+    assert eqdia(str(c), '''
+    ............
+    .          .
+    .          .
+    .  +---+   .
+    .  |--+|   .
+    .  |  ||   .
+    . -+  ||   .
+    .     ||   .
+    .     |+-> .
+    .     +->  .
+    ............
+   ''')
+    """

@@ -1,5 +1,3 @@
-import math
-
 from .mutablestring import MutableString
 
 
@@ -49,6 +47,15 @@ class Canvas:
 
     def __str__(self):
         return '\n'.join(str(line) for line in self._backend) + '\n'
+
+    def get_char(self, col, row):
+        if col >= self.cols:
+            self.extendright((col + 1) - self.cols)
+
+        if row >= self.rows:
+            self.extendbottom((row + 1) - self.rows)
+
+        return self._backend[row][col]
 
     def set_char(self, col, row, char):
         if col >= self.cols:
@@ -145,17 +152,47 @@ class Canvas:
         self.draw_vline(col, row, length - 1, **kw)
         self.set_char(col, row + length - 1, 'v')
 
-    def route(self, col1, row1, col2, row2, direction):
-        if direction == 'horizontal':
+    def route(self, startcol, startrow, endcol, endrow):
+        path = [(startcol, startrow)]
 
-            firsthalf = (math.ceil((col2 - col1) / 2) - 1)
-            secondhalf = col2 - (col1 + firsthalf) - 1
-            minrow = min(row1, row2)
+        def can(col, row):
+            return self.get_char(col, row) == ' '
 
-            self.draw_hline(col1, row1, firsthalf + 1)
-            self.draw_vline(col1 + firsthalf, minrow, abs(row2 - row1))
-            if row1 != row2:
-                self.set_char(col1 + firsthalf, row1, '+')
-                self.set_char(col1 + firsthalf, row2, '+')
-            self.draw_hline(col1 + firsthalf + 1, row2, secondhalf)
-            self.set_char(col2 - 1, row2, '>')
+        def try_(col, row):
+            if can(col, row):
+                path.append((col, row))
+                return True
+
+            return False
+
+        def walk():
+            col, row = path[-1]
+
+            if col == endcol and row == endrow:
+                return
+
+            if col == endcol:
+                intrested_hdir = 0
+            else:
+                intrested_hdir = 1 if col < endcol else -1
+
+            if row == endrow:
+                intrested_vdir = 0
+            else:
+                intrested_vdir = 1 if row < endrow else -1
+
+            try:
+                # Try horizontal
+                if intrested_hdir and try_(col + intrested_hdir, row):
+                    return
+
+                # Try vertical
+                if intrested_vdir and try_(col, row + intrested_vdir):
+                    return
+
+            finally:
+                walk()
+
+        walk()
+        for col, row in path:
+            self.set_char(col, row, '*')
