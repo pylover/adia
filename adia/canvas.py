@@ -48,6 +48,15 @@ class Canvas:
     def __str__(self):
         return '\n'.join(str(line) for line in self._backend) + '\n'
 
+    def get_char(self, col, row):
+        if col >= self.cols:
+            self.extendright((col + 1) - self.cols)
+
+        if row >= self.rows:
+            self.extendbottom((row + 1) - self.rows)
+
+        return self._backend[row][col]
+
     def set_char(self, col, row, char):
         if col >= self.cols:
             self.extendright((col + 1) - self.cols)
@@ -143,26 +152,67 @@ class Canvas:
         self.draw_vline(col, row, length - 1, **kw)
         self.set_char(col, row + length - 1, 'v')
 
-    def route(self, col1, row1, col2, row2):
-        overlap = False
+    def route(self, startcol, startrow, endcol, endrow):
+        path = [(startcol, startrow)]
 
-        try:
-            for i in self._backend[row1][col1:col2 + 1]:
-                if i == '-' or '|':
-                    overlap = True
-                    break
+        def can(col, row):
+            return self.get_char(col, row) == ' ' and \
+                (col, row) not in path
 
-        except IndexError:
-            overlap = False
+        def try_(col, row):
+            if can(col, row):
+                path.append((col, row))
+                return True
 
-        if not overlap:
-            self.draw_hline(col1, row1, col2 - col1)
-            self.draw_vline(col2, row1 + 1, row2 - row1 - 2)
-            self.set_char(col2, row2 - 1, 'v')
-            self.set_char(col2, row1, '+')
+            return False
 
-        else:
-            self.draw_vline(col1, row1, (row2 - row1))
-            self.set_char(col1, row2, '+')
-            self.draw_hline(col1 + 1, row2, col2 - col1 - 1)
-            self.set_char(col2 - 1, row2, '>')
+        def walk():
+            col, row = path[-1]
+            done = False
+
+            if col == endcol - 1 and row == endrow:
+                return
+
+            if col == endcol - 1:
+                intrested_hdir = 0
+            else:
+                intrested_hdir = 1 if col < endcol else -1
+
+            if row == endrow:
+                intrested_vdir = 0
+            else:
+                intrested_vdir = 1 if row < endrow else -1
+
+            try:
+                # from pudb import set_trace; col > 16 and set_trace()
+                # Try horizontal
+                if intrested_hdir:
+                    if try_(col + intrested_hdir, row):
+                        return
+                    elif try_(col, row + intrested_vdir):
+                        return
+                    elif try_(col, row - 1):
+                        return
+                    elif try_(col, row + 1):
+                        return
+
+                # Try vertical
+                elif intrested_vdir:
+                    if try_(col, row + intrested_vdir):
+                        return
+                    elif try_(col - 1, row):
+                        return
+                    elif try_(col + 1, row):
+                        return
+
+                else:
+                    done = True
+
+            finally:
+                if not done:
+                    walk()
+
+        walk()
+        path.append((endcol, endrow))
+        for col, row in path:
+            self.set_char(col, row, '*')
