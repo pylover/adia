@@ -170,10 +170,10 @@ class Canvas:
             col, row = path[-1]
             done = False
 
-            if col == endcol and row == endrow:
+            if col == endcol - 1 and row == endrow:
                 return
 
-            if col == endcol:
+            if col == endcol - 1:
                 intrested_hdir = 0
             else:
                 intrested_hdir = 1 if col < endcol else -1
@@ -213,5 +213,6 @@ class Canvas:
                     walk()
 
         walk()
+        path.append((endcol, endrow))
         for col, row in path:
             self.set_char(col, row, '*')
